@@ -27,21 +27,21 @@ data = [
 ]
 
 # 打印HTML表格
-
-def test_addition():
-    print_html_table(data)
-
-def test_subtraction():
-    print(12234)
-    assert 5 - 1 == 2
-    assert 5 - 2 == 2
-
-def test_not():
-    print(1)
-
-@pytest.mark.servername(server='my_server_name')
-def test_function():
-    print("111")
+#
+# def test_addition():
+#     print_html_table(data)
+#
+# def test_subtraction():
+#     print(12234)
+#     assert 5 - 1 == 2
+#     assert 5 - 2 == 2
+#
+# def test_not():
+#     print(1)
+#
+# @pytest.mark.servername(server='my_server_name')
+# def test_function():
+#     print("111")
 
 class Test_C():
 

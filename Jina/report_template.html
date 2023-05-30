@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Report Title</title>
+  <style type="text/css">
+         table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+         }
+         th, td {
+            padding: 5px;
+            text-align: left;
+         }
+         .pass {
+            background-color: #9ACD32;
+         }
+         .fail {
+            background-color: #FF5733;
+         }
+         .tbd {
+            background-color: #FFFF33;
+         }
+      </style>
+</head>
+<body>
+<h1>Test Report Title</h1>
+
+<h2>Test Information</h2>
+<table>
+  <tr>
+    <th>User Name:</th>
+    <td>[Insert User Name Here]</td>
+  </tr>
+  <tr>
+    <th>ARIA:</th>
+    <td>[Insert ARIA Here]</td>
+  </tr>
+  <tr>
+    <th>PC Name:</th>
+    <td>[Insert PC Name Here]</td>
+  </tr>
+</table>
+
+<h2>Test Summary</h2>
+<table>
+  <tr>
+    <th>Pass:</th>
+    <td>[Insert Pass Count Here]</td>
+    <th>Fail:</th>
+    <td>[Insert Fail Count Here]</td>
+    <th>TBD:</th>
+    <td>[Insert TBD Count Here]</td>
+  </tr>
+  <tr>
+    <th>Start Time:</th>
+    <td>[Insert Start Time Here]</td>
+    <th>End Time:</th>
+    <td>[Insert End Time Here]</td>
+  </tr>
+</table>
+
+<h2>Test Information Table</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Timestamps</th>
+    <th>Class</th>
+    <th>Result</th>
+    <th>Duration</th>
+    <th>Show/Hide Details</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>[Insert Timestamp Here]</td>
+    <td>[Insert Class Here]</td>
+    <td class="[Insert Result Here: Pass/Fail/TBD]">[Insert Result Here: Pass/Fail/TBD]</td>
+    <td>[Insert Duration Here]</td>
+    <td><button onclick="toggleDetails(this)">Show Details</button></td>
+  </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+         function toggleDetails(btn) {
+            var row = btn.parentNode.parentNode;
+            var detailsRow = row.nextElementSibling;
+            if (detailsRow.style.display === 'none') {
+               detailsRow.style.display = 'table-row';
+               btn.textContent = 'Hide Details';
+            } else {
+               detailsRow.style.display = 'none';
+               btn.textContent = 'Show Details';
+            }
+         }
+      </script>
+
+<table style="display:none">
+  <thead>
+  <tr>
+    <th>Timestamps</th>
+    <th>Test Case</th>
+    <th>Result</th>
+    <th>Duration</th>
+    <th>Show/Hide Details</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>[Insert Timestamp Here]</td>
+    <td>[Insert Test Case Here]</td>
+    <td class="[Insert Result Here: Pass/Fail/TBD]">[Insert Result Here: Pass/Fail/TBD]</td>
+    <td>[Insert Duration Here]</td>
+    <td><button onclick="toggleDetails(this)">Show Details</button></td>
+  </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+         function toggleDetails(btn) {
+            var row = btn.parentNode.parentNode;
+            var detailsRow = row.nextElementSibling;
+            if (detailsRow.style.display === 'none') {
+               detailsRow.style.display = 'table-row';
+               btn.textContent = 'Hide Details';
+            } else {
+               detailsRow.style.display = 'none';
+               btn.textContent = 'Show Details';
+            }
+         }
+      </script>
+
+<table style="display:none">
+  <thead>
+  <tr>
+    <th>Timestamps</th>
+    <th>Test Steps</th>
+    <th>Action Expect</th>
+    <th>Actual</th>
+    <th>Result</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>[Insert Timestamp Here]</td>
+    <td>[Insert Test Steps Here]</td>
+    <td>[Insert Action Expect Here]</td>
+    <td>[Insert Actual Here]</td>
+    <td class="[Insert Result Here: Pass/Fail/TBD]">[Insert Result Here: Pass/Fail/TBD]</td>
+  </tr>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+         function toggleDetails(btn) {
+            var row = btn.parentNode.parentNode;
+            var detailsRow = row.nextElementSibling;
+            if (detailsRow.style.display === 'none') {
+               detailsRow.style.display = 'table-row';
+               btn.textContent = 'Hide Details';
+            } else {
+               detailsRow.style.display = 'none';
+               btn.textContent = 'Show Details';
+            }
+         }
+      </script>
+
+</body>
+</html>

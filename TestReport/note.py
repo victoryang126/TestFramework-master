@@ -37,4 +37,11 @@ pytest_sessionfinish(session, exitstatus)
 how to customize pytest html report
 """
 
+
+"""
+请帮我实现一个html,首先是一个title，然后title的左边是一个表格，TestInformaiton, 这个表格的header为User,PC,ARIA, 下面是另外一个表格TestSummary，header为 Pass,Fail,TBD,Total,Start,End,Duration, 最下面是Result的表格，header为Timestamp,TestCalss,File,Duration, Result，Result旁边有一个按钮，点击以后可以展开一个div，这个div在TestClassd一行里面在这个div 里面有另外一个表格，header为Timestamp,TestCase,File,Duration, Result，Result旁边有一个按钮，点击以后展开一个div, 这个div在testCase这个表格的一行里面这个里面是另外一个表格Timestamps TestSteps,Action Expect, Actual,Result
+"""
+
+"""
+请帮我实现一个html,首先是一个title，然后title的左边是一个表格，TestInformaiton, 这个表格的header为User,PC,ARIA, 下面是另外一个表格TestSummary，header为 Pass,Fail,TBD,Total,Start,End,Duration, 最下面是Result的表格，header为Timestamp,TestClass,File,Duration, Result，Result下面的元素旁边有一个按钮，点击以后可以展开一个div，这个div作为Result表格的一行数据，默认是折叠起来的，当点击这个按钮以后，数据会展开，在这个div 里面有另外一个表格，名字叫做TestCases,header为Timestamp,TestCase,File,Duration, Result，Result下面的元素旁边有一个按钮，点击以后展开一个div,这个div作为TestCases的一行数据，默认是折叠起来的，当点击这个按钮以后，数据会展开这个里面是另外一个表格Timestamps TestSteps,Action Expect, Actual,Result"""
 """"""

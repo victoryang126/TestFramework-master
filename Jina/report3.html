@@ -1,0 +1,257 @@
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #f2f2f2;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  #test_steps th {
+    background-color: #FFF5EE;
+    color: #000000;
+  }
+
+  tr.pass {
+    background-color: #c9ecc9;
+  }
+
+  tr.fail {
+    background-color: #f8caca;
+  }
+
+  tr.tbd {
+    background-color: #fdfdc4;
+  }
+
+  .details {
+    display: none;
+  }
+</style>
+
+<table id="results-table">
+    <thead>
+    <tr>
+        <th>User</th>
+        <th>PC</th>
+        <th>ARIA</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>TestInformation</td>
+        <td colspan="2"></td>
+    </tr>
+    </tbody>
+</table>
+
+<table id="test_summary">
+    <thead>
+    <tr>
+        <th>Pass</th>
+        <th>Fail</th>
+        <th>TBD</th>
+        <th>Total</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Duration</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+<button class="details-btn" onclick="toggleAllDetails(this)">Expand All</button>
+<table id="result">
+    <thead>
+    <tr>
+        <th>Timestamp</th>
+        <th>TestClass</th>
+        <th>File</th>
+        <th>Duration</th>
+        <th>Result</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Timestamp 1</td>
+        <td>TestClass 1</td>
+        <td>File 1</td>
+        <td>Duration 1</td>
+        <td>Result 1</td>
+        <td>
+            <button class="details-btn" onclick="toggleDetails(this)">Details</button>
+        </td>
+    </tr>
+    <tr class="details">
+        <td colspan="6">
+            <table id="test_cases">
+                <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>TestCase</th>
+                    <th>File</th>
+                    <th>Duration</th>
+                    <th>Result</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Timestamp 1</td>
+                    <td>TestCase 1</td>
+                    <td>File 1</td>
+                    <td>Duration 1</td>
+                    <td>Result 1</td>
+                    <td>
+                        <button class="details-btn" onclick="toggleDetails(this)">Details</button>
+                    </td>
+                </tr>
+                <tr class="details">
+                    <td colspan="6">
+                        <table id="test_steps">
+                            <thead>
+                            <tr>
+                                <th>Timestamps</th>
+                                <th>TestSteps</th>
+                                <th>Action</th>
+                                <th>Expect</th>
+                                <th>Actual</th>
+                                <th>Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Timestamp 1</td>
+                                <td>TestSteps 1</td>
+                                <td>Action 1</td>
+                                <td>Expect 1</td>
+                                <td>Actual 1</td>
+                                <td>Result 1</td>
+                            </tr>
+                            <tr>
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 2</td>
+                                <td>Action 2</td>
+                                <td>Expect 2</td>
+                                <td>Actual 2</td>
+                                <td>Result 2</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>Timestamp 2</td>
+        <td>TestClass 2</td>
+        <td>File 2</td>
+        <td>Duration 2</td>
+        <td>Result 2</td>
+        <td>
+            <button class="details-btn" onclick="toggleDetails(this)">Details</button>
+        </td>
+    </tr>
+    <tr class="details">
+        <td colspan="6">
+            <table id="test_cases">
+                <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>TestCase</th>
+                    <th>File</th>
+                    <th>Duration</th>
+                    <th>Result</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Timestamp 2</td>
+                    <td>TestCase 2</td>
+                    <td>File 2</td>
+                    <td>Duration 2</td>
+                    <td>Result 2</td>
+                    <td>
+                        <button class="details-btn" onclick="toggleDetails(this)">Details</button>
+                    </td>
+                </tr>
+                <tr class="details">
+                    <td colspan="6">
+                        <table id="test_steps">
+                            <thead>
+                            <tr>
+                                <th>Timestamps</th>
+                                <th>TestSteps</th>
+                                <th>Action</th>
+                                <th>Expect</th>
+                                <th>Actual</th>
+                                <th>Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 3</td>
+                                <td>Action 3</td>
+                                <td>Expect 3</td>
+                                <td>Actual 3</td>
+                                <td>Result 3</td>
+                            </tr>
+                            <tr>
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 4</td>
+                                <td>Action 4</td>
+                                <td>Expect 4</td>
+                                <td>Actual 4</td>
+                                <td>Result 4</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+  function toggleDetails(button) {
+    const detailsRow = button.parentElement.parentElement.nextElementSibling;
+    detailsRow.classList.toggle("details");
+  }
+  function toggleAllDetails() {
+    var testCasesTable = document.getElementById("test_cases");
+    var testStepsTable = document.getElementById("test_steps");
+
+    if (testCasesTable.classList.contains("details")) {
+      testCasesTable.classList.remove("details");
+    } else {
+      testCasesTable.classList.add("details");
+    }
+
+    if (testStepsTable.classList.contains("details")) {
+      testStepsTable.classList.remove("details");
+    } else {
+      testStepsTable.classList.add("details");
+    }
+  }
+</script>
