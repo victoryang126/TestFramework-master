@@ -31,10 +31,10 @@ data = [
 # def test_addition():
 #     print_html_table(data)
 #
-# def test_subtraction():
-#     print(12234)
-#     assert 5 - 1 == 2
-#     assert 5 - 2 == 2
+def test_subtraction():
+    print(12234)
+    assert 5 - 1 == 2
+    assert 5 - 2 == 2
 #
 # def test_not():
 #     print(1)
