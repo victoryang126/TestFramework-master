@@ -1,0 +1,82 @@
+<table id="results-table">
+    <thead id="results-table-head">
+    <tr>
+        <th col="time">Time</th>
+        <th col="test class">Test Class</th>
+        <th col="result">Result</th>
+        <th col="name">Test</th>
+        <th col="duration">Duration</th>
+    </tr>
+    <tr hidden="true" id="not-found-message">
+        <th colspan="5">No results found. Try to check the filters</th>
+    </tr>
+    </thead>
+    {% for result in results %}
+    <tbody class="{{ 'passed' if result.result == 'Passed' else 'failed' }} results-table-row">
+    <tr>
+        <td class="col-time">{{ result.time }}</td>
+        <td class="col-test-class">{{ result.test_class }}</td>
+        <td class="col-result">{{ result.result }}</td>
+        <td class="col-name">{{ result.name }}</td>
+        <td class="col-duration">{{ result.duration }}</td>
+    </tr>
+    <tr>
+        <td class="extra" colspan="5">
+            <div>
+                <table class="test_cases">
+                    <thead class="test_case_header">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>TestCase</th>
+                        <th>File</th>
+                        <th>Duration</th>
+                        <th>Result</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for detail in result.details %}
+                    <tr class="{{ 'passed' if detail.result == 'Passed' else 'failed' }} results-table-row">
+                        <td>{{ detail.timestamp }}</td>
+                        <td>{{ detail.test_case }}</td>
+                        <td>{{ detail.file }}</td>
+                        <td>{{ detail.duration }}</td>
+                        <td class="col-result">{{ detail.result }}</td>
+                    </tr>
+                    <tr class="details">
+                        <td colspan="6">
+                            <table class="test_steps">
+                                <thead>
+                                <tr class="test_step_header">
+                                    <th>Timestamps</th>
+                                    <th>TestSteps</th>
+                                    <th>Action</th>
+                                    <th>Expect</th>
+                                    <th>Actual</th>
+                                    <th>Result</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for step in detail.steps %}
+                                <tr class="{{ step.result.lower() }}">
+                                    <td>{{ step.timestamp }}</td>
+                                    <td>{{ step.test_step }}</td>
+                                    <td>{{ step.action }}</td>
+                                    <td>{{ step.expect }}</td>
+                                    <td>{{ step.actual }}</td>
+                                    <td>{{ step.result }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+    {% endfor %}
+</table>

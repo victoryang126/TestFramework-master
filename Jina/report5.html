@@ -2,29 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>test_report_hook.html</title>
-    <style>body {
+    <title>report20230601</title>
+    <style>
+    body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 12px;
   /* do not increase min-width as some may use split screens */
   min-width: 800px;
   color: #999;
     }
-    .test_cases, .test_steps {
-      width: 100%;
-   }
 
-   tr.pass {
-      background-color: #c9ecc9;
-   }
-
-   tr.fail {
-      background-color: #f8caca;
-   }
-
-   tr.tbd {
-      background-color: #fdfdc4;
-   }
 h1 {
   font-size: 24px;
   color: black;
@@ -58,31 +45,36 @@ table {
   background-color: #f6f6f6;
 }
 
+#testcasesSummaryTable table {
+      border-collapse: collapse;
+      width: 20%;
+      background-color: #f2f2f2;
+    }
+    #testcasesSummaryTable th, td {
+      border: 1px solid #ddd;
+      padding: 5px;
+    }
+   #testcasesSummaryTable th {
+      text-align: left;
+    }
+    #failed {
+      color: red;
+    }
+    #passed {
+      color: green;
+    }
+
 /******************************
  * TEST RESULT COLORS
  ******************************/
-span.passed,
+
 .passed .col-result {
   color: green;
 }
-
-span.skipped,
-span.xfailed,
-span.rerun,
-.skipped .col-result,
-.xfailed .col-result,
-.rerun .col-result {
-  color: orange;
-}
-
-span.error,
-span.failed,
-span.xpassed,
-.error .col-result,
-.failed .col-result,
-.xpassed .col-result {
+.failed .col-result {
   color: red;
 }
+
 
 /******************************
  * RESULTS TABLE
@@ -114,46 +106,8 @@ span.xpassed,
 /*------------------
  * 2. Extra
  *------------------*/
-.log {
-  background-color: #e6e6e6;
-  border: 1px solid #e6e6e6;
-  color: black;
-  display: block;
-  font-family: "Courier New", Courier, monospace;
-  height: 230px;
-  overflow-y: scroll;
-  padding: 5px;
-  white-space: pre-wrap;
-}
-.log:only-child {
-  height: inherit;
-}
 
-div.image {
-  border: 1px solid #e6e6e6;
-  float: right;
-  height: 240px;
-  margin-left: 5px;
-  overflow: hidden;
-  width: 320px;
-}
-div.image img {
-  width: 320px;
-}
 
-div.video {
-  border: 1px solid #e6e6e6;
-  float: right;
-  height: 240px;
-  margin-left: 5px;
-  overflow: hidden;
-  width: 320px;
-}
-div.video video {
-  overflow: hidden;
-  width: 320px;
-  height: 240px;
-}
 
 .collapsed {
   display: none;
@@ -174,40 +128,116 @@ div.video video {
 }
 
 /*------------------
- * 3. Sorting items
+ * 2. Test Cases and Test step
  *------------------*/
-.sortable {
-  cursor: pointer;
-}
 
-.sort-icon {
-  font-size: 0px;
-  float: left;
-  margin-right: 5px;
-  margin-top: 5px;
-  /*triangle*/
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-}
-.inactive .sort-icon {
-  /*finish triangle*/
-  border-top: 8px solid #E6E6E6;
-}
-.asc.active .sort-icon {
-  /*finish triangle*/
-  border-bottom: 8px solid #999;
-}
-.desc.active .sort-icon {
-  /*finish triangle*/
-  border-top: 8px solid #999;
-}
+
+.test_cases, .test_steps {
+      width: 100%;
+   }
+
+   tr.pass {
+      background-color: #c9ecc9;
+   }
+
+   tr.fail {
+      background-color: #f8caca;
+   }
+
+   tr.tbd {
+      background-color: #fdfdc4;
+   }
+
+    .highlight-row {
+        font-weight: bold;
+        color: black;
+    }
+
+    .test_cases .passed .col-result
+    {
+    color: green;
+    }
+
+    .test_cases .failed .col-result
+    {
+    color: red;
+    }
 </style></head>
 <body onLoad="init()">
 <script>/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+function testcasesSummary() {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
+
+    // Initialize total, failed, and passed counts
+    var total = 0;
+    var failed = 0;
+    var passed = 0;
+
+    // Loop through each table
+    for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Get failed and passed rows in the table
+    var failedRows = table.querySelectorAll('tr.failed');
+    var passedRows = table.getElementsByClassName('passed');
+
+    // Update total, failed, and passed counts
+    total += failedRows.length + passedRows.length;
+    failed += failedRows.length;
+    passed += passedRows.length;
+    }
+
+    // Update the summary table with the counts
+    document.getElementById('total').textContent = total;
+    document.getElementById('failed').textContent = failed;
+    document.getElementById('passed').textContent = passed;
+  }
+    // Function to toggle row visibility based on checkbox
+    function toggletestcaseRowVisibility(category) {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
+
+    // Toggle row visibility based on checkbox state in each table
+    for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Get rows of the specified category within the table
+    var rows = table.getElementsByClassName(category);
+
+    // Toggle row visibility based on checkbox state
+    for (var j = 0; j < rows.length; j++) {
+      var row = rows[j];
+      if (row.style.display === 'none') {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+    }
+}
+
+
+// Call the testcasesSummary function when the page is loaded
+document.addEventListener('DOMContentLoaded', testcasesSummary);
+
+function addRowHighlight(className) {
+            var rows = document.getElementsByClassName(className);
+
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].addEventListener('mouseover', function() {
+                    this.classList.add('highlight-row');
+                });
+
+                rows[i].addEventListener('mouseout', function() {
+                    this.classList.remove('highlight-row');
+                });
+            }
+        }
+
+
 
 function toArray(iter) {
     if (iter === null) {
@@ -230,19 +260,7 @@ function findAll(selector, elem) {
     return toArray(elem.querySelectorAll(selector));
 }
 
-function sortColumn(elem) {
-    toggleSortStates(elem);
-    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
-    let key;
-    if (elem.classList.contains('result')) {
-        key = keyResult;
-    } else if (elem.classList.contains('links')) {
-        key = keyLink;
-    } else {
-        key = keyAlpha;
-    }
-    sortTable(elem, key(colIndex));
-}
+
 
 function showAllExtras() { // eslint-disable-line no-unused-vars
     findAll('.col-result').forEach(showExtras);
@@ -268,21 +286,6 @@ function hideExtras(colresultElem) {
     expandcollapse.classList.add('expander');
 }
 
-function showFilters() {
-    let visibleString = getQueryParameter('visible') || 'all';
-    visibleString = visibleString.toLowerCase();
-    const checkedItems = visibleString.split(',');
-
-    const filterItems = document.getElementsByClassName('filter');
-    for (let i = 0; i < filterItems.length; i++) {
-        filterItems[i].hidden = false;
-
-        if (visibleString != 'all') {
-            filterItems[i].checked = checkedItems.includes(filterItems[i].getAttribute('data-test-result'));
-            filterTable(filterItems[i]);
-        }
-    }
-}
 
 function addCollapse() {
     // Add links for show/hide all
@@ -321,138 +324,17 @@ function getQueryParameter(name) {
     const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
-
 function init () { // eslint-disable-line no-unused-vars
-    resetSortHeaders();
-
     addCollapse();
-
-    showFilters();
-
-    sortColumn(find('.initial-sort'));
-
-    findAll('.sortable').forEach(function(elem) {
-        elem.addEventListener('click',
-            function() {
-                sortColumn(elem);
-            }, false);
-    });
+    addRowHighlight('tbd');
+    addRowHighlight('fail');
+    addRowHighlight('pass');
 }
 
-function sortTable(clicked, keyFunc) {
-    const rows = findAll('.results-table-row');
-    const reversed = !clicked.classList.contains('asc');
-    const sortedRows = sort(rows, keyFunc, reversed);
-    /* Whole table is removed here because browsers acts much slower
-     * when appending existing elements.
-     */
-    const thead = document.getElementById('results-table-head');
-    document.getElementById('results-table').remove();
-    const parent = document.createElement('table');
-    parent.id = 'results-table';
-    parent.appendChild(thead);
-    sortedRows.forEach(function(elem) {
-        parent.appendChild(elem);
-    });
-    document.getElementsByTagName('BODY')[0].appendChild(parent);
-}
 
-function sort(items, keyFunc, reversed) {
-    const sortArray = items.map(function(item, i) {
-        return [keyFunc(item), i];
-    });
-
-    sortArray.sort(function(a, b) {
-        const keyA = a[0];
-        const keyB = b[0];
-
-        if (keyA == keyB) return 0;
-
-        if (reversed) {
-            return keyA < keyB ? 1 : -1;
-        } else {
-            return keyA > keyB ? 1 : -1;
-        }
-    });
-
-    return sortArray.map(function(item) {
-        const index = item[1];
-        return items[index];
-    });
-}
-
-function keyAlpha(colIndex) {
-    return function(elem) {
-        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
-    };
-}
-
-function keyLink(colIndex) {
-    return function(elem) {
-        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
-        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
-    };
-}
-
-function keyResult(colIndex) {
-    return function(elem) {
-        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
-            'Skipped', 'Passed'];
-        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
-    };
-}
-
-function resetSortHeaders() {
-    findAll('.sort-icon').forEach(function(elem) {
-        elem.parentNode.removeChild(elem);
-    });
-    findAll('.sortable').forEach(function(elem) {
-        const icon = document.createElement('div');
-        icon.className = 'sort-icon';
-        icon.textContent = 'vvv';
-        elem.insertBefore(icon, elem.firstChild);
-        elem.classList.remove('desc', 'active');
-        elem.classList.add('asc', 'inactive');
-    });
-}
-
-function toggleSortStates(elem) {
-    //if active, toggle between asc and desc
-    if (elem.classList.contains('active')) {
-        elem.classList.toggle('asc');
-        elem.classList.toggle('desc');
-    }
-
-    //if inactive, reset all other functions and add ascending active
-    if (elem.classList.contains('inactive')) {
-        resetSortHeaders();
-        elem.classList.remove('inactive');
-        elem.classList.add('active');
-    }
-}
-
-function isAllRowsHidden(value) {
-    return value.hidden == false;
-}
-
-function filterTable(elem) { // eslint-disable-line no-unused-vars
-    const outcomeAtt = 'data-test-result';
-    const outcome = elem.getAttribute(outcomeAtt);
-    const classOutcome = outcome + ' results-table-row';
-    const outcomeRows = document.getElementsByClassName(classOutcome);
-
-    for(let i = 0; i < outcomeRows.length; i++){
-        outcomeRows[i].hidden = !elem.checked;
-    }
-
-    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
-    const allRowsHidden = rows.length == 0 ? true : false;
-    const notFoundMessage = document.getElementById('not-found-message');
-    notFoundMessage.hidden = !allRowsHidden;
-}
 </script>
-<h1>test_report_hook.html</h1>
-<p>Report generated on 30-May-2023 at 22:31:09 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
+<h1>report20230601.html</h1>
+<p>Report generated on 30-May-2023 at 22:31:09</p>
 <h2>Environment</h2>
 <table id="environment">
     <tr>
@@ -462,8 +344,34 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
         <td>User</td>
         <td>monster</td></tr></table>
 <h2>Summary</h2>
-<p>2 tests ran in 0.03 seconds. </p>
-<p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">2 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+<table id="testcasesSummaryTable">
+    <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>Show/Hide</th>
+    </tr>
+    <tr>
+        <td>Total test cases:</td>
+        <td id="total"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Failed test cases:</td>
+        <td id="failed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('failed')">
+        </td>
+    </tr>
+    <tr>
+        <td>Passed test cases:</td>
+        <td id="passed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('passed')">
+        </td>
+    </tr>
+</table>
+
+
 <h2>Results</h2>
 <table id="results-table">
     <thead id="results-table-head">
@@ -478,14 +386,14 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
     <tbody class="passed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590726</td>
-        <td class="col-server-name">-</td>
+        <td class="col-test-class">-</td>
         <td class="col-result">Passed</td>
         <td class="col-name">pytest_hook.py::Test_C::test_example</td>
         <td class="col-duration">0.00</td></tr>
     <tr>
         <td class="extra" colspan="5">
             <div><table class="test_cases">
-                <thead>
+                <thead class = "test_case_header">
                 <tr>
                     <th>Timestamp</th>
                     <th>TestCase</th>
@@ -498,7 +406,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
                 <tbody>
                 <tr class="passed results-table-row">
                     <td>Timestamp 2</td>
-                    <td>TestCase 2</td>
+                    <td>TestCase 1</td>
                     <td>File 2</td>
                     <td>Duration 2</td>
                     <td class="col-result">Passed</td>
@@ -508,7 +416,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
                     <td colspan="6">
                         <table class="test_steps">
                             <thead>
-                            <tr>
+                            <tr class = "test_step_header">
                                 <th>Timestamps</th>
                                 <th>TestSteps</th>
                                 <th>Action</th>
@@ -558,7 +466,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
                 <tr class="details">
                     <td colspan="6">
                         <table class="test_steps">
-                            <thead>
+                            <thead class = "test_step_header">
                             <tr>
                                 <th>Timestamps</th>
                                 <th>TestSteps</th>
@@ -603,15 +511,15 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
     <tbody class="failed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590936</td>
-        <td class="col-server-name">-</td>
-        <td class="col-result">Passed</td>
+        <td class="col-test-class">-</td>
+        <td class="col-result">Failed</td>
         <td class="col-name">pytest_hook.py::Test_C::test_another_example</td>
         <td class="col-duration">0.00</td></tr>
     <tr>
         <td class="extra" colspan="5">
             <div>
                 <table class="test_cases">
-                    <thead>
+                    <thead class = "test_case_header">
                     <tr>
                         <th>Timestamp</th>
                         <th>TestCase</th>
@@ -624,7 +532,7 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
                     <tbody>
                     <tr class="failed results-table-row">
                         <td>Timestamp 2</td>
-                        <td>TestCase 2</td>
+                        <td>TestCase 3</td>
                         <td>File 2</td>
                         <td>Duration 2</td>
                         <td class="col-result">Failed</td>
@@ -632,7 +540,58 @@ function filterTable(elem) { // eslint-disable-line no-unused-vars
                     <tr class="details">
                         <td colspan="6">
                             <table class="test_steps">
-                                <thead>
+                                <thead class = "test_step_header">
+                                <tr>
+                                    <th>Timestamps</th>
+                                    <th>TestSteps</th>
+                                    <th>Action</th>
+                                    <th>Expect</th>
+                                    <th>Actual</th>
+                                    <th>Result</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="tbd">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 3</td>
+                                    <td>Action 3</td>
+                                    <td>Expect 3</td>
+                                    <td>Actual 3</td>
+                                    <td>Result 3</td>
+                                </tr>
+                                <tr class="fail">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 4</td>
+                                    <td>Action 4</td>
+                                    <td>Expect 4</td>
+                                    <td>Actual 4</td>
+                                    <td>Result 4</td>
+                                </tr>
+                                <tr class="pass">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 4</td>
+                                    <td>Action 4</td>
+                                    <td>Expect 4</td>
+                                    <td>Actual 4</td>
+                                    <td>Result 4</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <tr class="passed results-table-row">
+                        <td>Timestamp 2</td>
+                        <td>TestCase 2</td>
+                        <td>File 2</td>
+                        <td>Duration 2</td>
+                        <td class="col-result">Passed</td>
+                    </tr>
+                    <tr class="details">
+                        <td colspan="6">
+                            <table class="test_steps">
+                                <thead class = "test_step_header">
                                 <tr>
                                     <th>Timestamps</th>
                                     <th>TestSteps</th>
