@@ -1,11 +1,14 @@
 
 import copy
+import traceback
+
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import os
 import getpass
 import socket
 import copy
+from nose.tools import assert_equal, assert_in
 
 class Report:
 
@@ -174,11 +177,11 @@ class Result:
     @classmethod
     def _compare_assert(cls, expect, actual):
         try:
-            assert expect == actual
+            assert_equal(expect,actual)
             return ('Passed',None)
         except AssertionError as e:
             #TODO the 2nd element shall be the details exception
-            return ('Failed',"lllll")
+            return ('Failed',traceback.format_exc())
 
     @classmethod
     def end_test_case(cls):

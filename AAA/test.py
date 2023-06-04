@@ -2,6 +2,7 @@
 import pytest
 from ReportUtil import Result,Report
 import inspect
+import unittest
 
 @pytest.fixture(scope='class',autouse=True)
 def setup_testclass(request):
@@ -37,8 +38,8 @@ class TestExample:
         # Result.end_test_case()
 
     def test_case_2(self):
-        Expect1 = [i for i in range(100)]
-        Actual1 = [i for i in range(100)]
+        Expect1 = "0x5010003201f4"
+        Actual1 = "0x5010003201F"
         # Actual1[1] = 10
         Result.test_step("compare Expect1 euqla Actual1",Expect1,Actual1)
         Result.end_test_case()
