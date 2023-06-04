@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>Report 20230601</title>
+    <title>report20230601</title>
     <style>
     body {
   font-family: Helvetica, Arial, sans-serif;
@@ -57,10 +57,10 @@ table {
    #testcasesSummaryTable th {
       text-align: left;
     }
-    #failed {
+    #Failed {
       color: red;
     }
-    #passed {
+    #Passed {
       color: green;
     }
 
@@ -68,10 +68,10 @@ table {
  * TEST RESULT COLORS
  ******************************/
 
-.passed .col-result {
+.Passed .col-result {
   color: green;
 }
-.failed .col-result {
+.Failed .col-result {
   color: red;
 }
 
@@ -136,11 +136,11 @@ table {
       width: 100%;
    }
 
-   .test_steps tr.passed {
+   .test_steps tr.Passed {
       background-color: #c9ecc9;
    }
 
-   .test_steps tr.failed {
+   .test_steps tr.Failed {
       background-color: #f8caca;
    }
 
@@ -153,12 +153,12 @@ table {
         color: black;
     }
 
-    .test_cases .passed .col-result
+    .test_cases .Passed .col-result
     {
     color: green;
     }
 
-    .test_cases .failed .col-result
+    .test_cases .Failed .col-result
     {
     color: red;
     }
@@ -171,29 +171,29 @@ function testcasesSummary() {
     // Get all tables with class 'test_cases'
     var tables = document.getElementsByClassName('test_cases');
 
-    // Initialize total, failed, and passed counts
+    // Initialize total, Failed, and Passed counts
     var total = 0;
-    var failed = 0;
-    var passed = 0;
+    var Failed = 0;
+    var Passed = 0;
 
     // Loop through each table
     for (var i = 0; i < tables.length; i++) {
     var table = tables[i];
 
-    // Get failed and passed rows in the table
-    var failedRows = table.getElementsByClassName('failed results-table-row');
-    var passedRows = table.getElementsByClassName('passed results-table-row');
+    // Get Failed and Passed rows in the table
+    var FailedRows = table.getElementsByClassName('Failed results-table-row');
+    var PassedRows = table.getElementsByClassName('Passed results-table-row');
 
-    // Update total, failed, and passed counts
-    total += failedRows.length + passedRows.length;
-    failed += failedRows.length;
-    passed += passedRows.length;
+    // Update total, Failed, and Passed counts
+    total += FailedRows.length + PassedRows.length;
+    Failed += FailedRows.length;
+    Passed += PassedRows.length;
     }
 
     // Update the summary table with the counts
     document.getElementById('total').textContent = total;
-    document.getElementById('failed').textContent = failed;
-    document.getElementById('passed').textContent = passed;
+    document.getElementById('Failed').textContent = Failed;
+    document.getElementById('Passed').textContent = Passed;
   }
     // Function to toggle row visibility based on checkbox
     function toggletestcaseRowVisibility(category) {
@@ -332,27 +332,22 @@ function getQueryParameter(name) {
 function init () { // eslint-disable-line no-unused-vars
     addCollapse();
     addRowHighlight('tbd');
-    addRowHighlight('failed');
-    addRowHighlight('passed');
+    addRowHighlight('Failed');
+    addRowHighlight('Passed');
 }
 
 
 </script>
 <h1>report20230601.html</h1>
 <p>Report generated on 30-May-2023 at 22:31:09</p>
-
 <h2>Environment</h2>
 <table id="environment">
     <tr>
         <td>Machine</td>
-        <td>MonsterdeMacBook-Pro.local</td>
-    </tr>
+        <td>MonsterdeMacBook-Pro.local</td></tr>
     <tr>
         <td>User</td>
-        <td>monster</td>
-    </tr>
-</table>
-
+        <td>monster</td></tr></table>
 <h2>Summary</h2>
 <table id="testcasesSummaryTable">
     <tr>
@@ -367,137 +362,169 @@ function init () { // eslint-disable-line no-unused-vars
     </tr>
     <tr>
         <td>Failed test cases:</td>
-        <td id="failed"></td>
+        <td id="Failed"></td>
         <td>
-            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('failed')">
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
         </td>
     </tr>
     <tr>
         <td>Passed test cases:</td>
-        <td id="passed"></td>
+        <td id="Passed"></td>
         <td>
-            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('passed')">
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
         </td>
     </tr>
 </table>
+
+
 <h2>Results</h2>
 <table id="results-table">
     <thead id="results-table-head">
     <tr>
         <th col="time">Time</th>
         <th col="test class">Test Class</th>
-        <th col="result">Result</th>
-        <th col="name">Test</th>
-        <th col="duration">Duration</th>
-    </tr>
+        <th  col="result">Result</th>
+        <th  col="name">Test</th>
+        <th  col="duration">Duration</th></tr>
     <tr hidden="true" id="not-found-message">
-        <th colspan="5">No results found. Try to check the filters</th>
-    </tr>
-    </thead>
-
-    <tbody class="passed results-table-row">
+        <th colspan="5">No results found. Try to check the filters</th></tr></thead>
+    <tbody class="Passed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590726</td>
-        <td class="col-test-class">AA</td>
+        <td class="col-test-class">-</td>
         <td class="col-result">Passed</td>
         <td class="col-name">pytest_hook.py::Test_C::test_example</td>
-        <td class="col-duration">0.00</td>
-    </tr>
-
+        <td class="col-duration">0.00</td></tr>
     <tr>
         <td class="extra" colspan="5">
-            <div>
-                <table class="test_cases">
-                    <thead class="test_case_header">
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>TestCase</th>
-                        <th>File</th>
-                        <th>Duration</th>
-                        <th>Result</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+            <div><table class="test_cases">
+                <thead class = "test_case_header">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>TestCase</th>
+                    <th>File</th>
+                    <th>Duration</th>
+                    <th>Result</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="Passed results-table-row">
+                    <td>Timestamp 2</td>
+                    <td>TestCase 1</td>
+                    <td>File 2</td>
+                    <td>Duration 2</td>
+                    <td class="col-result">Passed</td>
 
-                    <tr class="passed results-table-row">
-                        <td>Timestamp 2</td>
-                        <td>TestCase 1</td>
-                        <td>File 2</td>
-                        <td>Duration 2</td>
-                        <td class="col-result">Passed</td>
-                    </tr>
-
-                    <tr class="details">
-                        <td colspan="6">
-                            <table class="test_steps">
-                                <thead>
-                                <tr class="test_step_header">
-                                    <th>Timestamps</th>
-                                    <th>TestSteps</th>
-                                    <th>Action</th>
-                                    <th>Expect</th>
-                                    <th>Actual</th>
-                                    <th>Result</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                <tr class="failed">
-                                    <td>Timestamp 2</td>
-                                    <td>TestSteps 3</td>
-                                    <td>Action 3</td>
-                                    <td>Expect 3</td>
-                                    <td>Actual 3</td>
-                                    <td>Failed</td>
-                                </tr>
-
-                                <tr class="passed">
-                                    <td>Timestamp 2</td>
-                                    <td>TestSteps 4</td>
-                                    <td>Action 4</td>
-                                    <td>Expect 4</td>
-                                    <td>Actual 4</td>
-                                    <td>Passed</td>
-                                </tr>
-
-                                <tr class="failed">
-                                    <td>Timestamp 2</td>
-                                    <td>TestSteps 4</td>
-                                    <td>Action 4</td>
-                                    <td>Expect 4</td>
-                                    <td>Actual 4</td>
-                                    <td>Failed</td>
-                                </tr>
-
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-
-
-                    </tbody>
-                </table>
-            </div>
-        </td>
-    </tr>
-
-    </tbody>
-
-    <tbody class="passed results-table-row">
+                </tr>
+                <tr class="details">
+                    <td colspan="6">
+                        <table class="test_steps">
+                            <thead>
+                            <tr class = "test_step_header">
+                                <th>Timestamps</th>
+                                <th>TestSteps</th>
+                                <th>Action</th>
+                                <th>Expect</th>
+                                <th>Actual</th>
+                                <th>Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="tbd">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 3</td>
+                                <td>Action 3</td>
+                                <td>Expect 3</td>
+                                <td>Actual 3</td>
+                                <td>Result 3</td>
+                            </tr>
+                            <tr class="Failed">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 4</td>
+                                <td>Action 4</td>
+                                <td>Expect 4</td>
+                                <td>Actual 4</td>
+                                <td>Result 4</td>
+                            </tr>
+                            <tr class="Passed">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 4</td>
+                                <td>Action 4</td>
+                                <td>Expect 4</td>
+                                <td>Actual 4</td>
+                                <td>Result 4</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody>
+                <tr class="Passed results-table-row">
+                    <td>Timestamp 2</td>
+                    <td>TestCase 2</td>
+                    <td>File 2</td>
+                    <td>Duration 2</td>
+                    <td class="col-result">Passed</td>
+                </tr>
+                <tr class="details">
+                    <td colspan="6">
+                        <table class="test_steps">
+                            <thead class = "test_step_header">
+                            <tr>
+                                <th>Timestamps</th>
+                                <th>TestSteps</th>
+                                <th>Action</th>
+                                <th>Expect</th>
+                                <th>Actual</th>
+                                <th>Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="tbd">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 3</td>
+                                <td>Action 3</td>
+                                <td>Expect 3</td>
+                                <td>Actual 3</td>
+                                <td>Result 3</td>
+                            </tr>
+                            <tr class="Failed">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 4</td>
+                                <td>Action 4</td>
+                                <td>Expect 4</td>
+                                <td>Actual 4</td>
+                                <td>Result 4</td>
+                            </tr>
+                            <tr class="Passed">
+                                <td>Timestamp 2</td>
+                                <td>TestSteps 4</td>
+                                <td>Action 4</td>
+                                <td>Expect 4</td>
+                                <td>Actual 4</td>
+                                <td>Result 4</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table></div>
+        </td></tr></tbody>
+    <tbody class="Failed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590936</td>
-        <td class="col-test-class">BB</td>
+        <td class="col-test-class">-</td>
         <td class="col-result">Failed</td>
         <td class="col-name">pytest_hook.py::Test_C::test_another_example</td>
-        <td class="col-duration">0.00</td>
-    </tr>
-
+        <td class="col-duration">0.00</td></tr>
     <tr>
         <td class="extra" colspan="5">
             <div>
                 <table class="test_cases">
-                    <thead class="test_case_header">
+                    <thead class = "test_case_header">
                     <tr>
                         <th>Timestamp</th>
                         <th>TestCase</th>
@@ -508,20 +535,18 @@ function init () { // eslint-disable-line no-unused-vars
                     </tr>
                     </thead>
                     <tbody>
-
-                    <tr class="failed results-table-row">
+                    <tr class="Failed results-table-row">
                         <td>Timestamp 2</td>
                         <td>TestCase 3</td>
                         <td>File 2</td>
                         <td>Duration 2</td>
                         <td class="col-result">Failed</td>
                     </tr>
-
                     <tr class="details">
                         <td colspan="6">
                             <table class="test_steps">
-                                <thead>
-                                <tr class="test_step_header">
+                                <thead class = "test_step_header">
+                                <tr>
                                     <th>Timestamps</th>
                                     <th>TestSteps</th>
                                     <th>Action</th>
@@ -531,8 +556,7 @@ function init () { // eslint-disable-line no-unused-vars
                                 </tr>
                                 </thead>
                                 <tbody>
-
-                                <tr class="passed">
+                                <tr class="tbd">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 3</td>
                                     <td>Action 3</td>
@@ -540,8 +564,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 3</td>
                                     <td>Result 3</td>
                                 </tr>
-
-                                <tr class="tbd">
+                                <tr class="Failed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>
@@ -549,8 +572,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 4</td>
                                     <td>Result 4</td>
                                 </tr>
-
-                                <tr class="failed">
+                                <tr class="Passed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>
@@ -558,21 +580,62 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 4</td>
                                     <td>Result 4</td>
                                 </tr>
-
                                 </tbody>
                             </table>
                         </td>
                     </tr>
-
-
+                    </tbody>
+                    <tbody>
+                    <tr class="Passed results-table-row">
+                        <td>Timestamp 2</td>
+                        <td>TestCase 2</td>
+                        <td>File 2</td>
+                        <td>Duration 2</td>
+                        <td class="col-result">Passed</td>
+                    </tr>
+                    <tr class="details">
+                        <td colspan="6">
+                            <table class="test_steps">
+                                <thead class = "test_step_header">
+                                <tr>
+                                    <th>Timestamps</th>
+                                    <th>TestSteps</th>
+                                    <th>Action</th>
+                                    <th>Expect</th>
+                                    <th>Actual</th>
+                                    <th>Result</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="tbd">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 3</td>
+                                    <td>Action 3</td>
+                                    <td>Expect 3</td>
+                                    <td>Actual 3</td>
+                                    <td>Result 3</td>
+                                </tr>
+                                <tr class="Failed">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 4</td>
+                                    <td>Action 4</td>
+                                    <td>Expect 4</td>
+                                    <td>Actual 4</td>
+                                    <td>Result 4</td>
+                                </tr>
+                                <tr class="Passed">
+                                    <td>Timestamp 2</td>
+                                    <td>TestSteps 4</td>
+                                    <td>Action 4</td>
+                                    <td>Expect 4</td>
+                                    <td>Actual 4</td>
+                                    <td>Result 4</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
-        </td>
-    </tr>
-
-    </tbody>
-
-</table>
-</body>
-</html>
+        </td></tr></tbody></table></body></html>

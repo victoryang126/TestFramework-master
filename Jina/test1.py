@@ -13,11 +13,10 @@ data = {
     'user': 'monster',
     'results': [
         {
-            'time': '2023-05-30 22:31:09.590726',
+            'timestamp': '2023-05-30 22:31:09.590726',
             'test_class': 'AA',
             'result': 'Passed',
             'test': 'pytest_hook.py::Test_C::test_example',
-            'status':"passed",
             'duration': '0.00',
             'test_cases': [
                 {
@@ -26,7 +25,6 @@ data = {
                     'file': 'File 2',
                     'duration': 'Duration 2',
                     'result': 'Passed',
-                    'status':"passed",
                     'test_steps': [
                         {
                             'timestamp': 'Timestamp 2',
@@ -34,7 +32,6 @@ data = {
                             'action': 'Action 3',
                             'expect': 'Expect 3',
                             'actual': 'Actual 3',
-                            'status':"failed",
                             'result': 'Failed'
                         },
                         {
@@ -43,7 +40,6 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'status':"passed",
                             'result': 'Passed'
                         },
                         {
@@ -52,7 +48,6 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'status':"failed",
                             'result': 'Failed'
                         }
                     ]
@@ -60,12 +55,11 @@ data = {
             ]
         },
         {
-            'time': '2023-05-30 22:31:09.590936',
+            'timestamp': '2023-05-30 22:31:09.590936',
             'test_class': 'BB',
             'result': 'Failed',
             'test': 'pytest_hook.py::Test_C::test_another_example',
             'duration': '0.00',
-            'status':"passed",
             'test_cases': [
                 {
                     'timestamp': 'Timestamp 2',
@@ -73,7 +67,6 @@ data = {
                     'file': 'File 2',
                     'duration': 'Duration 2',
                     'result': 'Failed',
-                    'status':"failed",
                     'test_steps': [
                         {
                             'timestamp': 'Timestamp 2',
@@ -81,8 +74,7 @@ data = {
                             'action': 'Action 3',
                             'expect': 'Expect 3',
                             'actual': 'Actual 3',
-                            'status':"passed",
-                            'result': 'Result 3'
+                            'result': 'Passed'
 
                         },
                         {
@@ -91,8 +83,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'status':"tbd",
-                            'result': 'Result 4'
+                            'result': 'Passed'
                         },
                         {
                             'timestamp': 'Timestamp 2',
@@ -100,8 +91,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'status':"failed",
-                            'result': 'Result 4'
+                            'result': 'Failed'
                         }
                     ]
                 }

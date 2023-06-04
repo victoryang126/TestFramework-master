@@ -57,10 +57,10 @@ table {
    #testcasesSummaryTable th {
       text-align: left;
     }
-    #failed {
+    #Failed {
       color: red;
     }
-    #passed {
+    #Passed {
       color: green;
     }
 
@@ -68,10 +68,10 @@ table {
  * TEST RESULT COLORS
  ******************************/
 
-.passed .col-result {
+.Passed .col-result {
   color: green;
 }
-.failed .col-result {
+.Failed .col-result {
   color: red;
 }
 
@@ -136,15 +136,15 @@ table {
       width: 100%;
    }
 
-   tr.pass {
+   .test_steps tr.Passed {
       background-color: #c9ecc9;
    }
 
-   tr.fail {
+   .test_steps tr.Failed {
       background-color: #f8caca;
    }
 
-   tr.tbd {
+   .test_steps tr.tbd {
       background-color: #fdfdc4;
    }
 
@@ -153,12 +153,12 @@ table {
         color: black;
     }
 
-    .test_cases .passed .col-result
+    .test_cases .Passed .col-result
     {
     color: green;
     }
 
-    .test_cases .failed .col-result
+    .test_cases .Failed .col-result
     {
     color: red;
     }
@@ -171,29 +171,29 @@ function testcasesSummary() {
     // Get all tables with class 'test_cases'
     var tables = document.getElementsByClassName('test_cases');
 
-    // Initialize total, failed, and passed counts
+    // Initialize total, Failed, and Passed counts
     var total = 0;
-    var failed = 0;
-    var passed = 0;
+    var Failed = 0;
+    var Passed = 0;
 
     // Loop through each table
     for (var i = 0; i < tables.length; i++) {
     var table = tables[i];
 
-    // Get failed and passed rows in the table
-    var failedRows = table.querySelectorAll('tr.failed');
-    var passedRows = table.getElementsByClassName('passed');
+    // Get Failed and Passed rows in the table
+    var FailedRows = table.getElementsByClassName('Failed results-table-row');
+    var PassedRows = table.getElementsByClassName('Passed results-table-row');
 
-    // Update total, failed, and passed counts
-    total += failedRows.length + passedRows.length;
-    failed += failedRows.length;
-    passed += passedRows.length;
+    // Update total, Failed, and Passed counts
+    total += FailedRows.length + PassedRows.length;
+    Failed += FailedRows.length;
+    Passed += PassedRows.length;
     }
 
     // Update the summary table with the counts
     document.getElementById('total').textContent = total;
-    document.getElementById('failed').textContent = failed;
-    document.getElementById('passed').textContent = passed;
+    document.getElementById('Failed').textContent = Failed;
+    document.getElementById('Passed').textContent = Passed;
   }
     // Function to toggle row visibility based on checkbox
     function toggletestcaseRowVisibility(category) {
@@ -222,9 +222,13 @@ function testcasesSummary() {
 
 // Call the testcasesSummary function when the page is loaded
 document.addEventListener('DOMContentLoaded', testcasesSummary);
-
+//function to add highlight for the rows of test steps table
 function addRowHighlight(className) {
-            var rows = document.getElementsByClassName(className);
+        var tables = document.getElementsByClassName('test_steps');
+        for(var j = 0; j < tables.length; j ++)
+        {
+            var table = tables[j]
+            var rows = table.getElementsByClassName(className);
 
             for (var i = 0; i < rows.length; i++) {
                 rows[i].addEventListener('mouseover', function() {
@@ -236,6 +240,7 @@ function addRowHighlight(className) {
                 });
             }
         }
+       }
 
 
 
@@ -327,8 +332,8 @@ function getQueryParameter(name) {
 function init () { // eslint-disable-line no-unused-vars
     addCollapse();
     addRowHighlight('tbd');
-    addRowHighlight('fail');
-    addRowHighlight('pass');
+    addRowHighlight('Failed');
+    addRowHighlight('Passed');
 }
 
 
@@ -357,16 +362,16 @@ function init () { // eslint-disable-line no-unused-vars
     </tr>
     <tr>
         <td>Failed test cases:</td>
-        <td id="failed"></td>
+        <td id="Failed"></td>
         <td>
-            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('failed')">
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
         </td>
     </tr>
     <tr>
         <td>Passed test cases:</td>
-        <td id="passed"></td>
+        <td id="Passed"></td>
         <td>
-            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('passed')">
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
         </td>
     </tr>
 </table>
@@ -383,7 +388,7 @@ function init () { // eslint-disable-line no-unused-vars
         <th  col="duration">Duration</th></tr>
     <tr hidden="true" id="not-found-message">
         <th colspan="5">No results found. Try to check the filters</th></tr></thead>
-    <tbody class="passed results-table-row">
+    <tbody class="Passed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590726</td>
         <td class="col-test-class">-</td>
@@ -404,7 +409,7 @@ function init () { // eslint-disable-line no-unused-vars
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="passed results-table-row">
+                <tr class="Passed results-table-row">
                     <td>Timestamp 2</td>
                     <td>TestCase 1</td>
                     <td>File 2</td>
@@ -434,7 +439,7 @@ function init () { // eslint-disable-line no-unused-vars
                                 <td>Actual 3</td>
                                 <td>Result 3</td>
                             </tr>
-                            <tr class="fail">
+                            <tr class="Failed">
                                 <td>Timestamp 2</td>
                                 <td>TestSteps 4</td>
                                 <td>Action 4</td>
@@ -442,7 +447,7 @@ function init () { // eslint-disable-line no-unused-vars
                                 <td>Actual 4</td>
                                 <td>Result 4</td>
                             </tr>
-                            <tr class="pass">
+                            <tr class="Passed">
                                 <td>Timestamp 2</td>
                                 <td>TestSteps 4</td>
                                 <td>Action 4</td>
@@ -456,7 +461,7 @@ function init () { // eslint-disable-line no-unused-vars
                 </tr>
                 </tbody>
                 <tbody>
-                <tr class="passed results-table-row">
+                <tr class="Passed results-table-row">
                     <td>Timestamp 2</td>
                     <td>TestCase 2</td>
                     <td>File 2</td>
@@ -485,7 +490,7 @@ function init () { // eslint-disable-line no-unused-vars
                                 <td>Actual 3</td>
                                 <td>Result 3</td>
                             </tr>
-                            <tr class="fail">
+                            <tr class="Failed">
                                 <td>Timestamp 2</td>
                                 <td>TestSteps 4</td>
                                 <td>Action 4</td>
@@ -493,7 +498,7 @@ function init () { // eslint-disable-line no-unused-vars
                                 <td>Actual 4</td>
                                 <td>Result 4</td>
                             </tr>
-                            <tr class="pass">
+                            <tr class="Passed">
                                 <td>Timestamp 2</td>
                                 <td>TestSteps 4</td>
                                 <td>Action 4</td>
@@ -508,7 +513,7 @@ function init () { // eslint-disable-line no-unused-vars
                 </tbody>
             </table></div>
         </td></tr></tbody>
-    <tbody class="failed results-table-row">
+    <tbody class="Failed results-table-row">
     <tr>
         <td class="col-time">2023-05-30 22:31:09.590936</td>
         <td class="col-test-class">-</td>
@@ -530,7 +535,7 @@ function init () { // eslint-disable-line no-unused-vars
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="failed results-table-row">
+                    <tr class="Failed results-table-row">
                         <td>Timestamp 2</td>
                         <td>TestCase 3</td>
                         <td>File 2</td>
@@ -559,7 +564,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 3</td>
                                     <td>Result 3</td>
                                 </tr>
-                                <tr class="fail">
+                                <tr class="Failed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>
@@ -567,7 +572,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 4</td>
                                     <td>Result 4</td>
                                 </tr>
-                                <tr class="pass">
+                                <tr class="Passed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>
@@ -581,7 +586,7 @@ function init () { // eslint-disable-line no-unused-vars
                     </tr>
                     </tbody>
                     <tbody>
-                    <tr class="passed results-table-row">
+                    <tr class="Passed results-table-row">
                         <td>Timestamp 2</td>
                         <td>TestCase 2</td>
                         <td>File 2</td>
@@ -610,7 +615,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 3</td>
                                     <td>Result 3</td>
                                 </tr>
-                                <tr class="fail">
+                                <tr class="Failed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>
@@ -618,7 +623,7 @@ function init () { // eslint-disable-line no-unused-vars
                                     <td>Actual 4</td>
                                     <td>Result 4</td>
                                 </tr>
-                                <tr class="pass">
+                                <tr class="Passed">
                                     <td>Timestamp 2</td>
                                     <td>TestSteps 4</td>
                                     <td>Action 4</td>

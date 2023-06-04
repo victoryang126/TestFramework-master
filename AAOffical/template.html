@@ -379,141 +379,141 @@ function init () { // eslint-disable-line no-unused-vars
 
 
 </script>
-<h1>{{ report_title }}</h1>
-<p>Report generated on {{ generated_date }}</p>
+  <h1>{{ report_title }}</h1>
+  <p>Report generated on {{ generated_date }}</p>
 
-<h2>Environment</h2>
-<table id="environment">
-  <tr>
-    <td>Machine</td>
-    <td>{{ machine }}</td>
-  </tr>
-  <tr>
-    <td>User</td>
-    <td>{{ user }}</td>
-  </tr>
-</table>
+  <h2>Environment</h2>
+  <table id="environment">
+    <tr>
+      <td>Machine</td>
+      <td>{{ machine }}</td>
+    </tr>
+    <tr>
+      <td>User</td>
+      <td>{{ user }}</td>
+    </tr>
+  </table>
 
-<h2>Summary</h2>
-<table id="testcasesSummaryTable">
-  <tr>
-    <th>Category</th>
-    <th>Count</th>
-    <th>Show/Hide</th>
-  </tr>
-  <tr>
-    <td>Total test cases:</td>
-    <td id="total"></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>Failed test cases:</td>
-    <td id="Failed"></td>
-    <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
-    </td>
-  </tr>
-  <tr>
-    <td>Passed test cases:</td>
-    <td id="Passed"></td>
-    <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
-    </td>
-  </tr>
+  <h2>Summary</h2>
+    <table id="testcasesSummaryTable">
+    <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>Show/Hide</th>
+    </tr>
+    <tr>
+        <td>Total test cases:</td>
+        <td id="total"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Failed test cases:</td>
+        <td id="Failed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
+        </td>
+    </tr>
+    <tr>
+        <td>Passed test cases:</td>
+        <td id="Passed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
+        </td>
+    </tr>
 </table>
-<h2>Results</h2>
-<table id="results-table">
-  <thead id="results-table-head">
-  <tr>
-    <th col="time">Timestamp</th>
-    <th col="test class">Test Class</th>
-    <th col="result">Result</th>
-    <th col="duration">Duration (s)</th>
-  </tr>
-  <tr hidden="true" id="not-found-message">
-    <th colspan="5">No results found. Try to check the filters</th>
-  </tr>
-  </thead>
-  {% for result in results %}
-  <tbody class="{{ result.result }} results-table-row">
-  <tr>
-    <td class="col-time">{{ result.timestamp }}</td>
-    <td class="col-test-class">{{ result.test_class }}</td>
-    <td class="col-result">{{ result.result }}</td>
-    <td class="col-duration">{{ result.duration }}</td>
-  </tr>
-  {% if result.test_cases %}
-  <tr>
-    <td class="extra" colspan="5">
-      <div>
-        <table class="test_cases">
-          <thead class="test_case_header">
+  <h2>Results</h2>
+  <table id="results-table">
+    <thead id="results-table-head">
+      <tr>
+        <th col="time">Timestamp</th>
+        <th col="test class">Test Class</th>
+        <th col="result">Result</th>
+        <th col="duration">Duration (s)</th>
+      </tr>
+      <tr hidden="true" id="not-found-message">
+        <th colspan="5">No results found. Try to check the filters</th>
+      </tr>
+    </thead>
+    {% for result in results %}
+      <tbody class="{{ result.result }} results-table-row">
+        <tr>
+          <td class="col-time">{{ result.timestamp }}</td>
+          <td class="col-test-class">{{ result.test_class }}</td>
+          <td class="col-result">{{ result.result }}</td>
+          <td class="col-duration">{{ result.duration }}</td>
+        </tr>
+        {% if result.test_cases %}
           <tr>
-            <th>Timestamp</th>
-            <th>TestCase</th>
-            <th>Duration (s)</th>
-            <th>Result</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for test_case in result.test_cases %}
-          <tr class="{{ test_case.result }} results-table-row">
-            <td>{{ test_case.timestamp }}</td>
-            <td>{{ test_case.test_case }}</td>
-            <td>{{ test_case.duration }}</td>
-            <td class="col-result">{{ test_case.result }}</td>
-          </tr>
-          {% if test_case.test_steps %}
-          <tr class="details">
-            <td colspan="6">
-              <table class="test_steps">
-                <thead>
-                <tr class="test_step_header">
-                  <th>Timestamps</th>
-                  <th>TestSteps</th>
-                  <th>Action</th>
-                  <th>Expect</th>
-                  <th>Actual</th>
-                  <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for test_step in test_case.test_steps %}
-                <tr class="{{ test_step.result }}">
-                  <td>{{ test_step.timestamp }}</td>
-                  <td>{{ test_step.test_step }}</td>
-                  <td>{{ test_step.action }}</td>
-                  <td>{{ test_step.expect }}</td>
-                  <td>{{ test_step.actual }}</td>
-                  <td class="{% if test_step.result == 'Failed' %}col-test-step-log{% endif %}">
-                    {{ test_step.result }}
-                  </td>
-                  <!-- <td>{{ test_step.result }}</td> -->
-                </tr>
-                {% if test_step.result == 'Failed' %}
-                <tr>
-                  <td colspan="6">
-                    <div class="log">{{ test_step.log }}
-                    </div>
-                  </td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-                </tbody>
-              </table>
+            <td class="extra" colspan="5">
+              <div>
+                <table class="test_cases">
+                  <thead class="test_case_header">
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>TestCase</th>
+                      <th>Duration (s)</th>
+                      <th>Result</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for test_case in result.test_cases %}
+                      <tr class="{{ test_case.result }} results-table-row">
+                        <td>{{ test_case.timestamp }}</td>
+                        <td>{{ test_case.test_case }}</td>
+                        <td>{{ test_case.duration }}</td>
+                        <td class="col-result">{{ test_case.result }}</td>
+                      </tr>
+                      {% if test_case.test_steps %}
+                        <tr class="details">
+                          <td colspan="6">
+                            <table class="test_steps">
+                              <thead>
+                                <tr class="test_step_header">
+                                  <th>Timestamps</th>
+                                  <th>TestSteps</th>
+                                  <th>Action</th>
+                                  <th>Expect</th>
+                                  <th>Actual</th>
+                                  <th>Result</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for test_step in test_case.test_steps %}
+                                  <tr class="{{ test_step.result }}">
+                                    <td>{{ test_step.timestamp }}</td>
+                                    <td>{{ test_step.test_step }}</td>
+                                    <td>{{ test_step.action }}</td>
+                                    <td>{{ test_step.expect }}</td>
+                                    <td>{{ test_step.actual }}</td>
+                                    <td class="{% if test_step.result == 'Failed' %}col-test-step-log{% endif %}">
+                                        {{ test_step.result }}
+                                      </td>
+                                    <!-- <td>{{ test_step.result }}</td> -->
+                                  </tr>
+                                    {% if test_step.result == 'Failed' %}
+                                        <tr>
+                                        <td colspan="6">
+                                            <div class="log">{{ test_step.log }}
+                                            </div>
+                                        </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </td>
           </tr>
-          {% endif %}
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </td>
-  </tr>
-  {% endif %}
-  </tbody>
-  {% endfor %}
-</table>
+        {% endif %}
+      </tbody>
+    {% endfor %}
+  </table>
 </body>
 </html>
