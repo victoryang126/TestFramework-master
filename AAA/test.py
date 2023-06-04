@@ -25,12 +25,13 @@ def setup_test(request):
 class TestExample:
 
     def test_case_1(self):
-        Expect1 = [i for i in range(100)]
-        Actual1 = [i for i in range(100)]
+        Expect1 = [i for i in range(20)]
+        Actual1 = [i for i in range(20)]
         Actual1[1] = 10
         print(Actual1[1])
         Result.test_step("compare Expect1 euqla Actual1",Expect1,Actual1)
         Actual1[1] = 20
+        Actual1[4] = 20
         Result.test_comment("Waaaa")
         print(Actual1[1])
         Result.test_step("compare Expect2 euqla Actual2",Expect1,Actual1)
