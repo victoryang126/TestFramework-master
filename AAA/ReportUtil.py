@@ -1,7 +1,7 @@
 
 import copy
 import traceback
-
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import os
@@ -47,8 +47,11 @@ class Report:
         with open(output_file, 'w') as file:
             file.write(output)
         # absolute_path = os.path.abspath(output_file)
+        file_link = f"<a href={os.path.abspath(output_file)}></a>"
         # file_link = f"file://{absolute_path}"
-        print(f"generate customize html report: file://{os.path.abspath(output_file)}")
+        html_report = Path(os.path.expandvars(output_file)).expanduser()
+        print(f"generate customize html report: {html_report.absolute().as_uri()}")
+        # print(f"generate customize html report: file:<a href={os.path.abspath(output_file)}></a>")
 
 
 

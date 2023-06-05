@@ -7,6 +7,14 @@ from py.xml import html
 
 G_TestSteps = []
 
+def asset_and_return(condition):
+    try:
+        assert condition
+        return True
+    except AssertionError:
+        # raise AssertionError
+        return False
+
 class Result:
     passed = "Passed"
     failed = "Failed"
@@ -24,8 +32,12 @@ def test_step(request, timestamp):
     def save_test_steps(action, expect_result, actual_result):
         nonlocal count  # 使用非本地变量
         result = Result.tbd
+        ret = asset_and_return(expect_result == actual_result)
         # assert expect_result == actual_result
-
+        if ret:
+            result = Result.passed
+        else:
+            result = Result.failed
         test_step = {
             'Timestamps': timestamp,
             'Step': count,
