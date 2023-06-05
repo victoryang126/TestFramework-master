@@ -10,6 +10,42 @@ import socket
 import copy
 from nose.tools import assert_equal, assert_in
 
+
+def clsdecorator(func):
+    def wrapper( *args, **kwargs):
+        # 类方法的限定名称，包括类的名称和方法的名称
+        class_func_name = func.__func__.__qualname__
+        # print(func.__func__.__module__)
+        # Get the function name
+        function_name = func.__func__.__name__
+
+        # Get the parameter names and their corresponding values
+        params = []
+        for arg in args:
+            params.append(str(arg))
+        for key, value in kwargs.items():
+            params.append(f"{key}={value}")
+
+        # Concatenate the class name, function name, and parameter information
+        message = f"{class_func_name}, Parameters: {', '.join(params)}"
+        print(message)
+
+        try:
+            # Call the original function, passing cls, args, and kwargs
+            result = func.__func__( *args, **kwargs)
+            print("After function execution")
+            # Check if the function has a return value
+            if result is not None:
+                return [True, result]
+            else:
+                return [True, None]
+        except Exception as e:
+            print("\n".join(traceback.format_exc().split("\n")[3:]))
+            return [False, traceback.format_exc()]
+
+    return wrapper
+
+
 class Report:
 
     def get_machine_name(self):
