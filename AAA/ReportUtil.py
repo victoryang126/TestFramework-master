@@ -94,6 +94,27 @@ class Result:
         #latest test class shall be -1
         cls.results[-1]["test_cases"].append(test_case)
 
+    #TODO 根据ARIA 函数的名称和里面的参数去设置action，预期结果，世界结果
+    @classmethod
+    def test_step_aria(cls,action,aria_function,expect = None):
+        cls.step += 1
+        try:
+            ret = aria_function()
+            result = [cls.passed,None]
+        except Exception:
+            result = [cls.failed,traceback.format_exc()]
+        # result = cls._compare_assert(expect, actual)
+        test_step = {
+            "test_step": f"Step {cls.step}",
+            'action': action,
+            'expect': copy.deepcopy(expect),
+            'actual': "TBD",#copy.deepcopy(actual),
+            'result': result[0],
+            'log': result[1],
+            'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        }
+        # latest test class and test case
+        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
     @classmethod
     def test_step2(cls, action, expect, actual,result):
         """
