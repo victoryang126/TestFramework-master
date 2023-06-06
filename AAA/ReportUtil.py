@@ -9,7 +9,7 @@ import getpass
 import socket
 import copy
 from nose.tools import assert_equal, assert_in
-
+import logging
 
 def clsdecorator(func):
     def wrapper( *args, **kwargs):
@@ -132,27 +132,33 @@ class Result:
 
     #TODO 根据ARIA 函数的名称和里面的参数去设置action，预期结果，世界结果
     @classmethod
-    def test_step_aria(cls,action,aria_function,expect = None):
+    def test_step_aria(cls,aria_function_return,expect = None):
+
+        # if len(aria_function_return) !=4:
+        #Todo if the length is not equal 4. shall raise critical error in the stdout
+
+
         cls.step += 1
-        try:
-            ret = aria_function()
-            result = [cls.passed,None]
-        except Exception:
-            result = [cls.failed,traceback.format_exc()]
-        # result = cls._compare_assert(expect, actual)
+
+        if expect == None:
+            result = aria_function_return[0]
+            log = aria_function_return[1]
+        else:
+            #if the aria function have return value, then the index1 is the return result
+            result,log = cls._compare_assert(aria_function_return[1], expect)
         test_step = {
             "test_step": f"Step {cls.step}",
-            'action': action,
+            'action': aria_function_return[3],
             'expect': copy.deepcopy(expect),
-            'actual': "TBD",#copy.deepcopy(actual),
-            'result': result[0],
-            'log': result[1],
-            'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+            'actual': log,
+            'result': result,
+            'log': log,
+            'timestamp': aria_function_return[2]
         }
         # latest test class and test case
         cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
     @classmethod
-    def test_step2(cls, action, expect, actual,result):
+    def test_step2(cls, action, actual, expect,result):
         """
 
         :param action:
@@ -161,7 +167,6 @@ class Result:
         :return:
         """
         cls.step +=1
-        # result = cls._compare_assert(expect, actual)
         test_step = {
             "test_step":f"Step {cls.step}",
             'action': action,
@@ -175,7 +180,7 @@ class Result:
         cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
 
     @classmethod
-    def test_step(cls, action, expect, actual):
+    def test_step(cls, action, actual, expect):
         """
 
         :param action:
@@ -184,7 +189,7 @@ class Result:
         :return:
         """
         cls.step +=1
-        result = cls._compare_assert(expect, actual)
+        result = cls._compare_assert(actual, expect)
         test_step = {
             "test_step":f"Step {cls.step}",
             'action': action,
@@ -198,7 +203,7 @@ class Result:
         cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
 
     @classmethod
-    def test_step_customize(cls,action,expect,actual,comparefunc):
+    def test_step_customize(cls,action, actual, expect,comparefunc):
         """
 
         :param action:
@@ -235,9 +240,9 @@ class Result:
         cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
 
     @classmethod
-    def _compare_assert(cls, expect, actual):
+    def _compare_assert(cls, actual,expect):
         try:
-            assert_equal(expect,actual)
+            assert_equal(actual,expect)
             return ('Passed',None)
         except AssertionError as e:
             #TODO the 2nd element shall be the details exception

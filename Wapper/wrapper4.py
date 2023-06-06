@@ -2,7 +2,7 @@ import inspect
 import traceback
 import logging
 
-def decorator(func):
+def aria_func_decorator(func):
     def wrapper(*args, **kwargs):
         # Get the class name
         class_name = func.__qualname__
@@ -16,16 +16,18 @@ def decorator(func):
         message = f"{class_name}, Parameters: {', '.join(params[1:])}"
         try:
             # Call the original function, passing args and kwargs
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+
             result = func(*args, **kwargs)
-            print("After function execution")
+            logging.info(f"{timestamp} execute {message}")
             # Check if the function has a return value
             if result is not None:
-                return [True, result,message]
+                return [True, result,timestamp,message]
             else:
-                return [True, None,message]
+                return [True, None,timestamp,message]
         except Exception as e:
             logging.critical(traceback.format_exc())
-            return [False, traceback.format_exc(),message]
+            return [False, traceback.format_exc(),timestamp,message]
 
     return wrapper
 
