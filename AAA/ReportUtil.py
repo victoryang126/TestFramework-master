@@ -1,7 +1,7 @@
 
 import copy
 import traceback
-from pathlib import Path,PurePath
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import os
@@ -14,9 +14,6 @@ import logging
 
 class Report:
 
-    template_path = os.path.join( os.path.dirname(os.path.realpath(__file__)),"resources","template.html")
-    template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources", "")
-    print(os.path.exists(template_path))
     def get_machine_name(self):
         return socket.gethostname()
 
@@ -25,8 +22,8 @@ class Report:
 
     def __init__(self, template_file = "template.html" ):
         self.template_file = template_file
-        # self.template_file = r"E:\GitHub\TestFramework-master\AAA\resources\template.html"
-        self.env = Environment(loader=FileSystemLoader(self.template_path))
+        template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources", "")
+        self.env = Environment(loader=FileSystemLoader(template_path))
         self.template = self.env.get_template(self.template_file)
         self.data = {}
 
