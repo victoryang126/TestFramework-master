@@ -117,7 +117,7 @@ class Result:
             "test_step": f"Step {cls.step}",
             'action': aria_function_return[3],
             'expect': copy.deepcopy(expect),
-            'actual': log,
+            'actual': aria_function_return[1],
             'result': result,
             'log': log,
             'timestamp': aria_function_return[2]
