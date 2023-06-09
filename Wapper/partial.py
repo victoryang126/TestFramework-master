@@ -16,3 +16,4 @@ square = functools.partial(power, exponent=2)
 # 调用偏函数，只需要传递 base 参数
 result = square(base=5)
 print(result)  # 输出：25
+
