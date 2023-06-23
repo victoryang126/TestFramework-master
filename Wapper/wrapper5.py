@@ -2,6 +2,7 @@ import inspect
 import logging
 import traceback
 import datetime
+import time
 
 class AriaFuncDecorator:
     def __init__(self, func):
@@ -24,9 +25,12 @@ class AriaFuncDecorator:
         try:
             # Call the original function, passing args and kwargs
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-            result = self.func(*args, **kwargs)
 
-            logging.info(f"{timestamp} execute {message}")
+            start_time = time.time()
+            result = self.func(*args, **kwargs)
+            execution_time = time.time() - start_time
+
+            logging.info(f"{timestamp} execute {message}, Execution Time: {execution_time:.6f} seconds")
 
             # Check if the function has a return value
             if result is not None:
@@ -42,42 +46,23 @@ class AriaFuncDecorator:
         def wrapper(*args, **kwargs):
             # Perform additional decoration logic...
             # For example, you can modify the arguments or manipulate the result
-            class_name = func.__qualname__
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            execution_time = time.time() - start_time
 
-            # Get the parameter names and their corresponding values
-            signature = inspect.signature(func)
-            bound_arguments = signature.bind(*args, **kwargs).arguments
-            params = []
-            for param_name, param_value in bound_arguments.items():
-                params.append(f"{param_name}={param_value}")
+            logging.info(f"Execution Time: {execution_time:.6f} seconds")
 
-            # Concatenate the class name and parameter information
-            message = f"{class_name}, Parameters: {', '.join(params[1:])}"
-
-            try:
-                # Call the original function, passing args and kwargs
-                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-                result = func(*args, **kwargs)
-
-                logging.info(f"{timestamp} execute {message}")
-
-                # Check if the function has a return value
-                if result is not None:
-                    return [True, result, timestamp, message]
-                else:
-                    return [True, None, timestamp, message]
-            except Exception as e:
-                logging.critical(traceback.format_exc())
-                return [False, traceback.format_exc(), timestamp, message]
+            return result
 
         return wrapper
 
 
 # Example usage
-# @AriaFuncDecorator
+@AriaFuncDecorator
 @AriaFuncDecorator.my_additional_decorator
 def my_function(param1, param2):
     # Function logic...
+    time.sleep(2)  # Simulating a long-running function
     return "Hello, World!"
 
 result = my_function("param1_value", "param2_value")
