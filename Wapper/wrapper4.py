@@ -1,7 +1,11 @@
 import inspect
 import traceback
 import logging
+import datetime
+import logging
 
+# aria_log = logging.getLogger("__aria__")
+# aria_log.setLevel(logging.INFO)
 def aria_func_decorator(func):
     def wrapper(*args, **kwargs):
         # Get the class name
@@ -19,6 +23,7 @@ def aria_func_decorator(func):
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
             result = func(*args, **kwargs)
+            
             logging.info(f"{timestamp} execute {message}")
             # Check if the function has a return value
             if result is not None:
@@ -37,12 +42,23 @@ def aria_func_decorator(func):
 class MyClass:
 
     @classmethod
-    @decorator
+    @aria_func_decorator
     def my_method(cls, x,y, a,b):
         print("Inside my_method")
         # raise  Exception("ttt")
         return 42  # Just an example return value
 
 # Call the decorated method
+
+
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# logging.debug('This is a debug message')
+# logging.info('This is an info message')
+# logging.warning('This is a warning message')
+# logging.error('This is an error message')
+# logging.critical('This is a critical message')
+
 result = MyClass.my_method(1, 2, a='apple', b='banana')
 print(result)
