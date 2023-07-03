@@ -5,8 +5,9 @@ import getpass
 import socket
 import os
 import datetime
+import copy
 
-
+from bs4.formatter import HTMLFormatter
 
 
 class HTMLReportGenerator:
@@ -15,7 +16,8 @@ class HTMLReportGenerator:
     failed = "Failed"
     step = 0
 
-    def __init__(self,html_title=None):
+    def __init__(self,html_title=None,report_path=""):
+
 
 
         self.test_case_result = self.passed
@@ -29,6 +31,11 @@ class HTMLReportGenerator:
             self.html_title = os.path.basename(__file__).split(".")[0]
         else:
             self.html_title = html_title
+
+        self.report_path = report_path
+
+        file_path = os.path.join(self.report_path, f"{self.html_title}.html")
+        self.file = open(file_path, "w")
 
         self.add_head_section()
         self.add_environment_section()
@@ -91,30 +98,30 @@ class HTMLReportGenerator:
 
         script_tag = self.soup.new_tag('script')
         script_tag.string = template_script
-        self.html.append(script_tag)
+        self.body.append(script_tag)
 
         h1 = self.soup.new_tag('h1')
         h1.string = self.html_title
-        self.html.append(h1)
+        self.body.append(h1)
 
         timestamp = self.soup.new_tag('p')
 
         now = datetime.datetime.now()
         timestamp.string = f"Report Generate at {now.strftime('%Y-%m-%d %H:%M:%S')}"
-        self.html.append(timestamp)
+        self.body.append(timestamp)
 
 
 
     def add_environment_section(self):
         h2_env = self.soup.new_tag('h2')
         h2_env.string = 'Environment'
-        self.html.append(h2_env)
+        self.body.append(h2_env)
         environment_data = {}
         environment_data["User"] = self.get_user()
         environment_data["Machine"] = self.get_machine_name()
         environment_data.update(self.get_module_version())
         env_table = self.soup.new_tag('table', id='environment')
-        self.html.append(env_table)
+        self.body.append(env_table)
 
         for key, value in environment_data.items():
             tr = self.soup.new_tag('tr')
@@ -132,10 +139,10 @@ class HTMLReportGenerator:
         h2_summary_section = self.soup.new_tag('h2')
         h2_summary_section.string = 'Summary'
 
-        self.html.append(h2_summary_section)
+        self.body.append(h2_summary_section)
 
         summary_table = self.soup.new_tag('table', id='testgroupsSummaryTable')
-        self.html.append(summary_table)
+        self.body.append(summary_table)
 
         headers = ['Category', 'Count', 'Show/Hide']
         header_row = self.soup.new_tag('tr')
@@ -172,10 +179,10 @@ class HTMLReportGenerator:
     def add_results_section(self):
         results_section = self.soup.new_tag('h2')
         results_section.string = 'Results'
-        self.html.append(results_section)
+        self.body.append(results_section)
 
         self.results_table = self.soup.new_tag('table', id='results-table')
-        self.html.append(self.results_table)
+        self.body.append(self.results_table)
         # results_section.insert_after(results_table)
 
         thead = self.soup.new_tag('thead', id='results-table-head')
@@ -189,17 +196,20 @@ class HTMLReportGenerator:
             th.string = header
             header_row.append(th)
 
-    def generate_report(self, file_path=""):
-
-        file_path = os.path.join(file_path,f"{self.html_title}.html")
-        # self.report = open(file_path,"w")
-        # self.report.read(self.soup.prettify())
-        with open(file_path, 'w') as file:
-            file.write(self.soup.prettify())
+    def generate_report(self):
+        self.file.write(self.soup.prettify(formatter='html5'))
+        file_path = os.path.join(self.report_path,f"{self.html_title}.html")
+        # # self.report = open(file_path,"w")
+        # # self.report.read(self.soup.prettify())
+        # with open(file_path, 'w') as file:
+        #     file.write(self.soup.prettify(formatter = 'html5')) # if use this kind method, there some problem with the report
+        #     # file.write(str(self.html))
         html_report = Path(os.path.expandvars(file_path)).expanduser()
         print(f"generate customize html report: {html_report.absolute().as_uri()}")
+        self.file.close()
 
     def add_test_case(self, test_case):
+        self.test_case = test_case
         self.test_case_result = self.passed
         self.test_case_body = self.soup.new_tag('tbody')
         self.test_case_row = self.soup.new_tag('tr',attrs={"class": "Passed results-table-row"})
@@ -276,7 +286,7 @@ class HTMLReportGenerator:
         self.test_group_row.append(timestamp_cell)
 
         test_group_cell = self.soup.new_tag('td')
-        test_group_cell.string = test_group
+        test_group_cell.string = f"{self.test_case}::{test_group}"
         self.test_group_row.append(test_group_cell)
 
 
@@ -352,15 +362,20 @@ class HTMLReportGenerator:
         result_cell.string = result
         test_step_row.append(result_cell)
 
+        self.add_test_log()
+          # if use this kind method, there some problem with the report
+
+    def update_report(self):
+        self.file.write(self.soup.prettify(formatter='html5'))
+
+    def add_test_log(self):
         log_row = self.soup.new_tag('tr')
         td_colspan = self.soup.new_tag('td',attrs = {"colspan": "6"})
         self.log_div = self.soup.new_tag('div',attrs = {"class": "log"})
+        # self.log_div.string = ""
         td_colspan.append(self.log_div)
         log_row.append(td_colspan)
         self.test_steps_table.append(log_row)
-
-
-
 
     def update_duration_result_for_testcase_testgroup(self,now,result):
         end = datetime.datetime.strptime(now.strftime('%Y-%m-%d %H:%M:%S.%f'), '%Y-%m-%d %H:%M:%S.%f')
@@ -390,6 +405,11 @@ class HTMLReportGenerator:
                 self.test_group_result = self.failed
                 test_group_result_td = self.test_group_row.select('td')[2]
                 test_group_result_td.string = self.test_group_result
+
+
+    def test_comment(self,comment):
+        self.log_div.append(comment)
+
 
 
 
