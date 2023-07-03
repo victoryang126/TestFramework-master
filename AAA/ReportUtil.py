@@ -209,11 +209,13 @@ class Result:
     @classmethod
     def _compare_assert(cls, actual,expect):
         try:
-            assert_equal(actual,expect)
+            # assert_equal(actual,expect)
+            assert actual==expect
             return ('Passed',None)
         except AssertionError as e:
             #TODO the 2nd element shall be the details exception
-            return ('Failed',traceback.format_exc())
+            # return ('Failed',traceback.format_exc())
+            return ('Failed',"Not Equal details")
 
     @classmethod
     def end_test_case(cls):
@@ -265,30 +267,32 @@ if __name__=="__main__":
     Expect1 = [i for i in range(100)]
     Actual1 = [i for i in range(100)]
     Actual1[1] = 10
+
+    # raise Exception("Fail")
     # 执行一些操作...
     Result.add_test_case('TestCase2')
-    Result.test_step('Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal', Expect1, Actual1)
+    Result.test_step('Check if the array is equal', Expect1, Actual1)
     Result.test_step('Action2', 'Expect2', 'Actual2')
     Result.test_step('Action3', 'Expect3', 'Actual4')
     Result.end_test_case()
 
     Result.end_test_class()
 
-    Result.add_test_class('TestClassName2')
-    # 执行一些操作...
-    Result.add_test_case('TestCase3')
-    Result.test_step('Action1', 'Expect1', 'Expect1')
-    Result.test_step('Action2', 'Expect2', 'Expect2')
-    Result.test_step('Action3', 'Expect3', 'Expect3')
-    Result.end_test_case()
-
-    # 执行一些操作...
-    Result.add_test_case('TestCase4')
-    Result.test_step('Action1', 'Expect1', 'Actual1')
-    Result.test_step('Action2', 'Expect2', 'Actual2')
-    Result.test_step('Action3', 'Expect3', 'Actual4')
-    Result.end_test_case()
-
-    Result.end_test_class()
+    # Result.add_test_class('TestClassName2')
+    # # 执行一些操作...
+    # Result.add_test_case('TestCase3')
+    # Result.test_step('Action1', 'Expect1', 'Expect1')
+    # Result.test_step('Action2', 'Expect2', 'Expect2')
+    # Result.test_step('Action3', 'Expect3', 'Expect3')
+    # Result.end_test_case()
+    #
+    # # 执行一些操作...
+    # Result.add_test_case('TestCase4')
+    # Result.test_step('Action1', 'Expect1', 'Actual1')
+    # Result.test_step('Action2', 'Expect2', 'Actual2')
+    # Result.test_step('Action3', 'Expect3', 'Actual4')
+    # Result.end_test_case()
+    #
+    # Result.end_test_class()
 
     report.generate_html(Result.results,"pytestReport.html")

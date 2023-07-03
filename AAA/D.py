@@ -17,9 +17,20 @@ array2 = [4, 5, 6, 7, 8]
 
 diff_info = compare_arrays(array1, array2)
 
-for diff in diff_info:
-    expected = diff[0]
-    actual = diff[1]
-    print(f"Expected: {expected}  Actual: {actual}")
+# for diff in diff_info:
+#     expected = diff[0]
+#     actual = diff[1]
+#     print(f"Expected: {expected}  Actual: {actual}")
+
+import os
+
+# 获取当前文件的文件名（包括路径）
+current_file = __file__
+
+# 提取出纯粹的文件名部分
+file_name = os.path.basename(__file__).split(".")[0]
+
+print(file_name)
+
 
 
