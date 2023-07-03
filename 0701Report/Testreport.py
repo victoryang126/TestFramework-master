@@ -23,7 +23,7 @@ if __name__=="__main__":
     report_generator.test_comment("C")
     report_generator.test_comment("D")
     report_generator.add_test_group('Testgroup2')
-    time.sleep(5)
+    # time.sleep(5)
     report_generator.add_test_step('Action 1', 'Expect 1', 'Actual 1', HTMLReportGenerator.passed)
     report_generator.add_test_step( 'Action 2', 'Expect 2', 'Actual 2', HTMLReportGenerator.passed)
 

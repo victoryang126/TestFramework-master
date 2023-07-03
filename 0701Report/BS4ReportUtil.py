@@ -11,7 +11,9 @@ import htmlmin
 from bs4.formatter import HTMLFormatter
 
 def custom_formatter(tag):
-    return str(tag)
+    if tag.string:
+        tag.string = tag.string.strip()
+        return tag
 
 class HTMLReportGenerator:
 
@@ -233,7 +235,7 @@ class HTMLReportGenerator:
         :param test_case_name: Name of the test case
         :return: None
         """
-        self.group = 0
+        self.group = 0 # reinit the number
         self.test_case = test_case
         self.test_case_result = self.passed
         self.test_case_body = self.soup.new_tag('tbody')
