@@ -11,6 +11,7 @@ import copy
 import time
 from nose.tools import assert_equal, assert_in
 import logging
+import pytest_html
 
 
 class Report:
@@ -74,29 +75,29 @@ class Result:
         cls.results = []
 
     @classmethod
-    def add_test_class(cls,test_class_name):
-        test_class = {
-            'duration': 0.0,
-            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
-            'test_class': test_class_name,
-            'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
-            "test_cases":[]
-        }
-        cls.results.append(test_class)
-
-    @classmethod
     def add_test_case(cls,test_case_name):
-        cls.step = 0
         test_case = {
             'duration': 0.0,
             'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
             'test_case': test_case_name,
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
+            "test_groups":[]
+        }
+        cls.results.append(test_case)
+
+    @classmethod
+    def add_test_group(cls,test_group_name):
+        cls.step = 0
+        test_group = {
+            'duration': 0.0,
+            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
+            'test_group': test_group_name,
+            'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'test_steps':[]
 
         }
         #latest test class shall be -1
-        cls.results[-1]["test_cases"].append(test_case)
+        cls.results[-1]["test_groups"].append(test_group)
 
     #TODO 根据ARIA 函数的名称和里面的参数去设置action，预期结果，世界结果
     @classmethod
@@ -124,7 +125,7 @@ class Result:
             'timestamp': aria_function_return[2]
         }
         # latest test class and test case
-        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
+        cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
     @classmethod
     def test_step2(cls, action, actual, expect,result):
         """
@@ -145,7 +146,7 @@ class Result:
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
         #latest test class and test case
-        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
+        cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
 
     @classmethod
     def test_step(cls, action, actual, expect):
@@ -168,7 +169,7 @@ class Result:
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
         #latest test class and test case
-        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
+        cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
 
     @classmethod
     def test_step_customize(cls,action, actual, expect,comparefunc):
@@ -193,7 +194,7 @@ class Result:
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
         #latest test class and test case
-        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
+        cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
 
     @classmethod
     def test_comment(cls,comment):
@@ -205,7 +206,7 @@ class Result:
             'result': "",
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
-        cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
+        cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
 
     @classmethod
     def _compare_assert(cls, actual,expect):
@@ -219,30 +220,30 @@ class Result:
             return ('Failed',"Not Equal details")
 
     @classmethod
-    def end_test_case(cls):
+    def end_test_group(cls):
         end_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-        start_time = cls.results[-1]["test_cases"][-1]["timestamp"]
+        start_time = cls.results[-1]["test_groups"][-1]["timestamp"]
         end = datetime.datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S.%f')
         start = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
-        cls.results[-1]["test_cases"][-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
-        test_steps =  cls.results[-1]["test_cases"][-1]["test_steps"]
+        cls.results[-1]["test_groups"][-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
+        test_steps =  cls.results[-1]["test_groups"][-1]["test_steps"]
         #get the test results in all test steps
         test_steps_results = [test_step["result"] for test_step in test_steps]
         if cls.failed not in test_steps_results:
-            cls.results[-1]["test_cases"][-1]['result'] = cls.passed
+            cls.results[-1]["test_groups"][-1]['result'] = cls.passed
 
 
     @classmethod
-    def end_test_class(cls):
+    def end_test_case(cls):
         end_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         start_time = cls.results[-1]["timestamp"]
         end = datetime.datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S.%f')
         start = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
         cls.results[-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
-        test_cases =  cls.results[-1]["test_cases"]
+        test_groups =  cls.results[-1]["test_groups"]
         #get the test results in all test case
-        test_cases_results = [test_case["result"] for test_case in test_cases]
-        if cls.failed not in test_cases_results:
+        test_groups_results = [test_group["result"] for test_group in test_groups]
+        if cls.failed not in test_groups_results:
             cls.results[-1]['result'] = cls.passed
 
 # class TestClass:
@@ -257,14 +258,14 @@ if __name__=="__main__":
     # 使用示例
 
 
-    Result.add_test_class('TestClassName')
+    Result.add_test_case('TestClassName')
     # 执行一些操作...
-    Result.add_test_case('TestCase1')
+    Result.add_test_group('TestCase1')
     time.sleep(1)
     Result.test_step('Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal', 'Expect1', 'Expect1')
     Result.test_step('Action2', 'Expect2', 'Expect2')
 
-    Result.end_test_case()
+    Result.end_test_group()
 
     Expect1 = [i for i in range(100)]
     Actual1 = [i for i in range(100)]
@@ -272,30 +273,30 @@ if __name__=="__main__":
 
     # raise Exception("Fail")
     # 执行一些操作...
-    Result.add_test_case('TestCase2')
+    Result.add_test_group('TestCase2')
     time.sleep(0.5)
     Result.test_step('Check if the array is equal', Expect1, Actual1)
     Result.test_step('Action2', 'Expect2', 'Actual2')
 
+    Result.end_test_group()
+
     Result.end_test_case()
 
-    Result.end_test_class()
-
-    # Result.add_test_class('TestClassName2')
+    # Result.add_test_case('TestClassName2')
     # # 执行一些操作...
-    # Result.add_test_case('TestCase3')
+    # Result.add_test_group('TestCase3')
     # Result.test_step('Action1', 'Expect1', 'Expect1')
     # Result.test_step('Action2', 'Expect2', 'Expect2')
     # Result.test_step('Action3', 'Expect3', 'Expect3')
-    # Result.end_test_case()
+    # Result.end_test_group()
     #
     # # 执行一些操作...
-    # Result.add_test_case('TestCase4')
+    # Result.add_test_group('TestCase4')
     # Result.test_step('Action1', 'Expect1', 'Actual1')
     # Result.test_step('Action2', 'Expect2', 'Actual2')
     # Result.test_step('Action3', 'Expect3', 'Actual4')
-    # Result.end_test_case()
+    # Result.end_test_group()
     #
-    # Result.end_test_class()
+    # Result.end_test_case()
 
     report.generate_html(Result.results,"pytestReport.html")

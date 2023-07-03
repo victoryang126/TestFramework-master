@@ -14,11 +14,10 @@ class HTMLReportGenerator:
 
     passed = "Passed"
     failed = "Failed"
+    group = 0
     step = 0
 
     def __init__(self,html_title=None,report_path=""):
-
-
 
         self.test_case_result = self.passed
         self.test_group_result = self.passed
@@ -36,11 +35,14 @@ class HTMLReportGenerator:
 
         file_path = os.path.join(self.report_path, f"{self.html_title}.html")
         self.file = open(file_path, "w")
+        self.module_versions = self.get_module_versions()
 
         self.add_head_section()
         self.add_environment_section()
         self.add_summary_section()
         self.add_results_section()
+
+
 
 
     def get_machine_name(self):
@@ -49,12 +51,21 @@ class HTMLReportGenerator:
     def get_user(self):
         return getpass.getuser()
 
-    def get_module_version(self):
+    def get_module_versions(self):
         module_version = {}
         module_version["BS4"] = bs4.__version__
         pass
         #TODO get version of related module
         return module_version
+
+
+    def add_module_versions(self,module_verions:dict):
+        """
+        function used to update the module_versions
+        :param module_verions:
+        :return:
+        """
+        self.module_versions.update(module_verions)
 
     def get_style_and_script(self,html_file):
         # Read the HTML file
@@ -119,7 +130,7 @@ class HTMLReportGenerator:
         environment_data = {}
         environment_data["User"] = self.get_user()
         environment_data["Machine"] = self.get_machine_name()
-        environment_data.update(self.get_module_version())
+        environment_data.update(self.module_versions)
         env_table = self.soup.new_tag('table', id='environment')
         self.body.append(env_table)
 
@@ -209,6 +220,7 @@ class HTMLReportGenerator:
         self.file.close()
 
     def add_test_case(self, test_case):
+        self.group = 0
         self.test_case = test_case
         self.test_case_result = self.passed
         self.test_case_body = self.soup.new_tag('tbody')
@@ -271,6 +283,8 @@ class HTMLReportGenerator:
 
 
     def add_test_group(self, test_group):
+        self.group += 1
+        self.step = 0
         self.test_group_result = self.passed
         # Create a new row for the test case in the test_cases_table
         self.test_group_row = self.soup.new_tag('tr',attrs={"class": "Passed results-table-row"})
@@ -286,7 +300,7 @@ class HTMLReportGenerator:
         self.test_group_row.append(timestamp_cell)
 
         test_group_cell = self.soup.new_tag('td')
-        test_group_cell.string = f"{self.test_case}::{test_group}"
+        test_group_cell.string = f"Group {self.group} {self.test_case}::{test_group}"
         self.test_group_row.append(test_group_cell)
 
 
@@ -324,9 +338,9 @@ class HTMLReportGenerator:
         # details_tbody = self.soup.new_tag('tbody')
         # self.test_steps_table.append(details_tbody)
 
-    def add_test_step(self, test_step, action, expect, actual, result):
+    def add_test_step(self,action, expect, actual, result):
 
-
+        self.step +=1
 
         # Create a new row for the test step in the test_steps_table
         attrs={"class": 'Passed' if result == self.passed else 'Failed'}
@@ -343,19 +357,19 @@ class HTMLReportGenerator:
         test_step_row.append(timestamp_cell)
 
         test_step_cell = self.soup.new_tag('td')
-        test_step_cell.string = test_step
+        test_step_cell.string = f"Step {self.step}"
         test_step_row.append(test_step_cell)
 
         action_cell = self.soup.new_tag('td')
-        action_cell.string = action
+        action_cell.append(str(action))
         test_step_row.append(action_cell)
 
         expect_cell = self.soup.new_tag('td')
-        expect_cell.string = expect
+        expect_cell.append(str(expect))
         test_step_row.append(expect_cell)
 
         actual_cell = self.soup.new_tag('td')
-        actual_cell.string = actual
+        actual_cell.append(str(actual))
         test_step_row.append(actual_cell)
 
         result_cell = self.soup.new_tag('td',attrs={"class": "col-test-step-log"})

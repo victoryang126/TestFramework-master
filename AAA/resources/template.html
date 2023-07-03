@@ -45,16 +45,16 @@ table {
   background-color: #f6f6f6;
 }
 
-#testcasesSummaryTable table {
+#testgroupsSummaryTable table {
       border-collapse: collapse;
       width: 20%;
       background-color: #f2f2f2;
     }
-    #testcasesSummaryTable th, td {
+    #testgroupsSummaryTable th, td {
       border: 1px solid #ddd;
       padding: 5px;
     }
-   #testcasesSummaryTable th {
+   #testgroupsSummaryTable th {
       text-align: left;
     }
     #Failed {
@@ -138,11 +138,11 @@ table {
 }
 
 /*------------------
- * 2. Test Cases and Test step
+ * 2. test groups and Test step
  *------------------*/
 
 
-.test_cases, .test_steps {
+.test_groups, .test_steps {
       width: 100%;
    }
 
@@ -163,12 +163,12 @@ table {
         color: black;
     }
 
-    .test_cases .Passed .col-result
+    .test_groups .Passed .col-result
     {
     color: green;
     }
 
-    .test_cases .Failed .col-result
+    .test_groups .Failed .col-result
     {
     color: red;
     }
@@ -177,9 +177,9 @@ table {
 <script>/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-function testcasesSummary() {
-    // Get all tables with class 'test_cases'
-    var tables = document.getElementsByClassName('test_cases');
+function testgroupsSummary() {
+    // Get all tables with class 'test_groups'
+    var tables = document.getElementsByClassName('test_groups');
 
     // Initialize total, Failed, and Passed counts
     var total = 0;
@@ -206,9 +206,9 @@ function testcasesSummary() {
     document.getElementById('Passed').textContent = Passed;
   }
     // Function to toggle row visibility based on checkbox
-    function toggletestcaseRowVisibility(category) {
-    // Get all tables with class 'test_cases'
-    var tables = document.getElementsByClassName('test_cases');
+    function toggletestgroupsRowVisibility(category) {
+    // Get all tables with class 'test_groups'
+    var tables = document.getElementsByClassName('test_groups');
 
     // Toggle row visibility based on checkbox state in each table
     for (var i = 0; i < tables.length; i++) {
@@ -230,8 +230,8 @@ function testcasesSummary() {
 }
 
 
-// Call the testcasesSummary function when the page is loaded
-document.addEventListener('DOMContentLoaded', testcasesSummary);
+// Call the testgroupsSummary function when the page is loaded
+document.addEventListener('DOMContentLoaded', testgroupsSummary);
 //function to add highlight for the rows of test steps table
 function addRowHighlight(className) {
         var tables = document.getElementsByClassName('test_steps');
@@ -395,29 +395,29 @@ function init () { // eslint-disable-line no-unused-vars
 </table>
 
 <h2>Summary</h2>
-<table id="testcasesSummaryTable">
+<table id="testgroupsSummaryTable">
   <tr>
     <th>Category</th>
     <th>Count</th>
     <th>Show/Hide</th>
   </tr>
   <tr>
-    <td>Total test cases:</td>
+    <td>Total test groups:</td>
     <td id="total"></td>
     <td></td>
   </tr>
   <tr>
-    <td>Failed test cases:</td>
+    <td>Failed test groups:</td>
     <td id="Failed"></td>
     <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
+      <input type="checkbox" checked onclick="toggletestgroupsRowVisibility('Failed')">
     </td>
   </tr>
   <tr>
-    <td>Passed test cases:</td>
+    <td>Passed test groups:</td>
     <td id="Passed"></td>
     <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
+      <input type="checkbox" checked onclick="toggletestgroupsRowVisibility('Passed')">
     </td>
   </tr>
 </table>
@@ -426,7 +426,7 @@ function init () { // eslint-disable-line no-unused-vars
   <thead id="results-table-head">
   <tr>
     <th col="time">Timestamp</th>
-    <th col="test class">Test Class</th>
+    <th col="test case">Test Case</th>
     <th col="result">Result</th>
     <th col="duration">Duration (s)</th>
   </tr>
@@ -438,33 +438,33 @@ function init () { // eslint-disable-line no-unused-vars
   <tbody class="{{ result.result }} results-table-row">
   <tr>
     <td class="col-time">{{ result.timestamp }}</td>
-    <td class="col-test-class">{{ result.test_class }}</td>
+    <td class="col-test-case">{{ result.test_case }}</td>
     <td class="col-result">{{ result.result }}</td>
     <td class="col-duration">{{ result.duration }}</td>
   </tr>
-  {% if result.test_cases %}
+  {% if result.test_groups %}
   <tr>
     <td class="extra" colspan="5">
       <div>
-        <table class="test_cases">
-          <thead class="test_case_header">
+        <table class="test_groups">
+          <thead class="test_group_header">
           <tr>
             <th>Timestamp</th>
-            <th>TestCase</th>
-            <th>Duration (s)</th>
+            <th>TestGroup</th>
             <th>Result</th>
+            <th>Duration (s)</th>
             <th></th>
           </tr>
           </thead>
           <tbody>
-          {% for test_case in result.test_cases %}
-          <tr class="{{ test_case.result }} results-table-row">
-            <td>{{ test_case.timestamp }}</td>
-            <td>{{ test_case.test_case }}</td>
-            <td>{{ test_case.duration }}</td>
-            <td class="col-result">{{ test_case.result }}</td>
+          {% for test_group in result.test_groups %}
+          <tr class="{{ test_group.result }} results-table-row">
+            <td>{{ test_group.timestamp }}</td>
+            <td>{{ test_group.test_group }}</td>
+            <td class="col-result">{{ test_group.result }}</td>
+            <td>{{ test_group.duration }}</td>
           </tr>
-          {% if test_case.test_steps %}
+          {% if test_group.test_steps %}
           <tr class="details">
             <td colspan="6">
               <table class="test_steps">
@@ -479,26 +479,23 @@ function init () { // eslint-disable-line no-unused-vars
                 </tr>
                 </thead>
                 <tbody>
-                {% for test_step in test_case.test_steps %}
+                {% for test_step in test_group.test_steps %}
                 <tr class="{{ test_step.result }}">
                   <td>{{ test_step.timestamp }}</td>
                   <td>{{ test_step.test_step }}</td>
                   <td>{{ test_step.action }}</td>
                   <td>{{ test_step.expect }}</td>
                   <td>{{ test_step.actual }}</td>
-                  <td class="{% if test_step.result == 'Failed' %}col-test-step-log{% endif %}">
+                  <td class="col-test-step-log">
                     {{ test_step.result }}
                   </td>
-                  <!-- <td>{{ test_step.result }}</td> -->
                 </tr>
-                {% if test_step.result == 'Failed' %}
                 <tr>
                   <td colspan="6">
                     <div class="log">{{ test_step.log }}
                     </div>
                   </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
                 </tbody>
               </table>
