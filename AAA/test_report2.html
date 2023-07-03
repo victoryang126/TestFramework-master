@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>test_report2</title>
+  <style>
+    body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+    }
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+
+#testcasesSummaryTable table {
+      border-collapse: collapse;
+      width: 20%;
+      background-color: #f2f2f2;
+    }
+    #testcasesSummaryTable th, td {
+      border: 1px solid #ddd;
+      padding: 5px;
+    }
+   #testcasesSummaryTable th {
+      text-align: left;
+    }
+    #Failed {
+      color: red;
+    }
+    #Passed {
+      color: green;
+    }
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+
+.Passed .col-result {
+  color: green;
+}
+.Failed .col-result {
+  color: red;
+}
+
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+ .log {
+  background-color: #e6e6e6;
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  height: 50px;
+  overflow-y: scroll;
+  padding: 5px;
+  white-space: pre-wrap;
+}
+
+
+.collapsed {
+  display: none;
+}
+
+.expander::after {
+  content: " (show details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.collapser::after {
+  content: " (hide details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+/*------------------
+ * 2. Test Cases and Test step
+ *------------------*/
+
+
+.test_cases, .test_steps {
+      width: 100%;
+   }
+
+   .test_steps tr.Passed {
+      background-color: #c9ecc9;
+   }
+
+   .test_steps tr.Failed {
+      background-color: #f8caca;
+   }
+
+   .test_steps tr.tbd {
+      background-color: #fdfdc4;
+   }
+
+    .highlight-row {
+        font-weight: bold;
+        color: black;
+    }
+
+    .test_cases .Passed .col-result
+    {
+    color: green;
+    }
+
+    .test_cases .Failed .col-result
+    {
+    color: red;
+    }
+</style></head>
+<body onLoad="init()">
+<script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+function testcasesSummary() {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
+
+    // Initialize total, Failed, and Passed counts
+    var total = 0;
+    var Failed = 0;
+    var Passed = 0;
+
+    // Loop through each table
+    for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Get Failed and Passed rows in the table
+    var FailedRows = table.getElementsByClassName('Failed results-table-row');
+    var PassedRows = table.getElementsByClassName('Passed results-table-row');
+
+    // Update total, Failed, and Passed counts
+    total += FailedRows.length + PassedRows.length;
+    Failed += FailedRows.length;
+    Passed += PassedRows.length;
+    }
+
+    // Update the summary table with the counts
+    document.getElementById('total').textContent = total;
+    document.getElementById('Failed').textContent = Failed;
+    document.getElementById('Passed').textContent = Passed;
+  }
+    // Function to toggle row visibility based on checkbox
+    function toggletestcaseRowVisibility(category) {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
+
+    // Toggle row visibility based on checkbox state in each table
+    for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Get rows of the specified category within the table
+    var rows = table.getElementsByClassName(category);
+
+    // Toggle row visibility based on checkbox state
+    for (var j = 0; j < rows.length; j++) {
+      var row = rows[j];
+      if (row.style.display === 'none') {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+    }
+}
+
+
+// Call the testcasesSummary function when the page is loaded
+document.addEventListener('DOMContentLoaded', testcasesSummary);
+//function to add highlight for the rows of test steps table
+function addRowHighlight(className) {
+        var tables = document.getElementsByClassName('test_steps');
+        for(var j = 0; j < tables.length; j ++)
+        {
+            var table = tables[j]
+            var rows = table.getElementsByClassName(className);
+
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].addEventListener('mouseover', function() {
+                    this.classList.add('highlight-row');
+                });
+
+                rows[i].addEventListener('mouseout', function() {
+                    this.classList.remove('highlight-row');
+                });
+            }
+        }
+       }
+
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+    findAll('.col-test-step-log').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+    findAll('.col-test-step-log').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+
+function addCollapseforFailedStep() {
+
+// Add show/hide link to the failed result of test step
+findAll('.col-test-step-log').forEach(function(elem) {
+    const collapsed = getQueryParameter('collapsed') || 'Passed';
+    const extras = elem.parentNode.nextElementSibling;
+    const expandcollapse = document.createElement('span');
+    if (extras.classList.contains('collapsed')) {
+        expandcollapse.classList.add('expander');
+    } else if (collapsed.includes(elem.innerHTML)) {
+        extras.classList.add('collapsed');
+        expandcollapse.classList.add('expander');
+    } else {
+        expandcollapse.classList.add('collapser');
+    }
+    elem.appendChild(expandcollapse);
+
+    elem.addEventListener('click', function(event) {
+        if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+            showExtras(event.currentTarget);
+        } else {
+            hideExtras(event.currentTarget);
+        }
+    });
+});
+}
+
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+function init () { // eslint-disable-line no-unused-vars
+    addCollapse();
+    addCollapseforFailedStep();
+    addRowHighlight('tbd');
+    addRowHighlight('Failed');
+    addRowHighlight('Passed');
+}
+
+
+</script>
+<h1>test_report2.html</h1>
+<p>Report generated on 04-Jun-2023 at 21:41:09</p>
+
+<h2>Environment</h2>
+<table id="environment">
+  <tr>
+    <td>Machine</td>
+    <td>MonsterdeMacBook-Pro.local</td>
+  </tr>
+  <tr>
+    <td>User</td>
+    <td>monster</td>
+  </tr>
+</table>
+
+<h2>Summary</h2>
+<table id="testcasesSummaryTable">
+  <tr>
+    <th>Category</th>
+    <th>Count</th>
+    <th>Show/Hide</th>
+  </tr>
+  <tr>
+    <td>Total test cases:</td>
+    <td id="total"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Failed test cases:</td>
+    <td id="Failed"></td>
+    <td>
+      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
+    </td>
+  </tr>
+  <tr>
+    <td>Passed test cases:</td>
+    <td id="Passed"></td>
+    <td>
+      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
+    </td>
+  </tr>
+</table>
+<h2>Results</h2>
+<table id="results-table">
+  <thead id="results-table-head">
+  <tr>
+    <th col="time">Timestamp</th>
+    <th col="test class">Test Class</th>
+    <th col="result">Result</th>
+    <th col="duration">Duration (s)</th>
+  </tr>
+  <tr hidden="true" id="not-found-message">
+    <th colspan="5">No results found. Try to check the filters</th>
+  </tr>
+  </thead>
+  
+  <tbody class="Failed results-table-row">
+  <tr>
+    <td class="col-time">2023-06-04 21:41:09.562232</td>
+    <td class="col-test-class">test2.py::TestExample</td>
+    <td class="col-result">Failed</td>
+    <td class="col-duration">0.0120</td>
+  </tr>
+  
+  <tr>
+    <td class="extra" colspan="5">
+      <div>
+        <table class="test_cases">
+          <thead class="test_case_header">
+          <tr>
+            <th>Timestamp</th>
+            <th>TestCase</th>
+            <th>Duration (s)</th>
+            <th>Result</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          
+          <tr class="Failed results-table-row">
+            <td>2023-06-04 21:41:09.562388</td>
+            <td>test2.py::TestExample::test_case_1</td>
+            <td>0.0</td>
+            <td class="col-result">Failed</td>
+          </tr>
+          
+          <tr class="details">
+            <td colspan="6">
+              <table class="test_steps">
+                <thead>
+                <tr class="test_step_header">
+                  <th>Timestamps</th>
+                  <th>TestSteps</th>
+                  <th>Action</th>
+                  <th>Expect</th>
+                  <th>Actual</th>
+                  <th>Result</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                <tr class="Failed">
+                  <td>2023-06-04 21:41:09.564426</td>
+                  <td>Step 1</td>
+                  <td>compare Expect1 euqla Actual1</td>
+                  <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                  <td>[0, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                  <td class="col-test-step-log">
+                    Failed
+                  </td>
+                  <!-- <td>Failed</td> -->
+                </tr>
+                
+                <tr>
+                  <td colspan="6">
+                    <div class="log">assert [0, 1, 2, 3, 4, 5, ...] == [0, 10, 2, 3, 4, 5, ...]
+  At index 1 diff: 1 != 10
+  Full diff:
+    [
+     0,
+  -  10,
+  ?   -
+  +  1,...
+  
+  ...Full output truncated (99 lines hidden), use '-vv' to show
+                    </div>
+                  </td>
+                </tr>
+                
+                
+                <tr class="">
+                  <td>2023-06-04 21:41:09.564460</td>
+                  <td>Comment</td>
+                  <td>Waaaa</td>
+                  <td></td>
+                  <td>actual</td>
+                  <td class="">
+                    
+                  </td>
+                  <!-- <td></td> -->
+                </tr>
+                
+                
+                <tr class="Failed">
+                  <td>2023-06-04 21:41:09.565559</td>
+                  <td>Step 2</td>
+                  <td>compare Expect2 euqla Actual2</td>
+                  <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                  <td>[0, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                  <td class="col-test-step-log">
+                    Failed
+                  </td>
+                  <!-- <td>Failed</td> -->
+                </tr>
+                
+                <tr>
+                  <td colspan="6">
+                    <div class="log">assert [0, 1, 2, 3, 4, 5, ...] == [0, 20, 2, 3, 4, 5, ...]
+  At index 1 diff: 1 != 20
+  Full diff:
+    [
+     0,
+  -  20,
+  +  1,
+     2,...
+  
+  ...Full output truncated (98 lines hidden), use '-vv' to show
+                    </div>
+                  </td>
+                </tr>
+                
+                
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          
+          
+          <tr class="Failed results-table-row">
+            <td>2023-06-04 21:41:09.569952</td>
+            <td>test2.py::TestExample::test_case_2</td>
+            <td>0.0016</td>
+            <td class="col-result">Failed</td>
+          </tr>
+          
+          <tr class="details">
+            <td colspan="6">
+              <table class="test_steps">
+                <thead>
+                <tr class="test_step_header">
+                  <th>Timestamps</th>
+                  <th>TestSteps</th>
+                  <th>Action</th>
+                  <th>Expect</th>
+                  <th>Actual</th>
+                  <th>Result</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                <tr class="Failed">
+                  <td>2023-06-04 21:41:09.571561</td>
+                  <td>Step 1</td>
+                  <td>compare Expect1 euqla Actual1</td>
+                  <td>0x5010003201f4</td>
+                  <td>0x5010003201F</td>
+                  <td class="col-test-step-log">
+                    Failed
+                  </td>
+                  <!-- <td>Failed</td> -->
+                </tr>
+                
+                <tr>
+                  <td colspan="6">
+                    <div class="log">assert '0x5010003201f4' == '0x5010003201F'
+  - 0x5010003201F
+  ?             ^
+  + 0x5010003201f4
+  ?             ^^
+                    </div>
+                  </td>
+                </tr>
+                
+                
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          
+          
+          </tbody>
+        </table>
+      </div>
+    </td>
+  </tr>
+  
+  </tbody>
+  
+</table>
+</body>
+</html>

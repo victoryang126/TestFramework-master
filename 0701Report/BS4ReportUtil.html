@@ -1,0 +1,681 @@
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   BS4ReportUtil
+  </title>
+  <style>
+   body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+    }
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+
+#testgroupsSummaryTable table {
+      border-collapse: collapse;
+      width: 20%;
+      background-color: #f2f2f2;
+    }
+    #testgroupsSummaryTable th, td {
+      border: 1px solid #ddd;
+      padding: 5px;
+    }
+   #testgroupsSummaryTable th {
+      text-align: left;
+    }
+    #Failed {
+      color: red;
+    }
+    #Passed {
+      color: green;
+    }
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+
+.Passed .col-result {
+  color: green;
+}
+.Failed .col-result {
+  color: red;
+}
+
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #E6E6E6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+ .log {
+  background-color: #e6e6e6;
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  height: 50px;
+  overflow-y: scroll;
+  padding: 5px;
+  white-space: pre-wrap;
+}
+
+
+.collapsed {
+  display: none;
+}
+
+.expander::after {
+  content: " (show details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.collapser::after {
+  content: " (hide details)";
+  color: #BBB;
+  font-style: italic;
+  cursor: pointer;
+}
+
+/*------------------
+ * 2. Test Cases and Test step
+ *------------------*/
+
+
+.test_groups, .test_steps {
+      width: 100%;
+   }
+
+   .test_steps tr.Passed {
+      background-color: #c9ecc9;
+   }
+
+   .test_steps tr.Failed {
+      background-color: #f8caca;
+   }
+
+   .test_steps tr.tbd {
+      background-color: #fdfdc4;
+   }
+
+    .highlight-row {
+        font-weight: bold;
+        color: black;
+    }
+
+    .test_groups .Passed .col-result
+    {
+    color: green;
+    }
+
+    .test_groups .Failed .col-result
+    {
+    color: red;
+    }
+  </style>
+  <script>
+   /* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+function testgroupsSummary() {
+    // Get all tables with class 'test_groups'
+    var tables = document.getElementsByClassName('test_groups');
+
+    // Initialize total, Failed, and Passed counts
+    var total = 0;
+    var Failed = 0;
+    var Passed = 0;
+
+    // Loop through each table
+    for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+
+    // Get Failed and Passed rows in the table
+    var FailedRows = table.getElementsByClassName('Failed results-table-row');
+    var PassedRows = table.getElementsByClassName('Passed results-table-row');
+
+    // Update total, Failed, and Passed counts
+    total += FailedRows.length + PassedRows.length;
+    Failed += FailedRows.length;
+    Passed += PassedRows.length;
+    }
+
+    // Update the summary table with the counts
+    document.getElementById('total').textContent = total;
+    document.getElementById('Failed').textContent = Failed;
+    document.getElementById('Passed').textContent = Passed;
+  }
+    // Function to toggle row visibility based on checkbox
+    function toggletestgroupsRowVisibility(category) {
+    // Get all tables with class 'test_groups'
+      var tables = document.getElementsByClassName('test_groups');
+
+      // Toggle row visibility based on checkbox state in each table
+      for (var i = 0; i < tables.length; i++) {
+      var table = tables[i];
+
+      // Get rows of the specified category within the table
+      var rows = table.getElementsByClassName(category);
+
+      // Toggle row visibility based on checkbox state
+      for (var j = 0; j < rows.length; j++) {
+        var row = rows[j];
+        if (row.style.display === 'none') {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+}
+
+
+// Call the testgroupsSummary function when the page is loaded
+document.addEventListener('DOMContentLoaded', testgroupsSummary);
+//function to add highlight for the rows of test steps table
+function addRowHighlight(className) {
+        var tables = document.getElementsByClassName('test_steps');
+        for(var j = 0; j < tables.length; j ++)
+        {
+            var table = tables[j]
+            var rows = table.getElementsByClassName(className);
+
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].addEventListener('mouseover', function() {
+                    this.classList.add('highlight-row');
+                });
+
+                rows[i].addEventListener('mouseout', function() {
+                    this.classList.remove('highlight-row');
+                });
+            }
+        }
+       }
+
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+    findAll('.col-test-step-log').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+    findAll('.col-test-step-log').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+
+function addCollapseforFailedStep() {
+
+    // Add show/hide link to the failed result of test step
+      findAll('.col-test-step-log').forEach(function(elem) {
+          const collapsed = getQueryParameter('collapsed') || 'Passed';
+          const extras = elem.parentNode.nextElementSibling;
+          const expandcollapse = document.createElement('span');
+          if (extras.classList.contains('collapsed')) {
+              expandcollapse.classList.add('expander');
+          } else if (collapsed.includes(elem.innerHTML)) {
+              extras.classList.add('collapsed');
+              expandcollapse.classList.add('expander');
+          } else {
+              expandcollapse.classList.add('collapser');
+          }
+          elem.appendChild(expandcollapse);
+
+          elem.addEventListener('click', function(event) {
+              if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                  showExtras(event.currentTarget);
+              } else {
+                  hideExtras(event.currentTarget);
+              }
+          });
+      });
+    }
+
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+function init () { // eslint-disable-line no-unused-vars
+    addCollapse();
+    addCollapseforFailedStep();
+    addRowHighlight('tbd');
+    addRowHighlight('Failed');
+    addRowHighlight('Passed');
+}
+  </script>
+ </head>
+ <body onLoad="init()">
+  <h1>
+   BS4ReportUtil
+  </h1>
+  <p>
+   Report Generate at 2023-07-02 23:47:51
+  </p>
+  <h2>
+   Environment
+  </h2>
+  <table id="environment">
+   <tr>
+    <td>
+     User
+    </td>
+    <td>
+     monster
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Machine
+    </td>
+    <td>
+     MonsterdeMacBook-Pro.local
+    </td>
+   </tr>
+  </table>
+  <h2>
+   Summary
+  </h2>
+  <table id="testgroupsSummaryTable">
+   <tr>
+    <th>
+     Category
+    </th>
+    <th>
+     Count
+    </th>
+    <th>
+     Show/Hide
+    </th>
+   </tr>
+   <tr>
+    <td>
+     Total test groups:
+    </td>
+    <td id="total">
+    </td>
+    <td>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Failed test groups:
+    </td>
+    <td id="Failed">
+    </td>
+    <td>
+     <input checked="True" onclick="toggletestgroupsRowVisibility('Failed')" type="checkbox"/>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Passed test groups:
+    </td>
+    <td id="Passed">
+    </td>
+    <td>
+     <input checked="True" onclick="toggletestgroupsRowVisibility('Passed')" type="checkbox"/>
+    </td>
+   </tr>
+  </table>
+  <h2>
+   Results
+  </h2>
+  <table id="results-table">
+   <thead id="results-table-head">
+    <tr>
+     <th col="timestamp">
+      Timestamp
+     </th>
+     <th col="test-case">
+      Test Case
+     </th>
+     <th col="result">
+      Result
+     </th>
+     <th col="duration-(s)">
+      Duration (s)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr class="Failed results-table-row">
+     <td>
+      2023-07-02 23:47:51.638468
+     </td>
+     <td>
+      TestCase1
+     </td>
+     <td class="col-result">
+      Failed
+     </td>
+     <td>
+      3.0228
+     </td>
+    </tr>
+    <tr>
+     <td class_="extra" colspan="5">
+      <div>
+       <table class="test_groups">
+        <thead class="test_groups_header">
+         <tr>
+          <th>
+           Timestamp
+          </th>
+          <th>
+           TestGroup
+          </th>
+          <th>
+           Result
+          </th>
+          <th>
+           Duration (s)
+          </th>
+         </tr>
+        </thead>
+        <tr class="Failed results-table-row">
+         <td>
+          2023-07-02 23:47:51.638741
+         </td>
+         <td>
+          Testgroup1
+         </td>
+         <td class="col-result">
+          Failed
+         </td>
+         <td>
+          1.0142
+         </td>
+        </tr>
+        <tr class="details">
+         <td colspan="6">
+          <table class="test_steps">
+           <thead>
+            <tr class="test_step_header">
+             <th>
+              Timestamps
+             </th>
+             <th>
+              TestSteps
+             </th>
+             <th>
+              Action
+             </th>
+             <th>
+              Expect
+             </th>
+             <th>
+              Actual
+             </th>
+             <th>
+              Result
+             </th>
+            </tr>
+           </thead>
+           <tr class="Passed">
+            <td>
+             2023-07-02 23:47:52.642759
+            </td>
+            <td>
+             Step 1
+            </td>
+            <td>
+             Action 1
+            </td>
+            <td>
+             Expect 1
+            </td>
+            <td>
+             Actual 1
+            </td>
+            <td class="col-test-step-log">
+             Passed
+            </td>
+           </tr>
+           <tr class="Failed">
+            <td>
+             2023-07-02 23:47:52.652941
+            </td>
+            <td>
+             Step 2
+            </td>
+            <td>
+             Action 2
+            </td>
+            <td>
+             Expect 2
+            </td>
+            <td>
+             Actual 2
+            </td>
+            <td class="col-test-step-log">
+             Failed
+            </td>
+           </tr>
+          </table>
+         </td>
+        </tr>
+        <tr class="Passed results-table-row">
+         <td>
+          2023-07-02 23:47:52.654686
+         </td>
+         <td>
+          Testgroup2
+         </td>
+         <td class="col-result">
+          Passed
+         </td>
+         <td>
+          2.0065
+         </td>
+        </tr>
+        <tr class="details">
+         <td colspan="6">
+          <table class="test_steps">
+           <thead>
+            <tr class="test_step_header">
+             <th>
+              Timestamps
+             </th>
+             <th>
+              TestSteps
+             </th>
+             <th>
+              Action
+             </th>
+             <th>
+              Expect
+             </th>
+             <th>
+              Actual
+             </th>
+             <th>
+              Result
+             </th>
+            </tr>
+           </thead>
+           <tr class="Passed">
+            <td>
+             2023-07-02 23:47:54.660203
+            </td>
+            <td>
+             Step 1
+            </td>
+            <td>
+             Action 1
+            </td>
+            <td>
+             Expect 1
+            </td>
+            <td>
+             Actual 1
+            </td>
+            <td class="col-test-step-log">
+             Passed
+            </td>
+           </tr>
+           <tr class="Passed">
+            <td>
+             2023-07-02 23:47:54.661235
+            </td>
+            <td>
+             Step 2
+            </td>
+            <td>
+             Action 2
+            </td>
+            <td>
+             Expect 2
+            </td>
+            <td>
+             Actual 2
+            </td>
+            <td class="col-test-step-log">
+             Passed
+            </td>
+           </tr>
+          </table>
+         </td>
+        </tr>
+       </table>
+      </div>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+ </body>
+</html>
