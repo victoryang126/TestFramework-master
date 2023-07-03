@@ -28,6 +28,7 @@ if __name__=="__main__":
     report_generator.add_test_step( 'Action 2', 'Expect 2', 'Actual 2', HTMLReportGenerator.passed)
 
     # 生成报告
+    report_generator.end_test_case()
     report_generator.generate_report()
 
 

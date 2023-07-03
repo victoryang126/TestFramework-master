@@ -6,9 +6,12 @@ import socket
 import os
 import datetime
 import copy
+import htmlmin
 
 from bs4.formatter import HTMLFormatter
 
+def custom_formatter(tag):
+    return str(tag)
 
 class HTMLReportGenerator:
 
@@ -16,6 +19,10 @@ class HTMLReportGenerator:
     failed = "Failed"
     group = 0
     step = 0
+    passed_groups = 0
+    failed_groups = 0
+    passed_steps = 0
+    failed_steps = 0
 
     def __init__(self,html_title=None,report_path=""):
 
@@ -37,21 +44,23 @@ class HTMLReportGenerator:
         self.file = open(file_path, "w")
         self.module_versions = self.get_module_versions()
 
-        self.add_head_section()
-        self.add_environment_section()
-        self.add_summary_section()
-        self.add_results_section()
+        self.add_head_section() # Add the head section to the HTML report
+        self.add_environment_section() # Add the environment section to the HTML report
+        self.add_summary_section() # Add the summary section to the HTML report
+        self.add_results_section() # Add the results section to the HTML report
 
 
 
 
     def get_machine_name(self):
-        return socket.gethostname()
+        return socket.gethostname() # Get the machine name
 
     def get_user(self):
-        return getpass.getuser()
+        return getpass.getuser() # Get the current user
+
 
     def get_module_versions(self):
+        #get the version of related module
         module_version = {}
         module_version["BS4"] = bs4.__version__
         pass
@@ -86,6 +95,7 @@ class HTMLReportGenerator:
         return style, script
 
     def add_head_section(self):
+        # Add the head section to the HTML report
         head = self.soup.new_tag('head')
         self.html.append(head)
 
@@ -124,6 +134,7 @@ class HTMLReportGenerator:
 
 
     def add_environment_section(self):
+        # Add the environment section to the HTML report
         h2_env = self.soup.new_tag('h2')
         h2_env.string = 'Environment'
         self.body.append(h2_env)
@@ -147,6 +158,7 @@ class HTMLReportGenerator:
             tr.append(td2)
 
     def add_summary_section(self):
+        # Add the summary section to the HTML report
         h2_summary_section = self.soup.new_tag('h2')
         h2_summary_section.string = 'Summary'
 
@@ -208,18 +220,19 @@ class HTMLReportGenerator:
             header_row.append(th)
 
     def generate_report(self):
-        self.file.write(self.soup.prettify(formatter='html5'))
+        # self.file.write(self.soup.prettify(formatter=custom_formatter))
+        self.file.write(str(self.html))
         file_path = os.path.join(self.report_path,f"{self.html_title}.html")
-        # # self.report = open(file_path,"w")
-        # # self.report.read(self.soup.prettify())
-        # with open(file_path, 'w') as file:
-        #     file.write(self.soup.prettify(formatter = 'html5')) # if use this kind method, there some problem with the report
-        #     # file.write(str(self.html))
         html_report = Path(os.path.expandvars(file_path)).expanduser()
         print(f"generate customize html report: {html_report.absolute().as_uri()}")
         self.file.close()
 
     def add_test_case(self, test_case):
+        """
+        Add a test case to the report.
+        :param test_case_name: Name of the test case
+        :return: None
+        """
         self.group = 0
         self.test_case = test_case
         self.test_case_result = self.passed
@@ -229,12 +242,12 @@ class HTMLReportGenerator:
         self.test_case_body.append(self.test_case_row)
         self.results_table.append(self.test_case_body)
 
-        self.test_case_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        self.test_case_start_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         result = self.test_case_result
         duration = "0.0"
         # Create and append table cells for each column of data
         timestamp_cell = self.soup.new_tag('td')
-        timestamp_cell.string = self.test_case_timestamp
+        timestamp_cell.string = self.test_case_start_timestamp
         self.test_case_row.append(timestamp_cell)
 
         test_case_cell = self.soup.new_tag('td')
@@ -249,10 +262,10 @@ class HTMLReportGenerator:
         duration_cell.string = duration
         self.test_case_row.append(duration_cell)
 
-        self.add_extra_row_for_test_class()
+        self.add_extra_row_for_test_case()
 
 
-    def add_extra_row_for_test_class(self):
+    def add_extra_row_for_test_case(self):
         # Add the additional row for test cases
         extra_row = self.soup.new_tag('tr')
         self.test_case_body.append(extra_row)
@@ -282,21 +295,32 @@ class HTMLReportGenerator:
         # tbody = self.soup.new_tag('tbody')
 
 
-    def add_test_group(self, test_group):
+    def add_test_group(self, test_group:str)->None:
+        """
+        add group of test steps
+        :param test_group: the name of the test group
+        :return:
+        """
+        #handler the test group result for previous one
+        if self.group !=0:
+            self.end_test_group()
+
         self.group += 1
         self.step = 0
         self.test_group_result = self.passed
+        self.passed_steps = 0
+        self.failed_steps = 0
         # Create a new row for the test case in the test_cases_table
         self.test_group_row = self.soup.new_tag('tr',attrs={"class": "Passed results-table-row"})
         self.test_group_table.append(self.test_group_row)
 
-        self.test_group_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+        self.test_group_start_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         duration = "0.0"
         result = self.test_group_result
 
         # Create and append table cells for each column of data
         timestamp_cell = self.soup.new_tag('td')
-        timestamp_cell.string = self.test_group_timestamp
+        timestamp_cell.string = self.test_group_start_timestamp
         self.test_group_row.append(timestamp_cell)
 
         test_group_cell = self.soup.new_tag('td')
@@ -311,6 +335,11 @@ class HTMLReportGenerator:
         duration_cell = self.soup.new_tag('td')
         duration_cell.string = str(duration)
         self.test_group_row.append(duration_cell)
+
+        self.add_details_for_test_group()
+
+
+    def add_details_for_test_group(self):
 
         # Add the details table with test steps
         details_row = self.soup.new_tag('tr', attrs={"class": "details"})
@@ -334,23 +363,26 @@ class HTMLReportGenerator:
             th.string = step_header
             details_thead_row.append(th)
 
-        # Add the test steps
-        # details_tbody = self.soup.new_tag('tbody')
-        # self.test_steps_table.append(details_tbody)
+
 
     def add_test_step(self,action, expect, actual, result):
 
         self.step +=1
 
+        if result == self.passed:
+            attrs={"class": 'Passed'}
+            self.passed_steps +=1
+        else:
+            attrs={"class": 'Failed'}
+            self.failed_steps +=1
         # Create a new row for the test step in the test_steps_table
-        attrs={"class": 'Passed' if result == self.passed else 'Failed'}
         test_step_row = self.soup.new_tag('tr', attrs=attrs)
         self.test_steps_table.append(test_step_row)
 
         # Create and append table cells for each column of data
         now = datetime.datetime.now()
 
-        self.update_duration_result_for_testcase_testgroup(now,result)
+        # self.update_duration_result_for_testcase_testgroup(now,result)
 
         timestamp_cell = self.soup.new_tag('td')
         timestamp_cell.string = now.strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -391,42 +423,41 @@ class HTMLReportGenerator:
         log_row.append(td_colspan)
         self.test_steps_table.append(log_row)
 
-    def update_duration_result_for_testcase_testgroup(self,now,result):
-        end = datetime.datetime.strptime(now.strftime('%Y-%m-%d %H:%M:%S.%f'), '%Y-%m-%d %H:%M:%S.%f')
-        test_case_start = datetime.datetime.strptime(self.test_case_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-        test_group_start = datetime.datetime.strptime(self.test_group_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-        test_case_duration =  "{:.4f}".format((end - test_case_start).total_seconds())
+
+    def end_test_case(self):
+
+        self.end_test_group()
+
+        end_time = datetime.datetime.now()
+        start_time = datetime.datetime.strptime(self.test_case_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        test_case_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
         test_case_duration_ele = self.test_case_row.select('td')[3]
         test_case_duration_ele.string = test_case_duration
-        test_group_duration = "{:.4f}".format((end - test_group_start).total_seconds())
+        if self.failed_groups != 0:
+            self.test_case_row['class'] = 'Failed results-table-row'
+            self.test_case_result = self.failed
+            test_case_result_td = self.test_case_row.select('td')[2]
+            test_case_result_td.string =  self.test_case_result
+
+
+    def end_test_group(self):
+        end_time = datetime.datetime.now()
+        start_time = datetime.datetime.strptime(self.test_group_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        test_group_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
         test_group_duration_ele = self.test_group_row.select('td')[3]
         test_group_duration_ele.string = test_group_duration
-
-        #update the test result for test case and test group
-        if result == self.failed:
-            if self.test_case_row['class'] != 'Failed results-table-row':
-                self.test_case_row['class'] = 'Failed results-table-row'
-            if self.test_group_row['class'] != 'Failed results-table-row':
-                self.test_group_row['class'] = 'Failed results-table-row'
-
-
-            if self.test_case_result != self.failed:
-                self.test_case_result = self.failed
-                test_case_result_td = self.test_case_row.select('td')[2]
-                test_case_result_td.string =  self.test_case_result
-            # print(self.test_group_result)
-            if self.test_group_result != self.failed:
-                self.test_group_result = self.failed
-                test_group_result_td = self.test_group_row.select('td')[2]
-                test_group_result_td.string = self.test_group_result
+        if self.failed_steps != 0:
+            self.failed_groups += 1
+            self.test_group_row['class'] = 'Failed results-table-row'
+            self.test_group_result = self.failed
+            test_group_result_td = self.test_group_row.select('td')[2]
+            test_group_result_td.string = self.test_group_result
+        else:
+            self.passed_groups += 1
 
 
     def test_comment(self,comment):
-        self.log_div.append(comment)
-
-
-
-
+        self.log_div.append(f"{comment}\n")
 
 
 
