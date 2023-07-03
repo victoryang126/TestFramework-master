@@ -8,6 +8,7 @@ import os
 import getpass
 import socket
 import copy
+import time
 from nose.tools import assert_equal, assert_in
 import logging
 
@@ -259,9 +260,10 @@ if __name__=="__main__":
     Result.add_test_class('TestClassName')
     # 执行一些操作...
     Result.add_test_case('TestCase1')
+    time.sleep(1)
     Result.test_step('Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal,Check if the array is equal', 'Expect1', 'Expect1')
     Result.test_step('Action2', 'Expect2', 'Expect2')
-    Result.test_step('Action3', 'Expect3', 'Expect3')
+
     Result.end_test_case()
 
     Expect1 = [i for i in range(100)]
@@ -271,9 +273,10 @@ if __name__=="__main__":
     # raise Exception("Fail")
     # 执行一些操作...
     Result.add_test_case('TestCase2')
+    time.sleep(0.5)
     Result.test_step('Check if the array is equal', Expect1, Actual1)
     Result.test_step('Action2', 'Expect2', 'Actual2')
-    Result.test_step('Action3', 'Expect3', 'Actual4')
+
     Result.end_test_case()
 
     Result.end_test_class()
