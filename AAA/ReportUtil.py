@@ -12,6 +12,7 @@ import time
 from nose.tools import assert_equal, assert_in
 import logging
 import pytest_html
+import nose
 
 
 class Report:
@@ -297,6 +298,6 @@ if __name__=="__main__":
     # Result.test_step('Action3', 'Expect3', 'Actual4')
     # Result.end_test_group()
     #
-    # Result.end_test_case()
+    # Result._end_test_case()
 
     report.generate_html(Result.results,"pytestReport.html")

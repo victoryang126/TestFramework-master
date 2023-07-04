@@ -19,7 +19,7 @@ def setup_test(request):
     test_class_name = request.node.nodeid
     Result.add_test_case(test_class_name)
     # yield  # yield 语句将分隔在测试函数之前和之后执行的代码
-    # Result.end_test_case()
+    # Result._end_test_case()
 
 
 class TestExample:
@@ -36,7 +36,7 @@ class TestExample:
         print(Actual1[1])
         Result.test_step("compare Expect2 euqla Actual2",Expect1,Actual1)
 
-        # Result.end_test_case()
+        # Result._end_test_case()
 
     def test_case_2(self):
         Expect1 = "0x5010003201f4"

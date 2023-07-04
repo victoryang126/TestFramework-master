@@ -7,15 +7,77 @@ import os
 import datetime
 import copy
 import htmlmin
+from typing import Any,List
+import inspect
 
 from bs4.formatter import HTMLFormatter
+
+
+class TestLog:
+
+    DEBUG = 3
+    INFO = 2
+    WARNING = 1
+    CRITICAL = 0
+    LEVEL = 0
+
+    def __init__(self):
+        pass
+
+
+
+
+    @classmethod
+    def set_log_level(cls,level):
+        cls.LEVEL = level
+
+    @classmethod
+    def ff_back_log(cls,message):
+        frame_info = inspect.currentframe().f_back
+        frame_info = frame_info.f_back
+        line_number = frame_info.f_lineno
+        file_name = frame_info.f_code.co_filename
+        print(f"Log message: {message}, called at line {line_number} in file {file_name}")
+
+    @classmethod
+    def f_back_log(cls,message):
+        frame_info = inspect.currentframe().f_back
+        frame_info = frame_info.f_back
+        line_number = frame_info.f_lineno
+        file_name = frame_info.f_code.co_filename
+        print(f"Log message: {message}, called at line {line_number} in file {file_name}")
+
+    @classmethod
+    def info(cls,comment):
+        if cls.LEVEL >=2:
+            print(comment)
+
+    @classmethod
+    def debug(cls,comment):
+        if cls.LEVEL >= 3:
+            print(f'\033[30;1m{comment}\033[0m')
+
+    @classmethod
+    def critical(cls, comment):
+        print(f'\033[31;1m{comment}\033[0m')
+
+
+
+    @classmethod
+    def warning(cls,comment):
+        print(f'\033[33;1m{comment}\033[0m')
+
+    @classmethod
+    def pass_log(cls,comment):
+        print(f'\033[32;1m{comment}\033[0m')
+
 
 def custom_formatter(tag):
     if tag.string:
         tag.string = tag.string.strip()
         return tag
 
-class HTMLReportGenerator:
+class HTMLReport:
 
     passed = "Passed"
     failed = "Failed"
@@ -44,24 +106,24 @@ class HTMLReportGenerator:
 
         file_path = os.path.join(self.report_path, f"{self.html_title}.html")
         self.file = open(file_path, "w")
-        self.module_versions = self.get_module_versions()
+        self.env_datas = self._get_module_versions()
 
-        self.add_head_section() # Add the head section to the HTML report
-        self.add_environment_section() # Add the environment section to the HTML report
-        self.add_summary_section() # Add the summary section to the HTML report
-        self.add_results_section() # Add the results section to the HTML report
-
-
+        self._add_head_section() # Add the head section to the HTML report
+        self._add_environment_section() # Add the environment section to the HTML report
+        self._add_summary_section() # Add the summary section to the HTML report
+        self._add_results_section() # Add the results section to the HTML report
 
 
-    def get_machine_name(self):
+
+
+    def _get_machine_name(self):
         return socket.gethostname() # Get the machine name
 
-    def get_user(self):
+    def _get_user(self):
         return getpass.getuser() # Get the current user
 
 
-    def get_module_versions(self):
+    def _get_module_versions(self):
         #get the version of related module
         module_version = {}
         module_version["BS4"] = bs4.__version__
@@ -70,15 +132,15 @@ class HTMLReportGenerator:
         return module_version
 
 
-    def add_module_versions(self,module_verions:dict):
+    def add_env_datas(self, env_datas:dict):
         """
-        function used to update the module_versions
-        :param module_verions:
+        function used to update the module_versions,use to update the environment of html report
+        :param env_datas:
         :return:
         """
-        self.module_versions.update(module_verions)
+        self.env_datas.update(env_datas)
 
-    def get_style_and_script(self,html_file):
+    def _get_style_and_script(self, html_file):
         # Read the HTML file
         with open(html_file, 'r', encoding='utf-8') as file:
             html_content = file.read()
@@ -96,7 +158,7 @@ class HTMLReportGenerator:
 
         return style, script
 
-    def add_head_section(self):
+    def _add_head_section(self):
         # Add the head section to the HTML report
         head = self.soup.new_tag('head')
         self.html.append(head)
@@ -110,7 +172,7 @@ class HTMLReportGenerator:
 
         template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources", "")
         template = os.path.join(template_path,"template.html")
-        template_style,template_script = self.get_style_and_script(template)
+        template_style,template_script = self._get_style_and_script(template)
 
         style = self.soup.new_tag('style')
         style.string = template_style
@@ -135,15 +197,15 @@ class HTMLReportGenerator:
 
 
 
-    def add_environment_section(self):
+    def _add_environment_section(self):
         # Add the environment section to the HTML report
         h2_env = self.soup.new_tag('h2')
         h2_env.string = 'Environment'
         self.body.append(h2_env)
         environment_data = {}
-        environment_data["User"] = self.get_user()
-        environment_data["Machine"] = self.get_machine_name()
-        environment_data.update(self.module_versions)
+        environment_data["User"] = self._get_user()
+        environment_data["Machine"] = self._get_machine_name()
+        environment_data.update(self.env_datas)
         env_table = self.soup.new_tag('table', id='environment')
         self.body.append(env_table)
 
@@ -159,7 +221,7 @@ class HTMLReportGenerator:
             td2.string = value
             tr.append(td2)
 
-    def add_summary_section(self):
+    def _add_summary_section(self):
         # Add the summary section to the HTML report
         h2_summary_section = self.soup.new_tag('h2')
         h2_summary_section.string = 'Summary'
@@ -201,7 +263,7 @@ class HTMLReportGenerator:
                 checkbox = self.soup.new_tag('input', type='checkbox', checked=True, onclick=f"toggletestgroupsRowVisibility('{checkbox_label}')")
                 td3.append(checkbox)
 
-    def add_results_section(self):
+    def _add_results_section(self):
         results_section = self.soup.new_tag('h2')
         results_section.string = 'Results'
         self.body.append(results_section)
@@ -221,13 +283,6 @@ class HTMLReportGenerator:
             th.string = header
             header_row.append(th)
 
-    def generate_report(self):
-        # self.file.write(self.soup.prettify(formatter=custom_formatter))
-        self.file.write(str(self.html))
-        file_path = os.path.join(self.report_path,f"{self.html_title}.html")
-        html_report = Path(os.path.expandvars(file_path)).expanduser()
-        print(f"generate customize html report: {html_report.absolute().as_uri()}")
-        self.file.close()
 
     def add_test_case(self, test_case):
         """
@@ -264,10 +319,12 @@ class HTMLReportGenerator:
         duration_cell.string = duration
         self.test_case_row.append(duration_cell)
 
-        self.add_extra_row_for_test_case()
+        self._add_extra_row_for_test_case()
+
+        TestLog.debug(f"start execute testcase{self.test_case} at {self.test_case_start_timestamp}")
 
 
-    def add_extra_row_for_test_case(self):
+    def _add_extra_row_for_test_case(self):
         # Add the additional row for test cases
         extra_row = self.soup.new_tag('tr')
         self.test_case_body.append(extra_row)
@@ -325,8 +382,10 @@ class HTMLReportGenerator:
         timestamp_cell.string = self.test_group_start_timestamp
         self.test_group_row.append(timestamp_cell)
 
+        self.test_group = f"{self.group} {self.test_case}::{test_group}"
+
         test_group_cell = self.soup.new_tag('td')
-        test_group_cell.string = f"Group {self.group} {self.test_case}::{test_group}"
+        test_group_cell.string = self.test_group
         self.test_group_row.append(test_group_cell)
 
 
@@ -338,10 +397,12 @@ class HTMLReportGenerator:
         duration_cell.string = str(duration)
         self.test_group_row.append(duration_cell)
 
-        self.add_details_for_test_group()
+        self._add_details_for_test_group()
+
+        TestLog.debug(f"start execute test group{self.test_group} at {self.test_group_start_timestamp}")
 
 
-    def add_details_for_test_group(self):
+    def _add_details_for_test_group(self):
 
         # Add the details table with test steps
         details_row = self.soup.new_tag('tr', attrs={"class": "details"})
@@ -365,12 +426,64 @@ class HTMLReportGenerator:
             th.string = step_header
             details_thead_row.append(th)
 
+    def _end_test_case(self):
+        """
+        this function used to get the duration and final result of test case
+        :return:
+        """
+        self.end_test_group()
+
+        end_time = datetime.datetime.now()
+        start_time = datetime.datetime.strptime(self.test_case_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        test_case_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
+        test_case_duration_ele = self.test_case_row.select('td')[3]
+        test_case_duration_ele.string = test_case_duration
+        if self.failed_groups != 0:
+            self.test_case_row['class'] = 'Failed results-table-row'
+            self.test_case_result = self.failed
+            test_case_result_td = self.test_case_row.select('td')[2]
+            test_case_result_td.string =  self.test_case_result
+
+        if self.test_case_result== self.failed:
+            TestLog.critical(f"{self.test_case} {self.failed}")
+        else:
+            TestLog.pass_log(f"{self.test_case} {self.passed}")
+
+    def end_test_group(self):
+        """
+        this function is used to get the duration and final result of test group
+        :return:
+        """
+        end_time = datetime.datetime.now()
+        start_time = datetime.datetime.strptime(self.test_group_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        test_group_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
+        test_group_duration_ele = self.test_group_row.select('td')[3]
+        test_group_duration_ele.string = test_group_duration
+        if self.failed_steps != 0:
+            self.failed_groups += 1
+            self.test_group_row['class'] = 'Failed results-table-row'
+            self.test_group_result = self.failed
+            test_group_result_td = self.test_group_row.select('td')[2]
+            test_group_result_td.string = self.test_group_result
+        else:
+            self.passed_groups += 1
+
+        if self.test_group_result== self.failed:
+            TestLog.critical(f"{self.test_group} {self.failed}")
+        else:
+            TestLog.pass_log(f"{self.test_group} {self.passed}")
 
 
-    def add_test_step(self,action, expect, actual, result):
-
+    def customize_test_step(self, action:str, expect:Any, actual:Any, result:str):
+        """
+        function used to add customize step,the user can defined the result
+        :param action: action
+        :param expect:
+        :param actual:
+        :param result:
+        :return:
+        """
         self.step +=1
-
         if result == self.passed:
             attrs={"class": 'Passed'}
             self.passed_steps +=1
@@ -410,13 +523,13 @@ class HTMLReportGenerator:
         result_cell.string = result
         test_step_row.append(result_cell)
 
-        self.add_test_log()
+        self._add_test_log()
           # if use this kind method, there some problem with the report
 
     def update_report(self):
         self.file.write(self.soup.prettify(formatter='html5'))
 
-    def add_test_log(self):
+    def _add_test_log(self):
         log_row = self.soup.new_tag('tr')
         td_colspan = self.soup.new_tag('td',attrs = {"colspan": "6"})
         self.log_div = self.soup.new_tag('div',attrs = {"class": "log"})
@@ -426,40 +539,18 @@ class HTMLReportGenerator:
         self.test_steps_table.append(log_row)
 
 
-    def end_test_case(self):
-
-        self.end_test_group()
-
-        end_time = datetime.datetime.now()
-        start_time = datetime.datetime.strptime(self.test_case_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-        test_case_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
-        test_case_duration_ele = self.test_case_row.select('td')[3]
-        test_case_duration_ele.string = test_case_duration
-        if self.failed_groups != 0:
-            self.test_case_row['class'] = 'Failed results-table-row'
-            self.test_case_result = self.failed
-            test_case_result_td = self.test_case_row.select('td')[2]
-            test_case_result_td.string =  self.test_case_result
-
-
-    def end_test_group(self):
-        end_time = datetime.datetime.now()
-        start_time = datetime.datetime.strptime(self.test_group_start_timestamp, '%Y-%m-%d %H:%M:%S.%f')
-        test_group_duration =  "{:.4f}".format((end_time - start_time).total_seconds())
-        test_group_duration_ele = self.test_group_row.select('td')[3]
-        test_group_duration_ele.string = test_group_duration
-        if self.failed_steps != 0:
-            self.failed_groups += 1
-            self.test_group_row['class'] = 'Failed results-table-row'
-            self.test_group_result = self.failed
-            test_group_result_td = self.test_group_row.select('td')[2]
-            test_group_result_td.string = self.test_group_result
-        else:
-            self.passed_groups += 1
 
 
     def test_comment(self,comment):
         self.log_div.append(f"{comment}\n")
 
+
+    def generate_report(self):
+        # self.file.write(self.soup.prettify(formatter=custom_formatter))
+        self.file.write(str(self.html))
+        file_path = os.path.join(self.report_path,f"{self.html_title}.html")
+        html_report = Path(os.path.expandvars(file_path)).expanduser()
+        print(f"generate customize html report: {html_report.absolute().as_uri()}")
+        self.file.close()
 
 
