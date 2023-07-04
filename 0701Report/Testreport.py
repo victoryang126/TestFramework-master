@@ -13,17 +13,22 @@ if __name__=="__main__":
     # 添加测试步骤数据
     report_generator.add_test_group('Testgroup1')
     # time.sleep(1)
-    report_generator.add_test_step('Step 1', 'Action 1', 'Expect 1', 'Actual 1', HTMLReportGenerator.passed)
+    Expect1 = [i for i in range(100)]
+    Actual1 = [i for i in range(100)]
+    Actual1[1] = 10
+    report_generator.add_test_step("Action 1", Actual1, Expect1, HTMLReportGenerator.passed)
     report_generator.test_comment("A")
-    report_generator.add_test_step('Step 2', 'Action 2', 'Expect 2', 'Actual 2', HTMLReportGenerator.failed)
+    Actual1[1] = 20
+    report_generator.add_test_step('Action 2', Actual1, Expect1, HTMLReportGenerator.failed)
     report_generator.test_comment("C")
     report_generator.test_comment("D")
     report_generator.add_test_group('Testgroup2')
-    time.sleep(5)
-    report_generator.add_test_step('Step 1', 'Action 1', 'Expect 1', 'Actual 1', HTMLReportGenerator.passed)
-    report_generator.add_test_step('Step 2', 'Action 2', 'Expect 2', 'Actual 2', HTMLReportGenerator.passed)
+    # time.sleep(5)
+    report_generator.add_test_step('Action 1', 'Expect 1', 'Actual 1', HTMLReportGenerator.passed)
+    report_generator.add_test_step( 'Action 2', 'Expect 2', 'Actual 2', HTMLReportGenerator.passed)
 
     # 生成报告
+    report_generator.end_test_case()
     report_generator.generate_report()
 
 

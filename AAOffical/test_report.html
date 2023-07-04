@@ -379,279 +379,202 @@ function init () { // eslint-disable-line no-unused-vars
 
 
 </script>
-<h1>test_report.html</h1>
-<p>Report generated on 04-Jun-2023 at 22:04:00</p>
+  <h1>test_report.html</h1>
+  <p>Report generated on 03-Jun-2023 at 17:15:56</p>
 
-<h2>Environment</h2>
-<table id="environment">
-  <tr>
-    <td>Machine</td>
-    <td>MonsterdeMacBook-Pro.local</td>
-  </tr>
-  <tr>
-    <td>User</td>
-    <td>monster</td>
-  </tr>
-</table>
+  <h2>Environment</h2>
+  <table id="environment">
+    <tr>
+      <td>Machine</td>
+      <td>MonsterdeMacBook-Pro.local</td>
+    </tr>
+    <tr>
+      <td>User</td>
+      <td>monster</td>
+    </tr>
+  </table>
 
-<h2>Summary</h2>
-<table id="testcasesSummaryTable">
-  <tr>
-    <th>Category</th>
-    <th>Count</th>
-    <th>Show/Hide</th>
-  </tr>
-  <tr>
-    <td>Total test cases:</td>
-    <td id="total"></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>Failed test cases:</td>
-    <td id="Failed"></td>
-    <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
-    </td>
-  </tr>
-  <tr>
-    <td>Passed test cases:</td>
-    <td id="Passed"></td>
-    <td>
-      <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
-    </td>
-  </tr>
+  <h2>Summary</h2>
+    <table id="testcasesSummaryTable">
+    <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>Show/Hide</th>
+    </tr>
+    <tr>
+        <td>Total test cases:</td>
+        <td id="total"></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Failed test cases:</td>
+        <td id="Failed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Failed')">
+        </td>
+    </tr>
+    <tr>
+        <td>Passed test cases:</td>
+        <td id="Passed"></td>
+        <td>
+            <input type="checkbox" checked onclick="toggletestcaseRowVisibility('Passed')">
+        </td>
+    </tr>
 </table>
-<h2>Results</h2>
-<table id="results-table">
-  <thead id="results-table-head">
-  <tr>
-    <th col="time">Timestamp</th>
-    <th col="test class">Test Class</th>
-    <th col="result">Result</th>
-    <th col="duration">Duration (s)</th>
-  </tr>
-  <tr hidden="true" id="not-found-message">
-    <th colspan="5">No results found. Try to check the filters</th>
-  </tr>
-  </thead>
-  
-  <tbody class="Failed results-table-row">
-  <tr>
-    <td class="col-time">2023-06-04 22:04:00.454022</td>
-    <td class="col-test-class">test.py::TestExample</td>
-    <td class="col-result">Failed</td>
-    <td class="col-duration">0.0099</td>
-  </tr>
-  
-  <tr>
-    <td class="extra" colspan="5">
-      <div>
-        <table class="test_cases">
-          <thead class="test_case_header">
+  <h2>Results</h2>
+  <table id="results-table">
+    <thead id="results-table-head">
+      <tr>
+        <th col="time">Timestamp</th>
+        <th col="test class">Test Class</th>
+        <th col="result">Result</th>
+        <th col="duration">Duration (s)</th>
+      </tr>
+      <tr hidden="true" id="not-found-message">
+        <th colspan="5">No results found. Try to check the filters</th>
+      </tr>
+    </thead>
+    
+      <tbody class="Failed results-table-row">
+        <tr>
+          <td class="col-time">2023-06-03 17:15:56.762556</td>
+          <td class="col-test-class">test.py::TestExample</td>
+          <td class="col-result">Failed</td>
+          <td class="col-duration">0.0102</td>
+        </tr>
+        
           <tr>
-            <th>Timestamp</th>
-            <th>TestCase</th>
-            <th>Duration (s)</th>
-            <th>Result</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          
-          <tr class="Failed results-table-row">
-            <td>2023-06-04 22:04:00.454178</td>
-            <td>test.py::TestExample::test_case_1</td>
-            <td>0.0</td>
-            <td class="col-result">Failed</td>
-          </tr>
-          
-          <tr class="details">
-            <td colspan="6">
-              <table class="test_steps">
-                <thead>
-                <tr class="test_step_header">
-                  <th>Timestamps</th>
-                  <th>TestSteps</th>
-                  <th>Action</th>
-                  <th>Expect</th>
-                  <th>Actual</th>
-                  <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                
-                <tr class="Failed">
-                  <td>2023-06-04 22:04:00.458075</td>
-                  <td>Step 1</td>
-                  <td>compare Expect1 euqla Actual1</td>
-                  <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</td>
-                  <td>[0, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</td>
-                  <td class="col-test-step-log">
-                    Failed
-                  </td>
-                  <!-- <td>Failed</td> -->
-                </tr>
-                
-                <tr>
-                  <td colspan="6">
-                    <div class="log">Traceback (most recent call last):
-  File "/Users/monster/PycharmProjects/GitHub/TestFramework-master/AAA/ReportUtil.py", line 180, in _compare_assert
-    assert_equal(expect,actual)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 831, in assertEqual
-    assertion_func(first, second, msg=msg)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 1037, in assertListEqual
-    self.assertSequenceEqual(list1, list2, msg, seq_type=list)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 1019, in assertSequenceEqual
-    self.fail(msg)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 670, in fail
-    raise self.failureException(msg)
-AssertionError: Lists differ: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] != [0, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-
-First differing element 1:
-1
-10
-
-- [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-+ [0, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-
-                    </div>
-                  </td>
-                </tr>
-                
-                
-                <tr class="">
-                  <td>2023-06-04 22:04:00.458107</td>
-                  <td>Comment</td>
-                  <td>Waaaa</td>
-                  <td></td>
-                  <td>actual</td>
-                  <td class="">
+            <td class="extra" colspan="5">
+              <div>
+                <table class="test_cases">
+                  <thead class="test_case_header">
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>TestCase</th>
+                      <th>Duration (s)</th>
+                      <th>Result</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     
-                  </td>
-                  <!-- <td></td> -->
-                </tr>
-                
-                
-                <tr class="Failed">
-                  <td>2023-06-04 22:04:00.459264</td>
-                  <td>Step 2</td>
-                  <td>compare Expect2 euqla Actual2</td>
-                  <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</td>
-                  <td>[0, 20, 2, 3, 20, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</td>
-                  <td class="col-test-step-log">
-                    Failed
-                  </td>
-                  <!-- <td>Failed</td> -->
-                </tr>
-                
-                <tr>
-                  <td colspan="6">
-                    <div class="log">Traceback (most recent call last):
-  File "/Users/monster/PycharmProjects/GitHub/TestFramework-master/AAA/ReportUtil.py", line 180, in _compare_assert
-    assert_equal(expect,actual)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 831, in assertEqual
-    assertion_func(first, second, msg=msg)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 1037, in assertListEqual
-    self.assertSequenceEqual(list1, list2, msg, seq_type=list)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 1019, in assertSequenceEqual
-    self.fail(msg)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 670, in fail
-    raise self.failureException(msg)
-AssertionError: Lists differ: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] != [0, 20, 2, 3, 20, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-
-First differing element 1:
-1
-20
-
-- [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-?     ^        ^
-
-+ [0, 20, 2, 3, 20, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-?     ^^        ^^
-
-
-                    </div>
-                  </td>
-                </tr>
-                
-                
-                </tbody>
-              </table>
+                      <tr class="Failed results-table-row">
+                        <td>2023-06-03 17:15:56.762808</td>
+                        <td>test.py::TestExample::test_case_1</td>
+                        <td>0.0017</td>
+                        <td class="col-result">Failed</td>
+                      </tr>
+                      
+                        <tr class="details">
+                          <td colspan="6">
+                            <table class="test_steps">
+                              <thead>
+                                <tr class="test_step_header">
+                                  <th>Timestamps</th>
+                                  <th>TestSteps</th>
+                                  <th>Action</th>
+                                  <th>Expect</th>
+                                  <th>Actual</th>
+                                  <th>Result</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                
+                                  <tr class="Failed">
+                                    <td>2023-06-03 17:15:56.764282</td>
+                                    <td>Step 1</td>
+                                    <td>compare Expect1 euqla Actual1</td>
+                                    <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td>[0, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td class="col-test-step-log">
+                                        Failed
+                                      </td>
+                                    <!-- <td>Failed</td> -->
+                                  </tr>
+                                    
+                                        <tr>
+                                        <td colspan="6">
+                                            <div class="log">
+                                            </div>
+                                        </td>
+                                        </tr>
+                                    
+                                
+                                  <tr class="Failed">
+                                    <td>2023-06-03 17:15:56.764476</td>
+                                    <td>Step 2</td>
+                                    <td>compare Expect2 euqla Actual2</td>
+                                    <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td>[0, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td class="col-test-step-log">
+                                        Failed
+                                      </td>
+                                    <!-- <td>Failed</td> -->
+                                  </tr>
+                                    
+                                        <tr>
+                                        <td colspan="6">
+                                            <div class="log">
+                                            </div>
+                                        </td>
+                                        </tr>
+                                    
+                                
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      
+                    
+                      <tr class="Passed results-table-row">
+                        <td>2023-06-03 17:15:56.771553</td>
+                        <td>test.py::TestExample::test_case_2</td>
+                        <td>0.0008</td>
+                        <td class="col-result">Passed</td>
+                      </tr>
+                      
+                        <tr class="details">
+                          <td colspan="6">
+                            <table class="test_steps">
+                              <thead>
+                                <tr class="test_step_header">
+                                  <th>Timestamps</th>
+                                  <th>TestSteps</th>
+                                  <th>Action</th>
+                                  <th>Expect</th>
+                                  <th>Actual</th>
+                                  <th>Result</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                
+                                  <tr class="Passed">
+                                    <td>2023-06-03 17:15:56.772361</td>
+                                    <td>Step 1</td>
+                                    <td>compare Expect1 euqla Actual1</td>
+                                    <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]</td>
+                                    <td class="">
+                                        Passed
+                                      </td>
+                                    <!-- <td>Passed</td> -->
+                                  </tr>
+                                    
+                                
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      
+                    
+                  </tbody>
+                </table>
+              </div>
             </td>
           </tr>
-          
-          
-          <tr class="Failed results-table-row">
-            <td>2023-06-04 22:04:00.460717</td>
-            <td>test.py::TestExample::test_case_2</td>
-            <td>0.0007</td>
-            <td class="col-result">Failed</td>
-          </tr>
-          
-          <tr class="details">
-            <td colspan="6">
-              <table class="test_steps">
-                <thead>
-                <tr class="test_step_header">
-                  <th>Timestamps</th>
-                  <th>TestSteps</th>
-                  <th>Action</th>
-                  <th>Expect</th>
-                  <th>Actual</th>
-                  <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                
-                <tr class="Failed">
-                  <td>2023-06-04 22:04:00.461397</td>
-                  <td>Step 1</td>
-                  <td>compare Expect1 euqla Actual1</td>
-                  <td>0x5010003201f4</td>
-                  <td>0x5010003201F</td>
-                  <td class="col-test-step-log">
-                    Failed
-                  </td>
-                  <!-- <td>Failed</td> -->
-                </tr>
-                
-                <tr>
-                  <td colspan="6">
-                    <div class="log">Traceback (most recent call last):
-  File "/Users/monster/PycharmProjects/GitHub/TestFramework-master/AAA/ReportUtil.py", line 180, in _compare_assert
-    assert_equal(expect,actual)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 831, in assertEqual
-    assertion_func(first, second, msg=msg)
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 1211, in assertMultiLineEqual
-    self.fail(self._formatMessage(msg, standardMsg))
-  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/unittest/case.py", line 670, in fail
-    raise self.failureException(msg)
-AssertionError: '0x5010003201f4' != '0x5010003201F'
-- 0x5010003201f4
-?             ^^
-+ 0x5010003201F
-?             ^
-
-
-                    </div>
-                  </td>
-                </tr>
-                
-                
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          
-          
-          </tbody>
-        </table>
-      </div>
-    </td>
-  </tr>
-  
-  </tbody>
-  
-</table>
+        
+      </tbody>
+    
+  </table>
 </body>
 </html>

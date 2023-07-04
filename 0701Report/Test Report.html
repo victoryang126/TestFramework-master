@@ -1,10 +1,11 @@
-<!DOCTYPE html>
 <html>
-<head>
+ <head>
   <meta charset="utf-8"/>
-  <title>{{ title }}</title>
+  <title>
+   Test Report
+  </title>
   <style>
-    body {
+   body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 12px;
   /* do not increase min-width as some may use split screens */
@@ -45,16 +46,16 @@ table {
   background-color: #f6f6f6;
 }
 
-#testgroupsSummaryTable table {
+#testcasesSummaryTable table {
       border-collapse: collapse;
       width: 20%;
       background-color: #f2f2f2;
     }
-    #testgroupsSummaryTable th, td {
+    #testcasesSummaryTable th, td {
       border: 1px solid #ddd;
       padding: 5px;
     }
-   #testgroupsSummaryTable th {
+   #testcasesSummaryTable th {
       text-align: left;
     }
     #Failed {
@@ -138,11 +139,11 @@ table {
 }
 
 /*------------------
- * 2. test groups and Test step
+ * 2. Test Cases and Test step
  *------------------*/
 
 
-.test_groups, .test_steps {
+.test_cases, .test_steps {
       width: 100%;
    }
 
@@ -163,23 +164,23 @@ table {
         color: black;
     }
 
-    .test_groups .Passed .col-result
+    .test_cases .Passed .col-result
     {
     color: green;
     }
 
-    .test_groups .Failed .col-result
+    .test_cases .Failed .col-result
     {
     color: red;
     }
-</style></head>
-<body onLoad="init()">
-<script>/* This Source Code Form is subject to the terms of the Mozilla Public
+  </style>
+  <script>
+   /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-function testgroupsSummary() {
-    // Get all tables with class 'test_groups'
-    var tables = document.getElementsByClassName('test_groups');
+function testcasesSummary() {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
 
     // Initialize total, Failed, and Passed counts
     var total = 0;
@@ -206,9 +207,9 @@ function testgroupsSummary() {
     document.getElementById('Passed').textContent = Passed;
   }
     // Function to toggle row visibility based on checkbox
-    function toggletestgroupsRowVisibility(category) {
-    // Get all tables with class 'test_groups'
-    var tables = document.getElementsByClassName('test_groups');
+    function toggletestcaseRowVisibility(category) {
+    // Get all tables with class 'test_cases'
+    var tables = document.getElementsByClassName('test_cases');
 
     // Toggle row visibility based on checkbox state in each table
     for (var i = 0; i < tables.length; i++) {
@@ -230,8 +231,8 @@ function testgroupsSummary() {
 }
 
 
-// Call the testgroupsSummary function when the page is loaded
-document.addEventListener('DOMContentLoaded', testgroupsSummary);
+// Call the testcasesSummary function when the page is loaded
+document.addEventListener('DOMContentLoaded', testcasesSummary);
 //function to add highlight for the rows of test steps table
 function addRowHighlight(className) {
         var tables = document.getElementsByClassName('test_steps');
@@ -376,141 +377,309 @@ function init () { // eslint-disable-line no-unused-vars
     addRowHighlight('Failed');
     addRowHighlight('Passed');
 }
-
-
-</script>
-<h1>{{ report_title }}</h1>
-<p>Report generated on {{ generated_date }}</p>
-
-<h2>Environment</h2>
-<table id="environment">
-  <tr>
-    <td>Machine</td>
-    <td>{{ machine }}</td>
-  </tr>
-  <tr>
-    <td>User</td>
-    <td>{{ user }}</td>
-  </tr>
-</table>
-
-<h2>Summary</h2>
-<table id="testgroupsSummaryTable">
-  <tr>
-    <th>Category</th>
-    <th>Count</th>
-    <th>Show/Hide</th>
-  </tr>
-  <tr>
-    <td>Total test groups:</td>
-    <td id="total"></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>Failed test groups:</td>
-    <td id="Failed"></td>
+  </script>
+ </head>
+ <body onLoad="init()">
+  <h1>
+   Test Report
+  </h1>
+  <p>
+   Report Generate at 2023-07-02 21:04:20
+  </p>
+  <h2>
+   Environment
+  </h2>
+  <table id="environment">
+   <tr>
     <td>
-      <input type="checkbox" checked onclick="toggletestgroupsRowVisibility('Failed')">
+     User
     </td>
-  </tr>
-  <tr>
-    <td>Passed test groups:</td>
-    <td id="Passed"></td>
     <td>
-      <input type="checkbox" checked onclick="toggletestgroupsRowVisibility('Passed')">
+     monster
     </td>
-  </tr>
-</table>
-<h2>Results</h2>
-<table id="results-table">
-  <thead id="results-table-head">
-  <tr>
-    <th col="time">Timestamp</th>
-    <th col="test case">Test Case</th>
-    <th col="result">Result</th>
-    <th col="duration">Duration (s)</th>
-  </tr>
-  <tr hidden="true" id="not-found-message">
-    <th colspan="5">No results found. Try to check the filters</th>
-  </tr>
-  </thead>
-  {% for result in results %}
-  <tbody class="{{ result.result }} results-table-row">
-  <tr>
-    <td class="col-time">{{ result.timestamp }}</td>
-    <td class="col-test-case">{{ result.test_case }}</td>
-    <td class="col-result">{{ result.result }}</td>
-    <td class="col-duration">{{ result.duration }}</td>
-  </tr>
-  {% if result.test_groups %}
-  <tr>
-    <td class="extra" colspan="5">
+   </tr>
+   <tr>
+    <td>
+     Machine
+    </td>
+    <td>
+     MonsterdeMacBook-Pro.local
+    </td>
+   </tr>
+  </table>
+  <h2>
+   Summary
+  </h2>
+  <table id="testcasesSummaryTable">
+   <tr>
+    <th>
+     Category
+    </th>
+    <th>
+     Count
+    </th>
+    <th>
+     Show/Hide
+    </th>
+   </tr>
+   <tr>
+    <td>
+     Total test cases:
+    </td>
+    <td id="total">
+    </td>
+    <td>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Failed test cases:
+    </td>
+    <td id="Failed">
+    </td>
+    <td>
+     <input checked="True" onclick="toggletestcaseRowVisibility('Failed')" type="checkbox"/>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Passed test cases:
+    </td>
+    <td id="Passed">
+    </td>
+    <td>
+     <input checked="True" onclick="toggletestcaseRowVisibility('Passed')" type="checkbox"/>
+    </td>
+   </tr>
+  </table>
+  <h2>
+   Results
+  </h2>
+  <table id="results-table">
+   <thead id="results-table-head">
+    <tr>
+     <th col="timestamp">
+      Timestamp
+     </th>
+     <th col="test-class">
+      Test Class
+     </th>
+     <th col="result">
+      Result
+     </th>
+     <th col="duration-(s)">
+      Duration (s)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      2023-07-02 21:04:20.659510
+     </td>
+     <td>
+      TestClass1
+     </td>
+     <td>
+      Failed
+     </td>
+     <td>
+      0.0
+     </td>
+    </tr>
+    <tr>
+     <td class_="extra" colspan="5">
       <div>
-        <table class="test_groups">
-          <thead class="test_group_header">
-          <tr>
-            <th>Timestamp</th>
-            <th>TestGroup</th>
-            <th>Result</th>
-            <th>Duration (s)</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for test_group in result.test_groups %}
-          <tr class="{{ test_group.result }} results-table-row">
-            <td>{{ test_group.timestamp }}</td>
-            <td>{{ test_group.test_group }}</td>
-            <td class="col-result">{{ test_group.result }}</td>
-            <td>{{ test_group.duration }}</td>
-          </tr>
-          {% if test_group.test_steps %}
-          <tr class="details">
-            <td colspan="6">
-              <table class="test_steps">
-                <thead>
-                <tr class="test_step_header">
-                  <th>Timestamps</th>
-                  <th>TestSteps</th>
-                  <th>Action</th>
-                  <th>Expect</th>
-                  <th>Actual</th>
-                  <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for test_step in test_group.test_steps %}
-                <tr class="{{ test_step.result }}">
-                  <td>{{ test_step.timestamp }}</td>
-                  <td>{{ test_step.test_step }}</td>
-                  <td>{{ test_step.action }}</td>
-                  <td>{{ test_step.expect }}</td>
-                  <td>{{ test_step.actual }}</td>
-                  <td class="col-test-step-log">
-                    {{ test_step.result }}
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="6">
-                    <div class="log">{{ test_step.log }}
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-              </table>
+       <table class_="test_cases">
+        <thead class_="test_case_header">
+         <tr>
+          <th>
+           Timestamp
+          </th>
+          <th>
+           TestCase
+          </th>
+          <th>
+           Duration (s)
+          </th>
+          <th>
+           Result
+          </th>
+         </tr>
+        </thead>
+        <tr>
+         <td>
+          2023-07-02 21:04:20.659769
+         </td>
+         <td>
+          TestCase1
+         </td>
+         <td>
+          0.0
+         </td>
+         <td>
+          Failed
+         </td>
+        </tr>
+        <tr class_="details">
+         <td colspan="6">
+          <table class_="test_steps">
+           <thead>
+            <tr class_="test_step_header">
+             <th>
+              Timestamps
+             </th>
+             <th>
+              TestSteps
+             </th>
+             <th>
+              Action
+             </th>
+             <th>
+              Expect
+             </th>
+             <th>
+              Actual
+             </th>
+             <th>
+              Result
+             </th>
+            </tr>
+           </thead>
+           <tbody>
+           </tbody>
+           <tr class_="Passed">
+            <td>
+             2023-07-02 21:04:20.660080
             </td>
-          </tr>
-          {% endif %}
-          {% endfor %}
-          </tbody>
-        </table>
+            <td>
+             Step 1
+            </td>
+            <td>
+             Action 1
+            </td>
+            <td>
+             Expect 1
+            </td>
+            <td>
+             Actual 1
+            </td>
+            <td>
+             Passed
+            </td>
+           </tr>
+           <tr class_="Failed">
+            <td>
+             2023-07-02 21:04:20.660226
+            </td>
+            <td>
+             Step 2
+            </td>
+            <td>
+             Action 2
+            </td>
+            <td>
+             Expect 2
+            </td>
+            <td>
+             Actual 2
+            </td>
+            <td>
+             Failed
+            </td>
+           </tr>
+          </table>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          2023-07-02 21:04:20.660506
+         </td>
+         <td>
+          TestCase2
+         </td>
+         <td>
+          0.0
+         </td>
+         <td>
+          Failed
+         </td>
+        </tr>
+        <tr class_="details">
+         <td colspan="6">
+          <table class_="test_steps">
+           <thead>
+            <tr class_="test_step_header">
+             <th>
+              Timestamps
+             </th>
+             <th>
+              TestSteps
+             </th>
+             <th>
+              Action
+             </th>
+             <th>
+              Expect
+             </th>
+             <th>
+              Actual
+             </th>
+             <th>
+              Result
+             </th>
+            </tr>
+           </thead>
+           <tbody>
+           </tbody>
+           <tr class_="Passed">
+            <td>
+             2023-07-02 21:04:20.660868
+            </td>
+            <td>
+             Step 1
+            </td>
+            <td>
+             Action 1
+            </td>
+            <td>
+             Expect 1
+            </td>
+            <td>
+             Actual 1
+            </td>
+            <td>
+             Passed
+            </td>
+           </tr>
+           <tr class_="Passed">
+            <td>
+             2023-07-02 21:04:20.661014
+            </td>
+            <td>
+             Step 2
+            </td>
+            <td>
+             Action 2
+            </td>
+            <td>
+             Expect 2
+            </td>
+            <td>
+             Actual 2
+            </td>
+            <td>
+             Passed
+            </td>
+           </tr>
+          </table>
+         </td>
+        </tr>
+       </table>
       </div>
-    </td>
-  </tr>
-  {% endif %}
-  </tbody>
-  {% endfor %}
-</table>
-</body>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+ </body>
 </html>
