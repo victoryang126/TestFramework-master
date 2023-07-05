@@ -1,42 +1,52 @@
-from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 
-class HTMLReportGenerator:
-    def __init__(self):
-        self.html = BeautifulSoup('<html><head></head><body></body></html>', 'html.parser')
-        self.head = self.html.head
-        self.body = self.html.body
+def print_diff(left, right):
+    matcher = SequenceMatcher(None, left, right)
+    opcodes = matcher.get_opcodes()
 
-    def add_style(self, style):
-        style_tag = self.html.new_tag('style')
-        style_tag.string = style
-        self.head.append(style_tag)
-
-    def add_script(self, script):
-        script_tag = self.html.new_tag('script')
-        script_tag.string = script
-        self.body.append(script_tag)
-
-    def generate_html(self):
-        return str(self.html)
-
-    def save_html_file(self, filename):
-        html = self.generate_html()
-        with open(filename, "w") as file:
-            file.write(html)
+    # get the difference
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == 'equal':
+            #
+            print(f"{left[i1:i2]} == {right[j1:j2]}")
+        elif tag == 'delete':
+            # 删除部分
+            print(f"{left[i1:i2]} != None")
+        elif tag == 'insert':
+            # 插入部分
+            print(f"None!= {right[j1:j2]}")
+        elif tag == 'replace':
+            # 替换部分
+            print(f"{left[i1:i2]} != {right[j1:j2]}")
 
 
-# 使用示例
-report_generator = HTMLReportGenerator()
+def print_diff_with_index(left, right):
+    matcher = SequenceMatcher(None, left, right)
+    opcodes = matcher.get_opcodes()
 
-style = """
-/* 样式内容 */
-"""
+    # get the difference
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == 'equal':
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                print(f"{left[i]} == {right[j]} (left index: {i}, right index: {j})")
+        elif tag == 'delete':
+            for i in range(i1, i2):
+                print(f"{left[i]} != None (left index: {i}, right index: -)")
+        elif tag == 'insert':
+            for j in range(j1, j2):
+                print(f"None != {right[j]} (left index: -, right index: {j})")
+        elif tag == 'replace':
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                print(f"{left[i]} != {right[j]} (left index: {i}, right index: {j})")
 
-script = """
-/* 脚本内容 */
-"""
 
-report_generator.add_style(style)
-report_generator.add_script(script)
+left = [1, 2, 3, 4, 5]
+right = [1, 2, 6, 4, 5,7]
 
-report_generator.save_html_file("report.html")
+print_diff(left, right)
+print_diff("AB", "CD")
+print_diff( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
+
+print_diff_with_index(left, right)
+print_diff_with_index("AB", "CD")
+print_diff_with_index( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))

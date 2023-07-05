@@ -89,7 +89,7 @@ compare_elements("AB", "AD")
 
 bytes1 = bytearray([0x01,0x02])
 bytes2 = bytearray([0x02,0x02])
-diff = difflib.ndiff(bytes1, bytes2)
+diff = difflib.ndiff([str(bytes1)], [str(bytes2)])
 print(diff)
 print("\n".join(list(diff)))
 

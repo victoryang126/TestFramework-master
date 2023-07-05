@@ -1,5 +1,6 @@
-"""Utilities for assertion debugging."""
+
 import collections.abc
+import difflib
 import os
 from typing import AbstractSet
 from typing import Iterable
@@ -12,7 +13,135 @@ from typing import Any
 from typing import Dict
 from typing import IO
 from typing import Optional
+from collections import Counter
 
+from difflib import SequenceMatcher
+
+def compare_arrays_ignore_order(array1, array2):
+    """
+    function used to compare two arrays ignore order
+    :param array1:
+    :param array2:
+    :return:
+    :example:
+    array1 = [1, 2, 3, 4, 4, 5]
+    array2 = [5, 2, 3, 4, 4, 5]
+
+    diff_info,ret = compare_arrays_ignore_order(array1, array2)
+    ==>diff_info:['Expected: [1] !=  Actual: []',
+                'Expected: 2 ==  Actual: 2',
+                'Expected: 3 ==  Actual: 3',
+                'Expected: 4 ==  Actual: 4',
+                'Expected: [5] !=  Actual: [5, 5]']
+     ==>ret:    False
+    """
+    counter1 = Counter(array1)
+    counter2 = Counter(array2)
+    all_elements = set(array1).union(set(array2))  # 所有出现过的元素
+    ret = True
+    diff_info = []
+    for element in all_elements:
+        count1 = counter1.get(element, 0)
+        count2 = counter2.get(element, 0)
+        if count1 == count2:
+            diff_info.append((element, "==",element))
+        else:
+            diff_info.append((count1 * [element],"!=",count2 * [element]))
+            if ret:
+                ret = False
+    explanation = []
+    for diff in diff_info:
+        explanation.append(f"Expected: {diff[0]} {diff[1]}  Actual: {diff[2]}")
+    return explanation,ret
+
+def print_diff(left, right):
+    """
+    function used to print the difference
+    :param left:
+    :param right:
+    :return:
+    :example:
+        print_diff("AB", "CD")
+        ==>AB != CD
+        print_diff( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
+        ==>bytearray(b'\x01') != None
+           bytearray(b'\x02') == bytearray(b'\x02')
+    """
+    matcher = SequenceMatcher(None, left, right)
+    opcodes = matcher.get_opcodes()
+
+    # get the difference
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == 'equal':
+            #
+            print(f"{left[i1:i2]} == {right[j1:j2]}")
+        elif tag == 'delete':
+            # 删除部分
+            print(f"{left[i1:i2]} != None")
+        elif tag == 'insert':
+            # 插入部分
+            print(f"None!= {right[j1:j2]}")
+        elif tag == 'replace':
+            # 替换部分
+            print(f"{left[i1:i2]} != {right[j1:j2]}")
+
+
+def print_diff_with_index(left, right):
+    """
+     function used to print the difference, and will show the index of the element
+     :param left:
+     :param right:
+     :return:
+     :example:
+        print_diff_with_index("AB", "CD")
+        ==>A != C (left index: 0, right index: 0)
+           B != D (left index: 1, right index: 1)
+        print_diff_with_index( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
+        ==>
+            1 != None (left index: 0, right index: -)
+            2 == 2 (left index: 1, right index: 0)
+            None != 2 (left index: -, right index: 1)
+     """
+    matcher = SequenceMatcher(None, left, right)
+    opcodes = matcher.get_opcodes()
+
+    # get the difference
+    for tag, i1, i2, j1, j2 in opcodes:
+        if tag == 'equal':
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                print(f"{left[i]} == {right[j]} (left index: {i}, right index: {j})")
+        elif tag == 'delete':
+            for i in range(i1, i2):
+                print(f"{left[i]} != None (left index: {i}, right index: -)")
+        elif tag == 'insert':
+            for j in range(j1, j2):
+                print(f"None != {right[j]} (left index: -, right index: {j})")
+        elif tag == 'replace':
+            for i, j in zip(range(i1, i2), range(j1, j2)):
+                print(f"{left[i]} != {right[j]} (left index: {i}, right index: {j})")
+
+
+def compare_eq_any(left: Any, right: Any) -> List[str]:
+    explanation = []
+    if istext(left) and istext(right):
+        explanation = _compare_eq_text(left,right)
+    if type(left) == type(right) and (
+            isdatacls(left) or isattrs(left) or isnamedtuple(left)
+    ):
+        explanation = _compare_eq_cls(left, right)
+    elif issequence(left) and issequence(right):
+        explanation = _compare_eq_sequence(left, right)
+    elif isset(left) and isset(right):
+        explanation = _compare_eq_set(left, right)
+    elif isdict(left) and isdict(right):
+        explanation = _compare_eq_dict(left, right)
+
+
+    if isiterable(left) and isiterable(right):
+        expl = _compare_eq_iterable(left, right)
+        explanation.extend(expl)
+
+    return explanation
 
 
 def _try_repr_or_str(obj: object) -> str:
@@ -37,6 +166,12 @@ def _format_repr_exception(exc: BaseException, obj: object) -> str:
 
 
 def _ellipsize(s: str, maxsize: int) -> str:
+    """
+    将字符串截断为指定的最大大小，使用省略号表示省略的部分。
+    :param s:
+    :param maxsize:
+    :return:
+    """
     if len(s) > maxsize:
         i = max(0, (maxsize - 3) // 2)
         j = max(0, maxsize - 3 - i)
@@ -302,88 +437,29 @@ def has_default_eq(
 
 
 
-def _compare_eq_any(left: Any, right: Any, verbose: int = 0) -> List[str]:
+def compare_eq_any(left: Any, right: Any) -> List[str]:
     explanation = []
     if istext(left) and istext(right):
-        explanation = _diff_text(left, right, verbose)
-    else:
+        explanation = _compare_eq_text(left,right)
+    if type(left) == type(right) and (
+        isdatacls(left) or isattrs(left) or isnamedtuple(left)
+    ):
+        explanation = _compare_eq_cls(left, right)
+    elif issequence(left) and issequence(right):
+        explanation = _compare_eq_sequence(left, right)
+    elif isset(left) and isset(right):
+        explanation = _compare_eq_set(left, right)
+    elif isdict(left) and isdict(right):
+        explanation = _compare_eq_dict(left, right)
 
-        if type(left) == type(right) and (
-            isdatacls(left) or isattrs(left) or isnamedtuple(left)
-        ):
-            print("isdatacls")
-            # Note: unlike dataclasses/attrs, namedtuples compare only the
-            # field values, not the type or field names. But this branch
-            # intentionally only handles the same-type case, which was often
-            # used in older code bases before dataclasses/attrs were available.
-            explanation = _compare_eq_cls(left, right, verbose)
-        elif issequence(left) and issequence(right):
-            print("issequence")
-            explanation = _compare_eq_sequence(left, right, verbose)
-        elif isset(left) and isset(right):
-            print("isset")
-            explanation = _compare_eq_set(left, right, verbose)
-        elif isdict(left) and isdict(right):
-            print("isdict")
-            explanation = _compare_eq_dict(left, right, verbose)
-        else:
-            pass
-            #TODO
 
-        if isiterable(left) and isiterable(right):
-            print("isiterable")
-            expl = _compare_eq_iterable(left, right, verbose)
-            explanation.extend(expl)
+    if isiterable(left) and isiterable(right):
+        expl = _compare_eq_iterable(left, right)
+        explanation.extend(expl)
 
     return explanation
 
 
-def _diff_text(left: str, right: str, verbose: int = 0) -> List[str]:
-    """Return the explanation for the diff between text.
-
-    Unless --verbose is used this will skip leading and trailing
-    characters which are identical to keep the diff minimal.
-    """
-    from difflib import ndiff
-
-    explanation: List[str] = []
-
-    if verbose < 1:
-        i = 0  # just in case left or right has zero length
-        for i in range(min(len(left), len(right))):
-            if left[i] != right[i]:
-                break
-        if i > 42:
-            i -= 10  # Provide some context
-            explanation = [
-                "Skipping %s identical leading characters in diff, use -v to show" % i
-            ]
-            left = left[i:]
-            right = right[i:]
-        if len(left) == len(right):
-            for i in range(len(left)):
-                if left[-i] != right[-i]:
-                    break
-            if i > 42:
-                i -= 10  # Provide some context
-                explanation += [
-                    "Skipping {} identical trailing "
-                    "characters in diff, use -v to show".format(i)
-                ]
-                left = left[:-i]
-                right = right[:-i]
-    keepends = True
-    if left.isspace() or right.isspace():
-        left = repr(str(left))
-        right = repr(str(right))
-        explanation += ["Strings contain only whitespace, escaping them using repr()"]
-    # "right" is the expected base against which we compare "left",
-    # see https://github.com/pytest-dev/pytest/issues/3333
-    explanation += [
-        line.strip("\n")
-        for line in ndiff(right.splitlines(keepends), left.splitlines(keepends))
-    ]
-    return explanation
 
 
 def _surrounding_parens_on_own_lines(lines: List[str]) -> None:
@@ -398,11 +474,19 @@ def _surrounding_parens_on_own_lines(lines: List[str]) -> None:
         lines[:] = lines + [closing]
 
 
+def _compare_eq_text(left:str,right:str)->List[str]:
+    explanation = []
+    differ = difflib.Differ()
+    diff = differ.compare(left.splitlines(), right.splitlines())
+
+    explanation.append("Detailed Text Comparison:")
+    explanation.extend( line.rstrip() for line in diff)
+    return explanation
+
 def _compare_eq_iterable(
-    left: Iterable[Any], right: Iterable[Any], verbose: int = 0
+    left: Iterable[Any], right: Iterable[Any]
 ) -> List[str]:
-    if verbose <= 0 and not running_on_ci():
-        return ["Use -v to get more diff"]
+
     # dynamic import to speedup pytest
     import difflib
 
@@ -414,12 +498,13 @@ def _compare_eq_iterable(
     lines_right = len(right_formatting)
     if lines_left != lines_right:
         left_formatting = _pformat_dispatch(left).splitlines()
+
         right_formatting = _pformat_dispatch(right).splitlines()
+
 
     if lines_left > 1 or lines_right > 1:
         _surrounding_parens_on_own_lines(left_formatting)
         _surrounding_parens_on_own_lines(right_formatting)
-
     explanation = ["Full diff:"]
     # "right" is the expected base against which we compare "left",
     # see https://github.com/pytest-dev/pytest/issues/3333
@@ -430,7 +515,7 @@ def _compare_eq_iterable(
 
 
 def _compare_eq_sequence(
-    left: Sequence[Any], right: Sequence[Any], verbose: int = 0
+    left: Sequence[Any], right: Sequence[Any]
 ) -> List[str]:
     comparing_bytes = isinstance(left, bytes) and isinstance(right, bytes)
     explanation: List[str] = []
@@ -483,7 +568,7 @@ def _compare_eq_sequence(
 
 
 def _compare_eq_set(
-    left: AbstractSet[Any], right: AbstractSet[Any], verbose: int = 0
+    left: AbstractSet[Any], right: AbstractSet[Any]
 ) -> List[str]:
     explanation = []
     diff_left = left - right
@@ -491,29 +576,26 @@ def _compare_eq_set(
     if diff_left:
         explanation.append("Extra items in the left set:")
         for item in diff_left:
-            print(f"diff_left {saferepr(item)}")
             explanation.append(saferepr(item))
     if diff_right:
         explanation.append("Extra items in the right set:")
         for item in diff_right:
-            print(f"diff_right {saferepr(item)}")
             explanation.append(saferepr(item))
     return explanation
 
 
 def _compare_eq_dict(
-    left: Mapping[Any, Any], right: Mapping[Any, Any], verbose: int = 0
+    left: Mapping[Any, Any], right: Mapping[Any, Any]
 ) -> List[str]:
     explanation: List[str] = []
     set_left = set(left)
     set_right = set(right)
     common = set_left.intersection(set_right)
     same = {k: left[k] for k in common if left[k] == right[k]}
-    if same and verbose < 2:
-        explanation += ["Omitting %s identical items, use -vv to show" % len(same)]
-    elif same:
-        explanation += ["Common items:"]
-        explanation += pprint.pformat(same).splitlines()
+
+    explanation += ["Common items:"]
+    explanation += pprint.pformat(same).splitlines()
+
     diff = {k for k in common if left[k] != right[k]}
     if diff:
         explanation += ["Differing items:"]
@@ -542,7 +624,7 @@ def _compare_eq_dict(
     return explanation
 
 
-def _compare_eq_cls(left: Any, right: Any, verbose: int) -> List[str]:
+def _compare_eq_cls(left: Any, right: Any) -> List[str]:
     if not has_default_eq(left):
         return []
     if isdatacls(left):
@@ -568,13 +650,9 @@ def _compare_eq_cls(left: Any, right: Any, verbose: int) -> List[str]:
             diff.append(field)
 
     explanation = []
-    if same or diff:
-        explanation += [""]
-    if same and verbose < 2:
-        explanation.append("Omitting %s identical items, use -vv to show" % len(same))
-    elif same:
-        explanation += ["Matching attributes:"]
-        explanation += pprint.pformat(same).splitlines()
+
+    explanation += ["Matching attributes:"]
+    explanation += pprint.pformat(same).splitlines()
     if diff:
         explanation += ["Differing attributes:"]
         explanation += pprint.pformat(diff).splitlines()
@@ -588,44 +666,29 @@ def _compare_eq_cls(left: Any, right: Any, verbose: int) -> List[str]:
             ]
             explanation += [
                 indent + line
-                for line in _compare_eq_any(field_left, field_right, verbose)
+                for line in _compare_eq_any(field_left, field_right)
             ]
     return explanation
 
 
-def _notin_text(term: str, text: str, verbose: int = 0) -> List[str]:
-    index = text.find(term)
-    head = text[:index]
-    tail = text[index + len(term) :]
-    correct_text = head + tail
-    diff = _diff_text(text, correct_text, verbose)
-    newdiff = ["%s is contained here:" % saferepr(term, maxsize=42)]
-    for line in diff:
-        if line.startswith("Skipping"):
-            continue
-        if line.startswith("- "):
-            continue
-        if line.startswith("+ "):
-            newdiff.append("  " + line[2:])
-        else:
-            newdiff.append(line)
-    return newdiff
 
-
-def running_on_ci() -> bool:
-    """Check if we're currently running on a CI system."""
-    env_vars = ["CI", "BUILD_NUMBER"]
-    return any(var in os.environ for var in env_vars)
 
 bytes1 = bytearray([0x01,0x02])
 bytes2 = bytearray([0x02,0x02])
-print("\n".join(_compare_eq_any(bytes1,bytes2,1)))
-print("\n".join(_compare_eq_any("AB","CD",1)))
+print("\n".join(_compare_eq_any(bytes1,bytes2)))
 
-print("\n".join(_compare_eq_any(["01","02"],["01","03"],1)))
-import difflib
-print("\n".join(_compare_eq_any(set(["01","02","04"]),set(["02","03"]),1)))
-diff = difflib.SequenceMatcher.set_seqs(set(["01","02","04"]), set(["02","03"]))
-print(diff)
-print("\n".join(list(diff)))
-print()
+print("\n".join(_compare_eq_any("A B","A D")))
+
+text1 = "HAD EF."
+text2 = "GA FFD"
+
+print("\n".join(_compare_eq_any(text1,text2)))
+
+
+
+
+
+# # Compare text values
+# explanation = _diff_text("Hello", "World", verbose=1)
+# print("Compare text values:")
+# print('\n'.join(explanation))
