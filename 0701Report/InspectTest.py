@@ -1,4 +1,6 @@
 import inspect
+import traceback
+import sys
 
 class MyLogger:
     def log(self, message):
@@ -6,6 +8,8 @@ class MyLogger:
         line_number = frame_info.f_lineno
         file_name = frame_info.f_code.co_filename
         print(f"Log message: {message}, called at line {line_number} in file {file_name}")
+        # exc_type,exc_value,exe_traceback_obj = sys.exc_info()
+        # print(exc_type,exc_value,exe_traceback_obj)
 
 # 示例调用
 logger = MyLogger()

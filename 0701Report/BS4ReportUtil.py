@@ -6,8 +6,7 @@ import socket
 import os
 import datetime
 import copy
-import htmlmin
-from typing import Any,List
+from typing import Any
 import inspect
 
 from bs4.formatter import HTMLFormatter
@@ -20,55 +19,53 @@ class TestLog:
     WARNING = 1
     CRITICAL = 0
     LEVEL = 0
-
+    #the Critical info shall output
     def __init__(self):
         pass
-
-
-
 
     @classmethod
     def set_log_level(cls,level):
         cls.LEVEL = level
 
-    @classmethod
-    def ff_back_log(cls,message):
-        frame_info = inspect.currentframe().f_back
-        frame_info = frame_info.f_back
-        line_number = frame_info.f_lineno
-        file_name = frame_info.f_code.co_filename
-        print(f"Log message: {message}, called at line {line_number} in file {file_name}")
 
     @classmethod
-    def f_back_log(cls,message):
+    def f_back_log(cls,f_back_no:int = 0,message:Any = "",):
         frame_info = inspect.currentframe().f_back
-        frame_info = frame_info.f_back
+        #TODO shall consider to set  limit of f_back_no
+        f_back_no_type = type(f_back_no)
+        if f_back_no_type != int :
+            cls.critical(f"TestLog::f_back_log::arg::f_back_no shall be int but not {f_back_no_type}")
+            #TODO shall we need raise exception ?
+        else:
+            while f_back_no != 0:
+                frame_info = frame_info.f_back
+                f_back_no -= 1
         line_number = frame_info.f_lineno
         file_name = frame_info.f_code.co_filename
-        print(f"Log message: {message}, called at line {line_number} in file {file_name}")
+        print(f" {message}\n:called at line {line_number} in file {file_name}")
 
     @classmethod
-    def info(cls,comment):
+    def info(cls,comment:Any):
         if cls.LEVEL >=2:
             print(comment)
 
     @classmethod
-    def debug(cls,comment):
+    def debug(cls,comment:Any):
         if cls.LEVEL >= 3:
             print(f'\033[30;1m{comment}\033[0m')
 
     @classmethod
-    def critical(cls, comment):
+    def critical(cls, comment:Any):
         print(f'\033[31;1m{comment}\033[0m')
 
 
 
     @classmethod
-    def warning(cls,comment):
+    def warning(cls,comment:Any):
         print(f'\033[33;1m{comment}\033[0m')
 
     @classmethod
-    def pass_log(cls,comment):
+    def pass_log(cls,comment:Any):
         print(f'\033[32;1m{comment}\033[0m')
 
 
@@ -290,6 +287,8 @@ class HTMLReport:
         :param test_case_name: Name of the test case
         :return: None
         """
+        if self.group != 0:
+            self.end_test_case()
         self.group = 0 # reinit the number
         self.test_case = test_case
         self.test_case_result = self.passed
@@ -445,9 +444,9 @@ class HTMLReport:
             test_case_result_td.string =  self.test_case_result
 
         if self.test_case_result== self.failed:
-            TestLog.critical(f"{self.test_case} {self.failed}")
+            TestLog.critical(f"HTMLReport::{self.test_case} {self.failed}")
         else:
-            TestLog.pass_log(f"{self.test_case} {self.passed}")
+            TestLog.pass_log(f"HTMLReport::{self.test_case} {self.passed}")
 
     def end_test_group(self):
         """
@@ -469,24 +468,26 @@ class HTMLReport:
             self.passed_groups += 1
 
         if self.test_group_result== self.failed:
-            TestLog.critical(f"{self.test_group} {self.failed}")
+            TestLog.critical(f"HTMLReport::{self.test_group} {self.failed}")
         else:
-            TestLog.pass_log(f"{self.test_group} {self.passed}")
+            TestLog.pass_log(f"HTMLReport::{self.test_group} {self.passed}")
 
 
-    def customize_test_step(self, action:str, expect:Any, actual:Any, result:str):
+    def test_step_customize_result(self, action:str, expect:Any, actual:Any, result:bool,log:str = ""):
         """
         function used to add customize step,the user can defined the result
         :param action: action
         :param expect:
         :param actual:
         :param result:
+        :param log:
         :return:
         """
         self.step +=1
-        if result == self.passed:
+        if result == True:
             attrs={"class": 'Passed'}
             self.passed_steps +=1
+
         else:
             attrs={"class": 'Failed'}
             self.failed_steps +=1
@@ -520,20 +521,21 @@ class HTMLReport:
         test_step_row.append(actual_cell)
 
         result_cell = self.soup.new_tag('td',attrs={"class": "col-test-step-log"})
-        result_cell.string = result
+        result_cell.string = self.passed if result else self.failed
         test_step_row.append(result_cell)
 
-        self._add_test_log()
+        self._add_test_log(log)
           # if use this kind method, there some problem with the report
 
     def update_report(self):
         self.file.write(self.soup.prettify(formatter='html5'))
 
-    def _add_test_log(self):
+    def _add_test_log(self,log):
         log_row = self.soup.new_tag('tr')
         td_colspan = self.soup.new_tag('td',attrs = {"colspan": "6"})
         self.log_div = self.soup.new_tag('div',attrs = {"class": "log"})
         # self.log_div.string = ""
+        self.log_div.append(f"{log}\n")
         td_colspan.append(self.log_div)
         log_row.append(td_colspan)
         self.test_steps_table.append(log_row)
@@ -546,6 +548,8 @@ class HTMLReport:
 
 
     def generate_report(self):
+
+        self._end_test_case()
         # self.file.write(self.soup.prettify(formatter=custom_formatter))
         self.file.write(str(self.html))
         file_path = os.path.join(self.report_path,f"{self.html_title}.html")

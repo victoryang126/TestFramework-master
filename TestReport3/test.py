@@ -60,21 +60,25 @@ from collections import defaultdict
 
 # 测试用例示例
 class TestExample:
+    def test_case_2(self):
+        assert "AA" == "AB"
+
     def test_case_1(self):
         Expect1 = [i for i in range(100)]
         Actual1 = [i for i in range(100)]
         Actual1[1] = 10
-        try:
-            assert Expect1 == Actual1
-        except AssertionError as e:
-            # print(traceback.format_exc())
-            print("####",str(e),"####")
-        Actual1[1] = 20
-        try:
-            assert Expect1 == Actual1
-        except AssertionError as e:
-            # print(traceback.format_exc())
-            print("####",str(e),"####")
+        Actual1[4] = 10
+        # try:
+        #     assert Expect1 == Actual1
+        # except AssertionError as e:
+        #     # print(traceback.format_exc())
+        #     print("####",str(e),"####")
+        # Actual1[1] = 20
+
+        assert ["01","02"] == ["01","03"]
+        # except AssertionError as e:
+        #     # print(traceback.format_exc())
+        #     print("####",str(e),"####")
     # def test_case_2(self):
     #     Expect1 = [i for i in range(100)]
     #     Actual1 = [i for i in range(100)]
