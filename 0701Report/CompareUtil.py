@@ -9,15 +9,14 @@ from typing import Mapping
 from typing import Sequence
 import pprint
 import reprlib
-from typing import Any
+from typing import Any,Union
 from typing import Dict
 from typing import IO
 from typing import Optional
 from collections import Counter
-
 from difflib import SequenceMatcher
 
-def compare_arrays_ignore_order(array1, array2):
+def compare_arrays_ignore_order(array1, array2)->tuple[bool,str]:
     """
     function used to compare two arrays ignore order
     :param array1:
@@ -27,13 +26,14 @@ def compare_arrays_ignore_order(array1, array2):
     array1 = [1, 2, 3, 4, 4, 5]
     array2 = [5, 2, 3, 4, 4, 5]
 
-    diff_info,ret = compare_arrays_ignore_order(array1, array2)
+    ret, diff_info= compare_arrays_ignore_order(array1, array2)
+     ==>ret:    False
     ==>diff_info:['Expected: [1] !=  Actual: []',
                 'Expected: 2 ==  Actual: 2',
                 'Expected: 3 ==  Actual: 3',
                 'Expected: 4 ==  Actual: 4',
                 'Expected: [5] !=  Actual: [5, 5]']
-     ==>ret:    False
+
     """
     counter1 = Counter(array1)
     counter2 = Counter(array2)
@@ -52,51 +52,51 @@ def compare_arrays_ignore_order(array1, array2):
     explanation = []
     for diff in diff_info:
         explanation.append(f"Expected: {diff[0]} {diff[1]}  Actual: {diff[2]}")
-    return explanation,ret
+    return ret,explanation
 
-def print_diff(left, right):
+def get_diff_info(left:Any, right:Any)->List[str]:
     """
     function used to print the difference
     :param left:
     :param right:
-    :return:
+    :return:List of the differ info
     :example:
-        print_diff("AB", "CD")
-        ==>AB != CD
-        print_diff( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
-        ==>bytearray(b'\x01') != None
-           bytearray(b'\x02') == bytearray(b'\x02')
+        get_diff_info("AB", "CD")
+        return ==>AB != CD
+        get_diff_info( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
+        return ==>bytearray(b'\x01') != None
+                  bytearray(b'\x02') == bytearray(b'\x02')
     """
     matcher = SequenceMatcher(None, left, right)
     opcodes = matcher.get_opcodes()
-
+    explanation = []
     # get the difference
     for tag, i1, i2, j1, j2 in opcodes:
         if tag == 'equal':
             #
-            print(f"{left[i1:i2]} == {right[j1:j2]}")
+            explanation.append(f"{left[i1:i2]} == {right[j1:j2]}")
         elif tag == 'delete':
             # 删除部分
-            print(f"{left[i1:i2]} != None")
+            explanation.append(f"{left[i1:i2]} != None")
         elif tag == 'insert':
             # 插入部分
-            print(f"None!= {right[j1:j2]}")
+            explanation.append(f"None!= {right[j1:j2]}")
         elif tag == 'replace':
             # 替换部分
-            print(f"{left[i1:i2]} != {right[j1:j2]}")
+            explanation.append(f"{left[i1:i2]} != {right[j1:j2]}")
+    return explanation
 
-
-def print_diff_with_index(left, right):
+def get_diff_with_index(left, right):
     """
      function used to print the difference, and will show the index of the element
      :param left:
      :param right:
-     :return:
+     :return:List of the differ info with the index of element
      :example:
-        print_diff_with_index("AB", "CD")
+        get_diff_with_index("AB", "CD")
         ==>A != C (left index: 0, right index: 0)
            B != D (left index: 1, right index: 1)
-        print_diff_with_index( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
+        get_diff_with_index( bytearray([0x01,0x02]),  bytearray([0x02,0x02]))
         ==>
             1 != None (left index: 0, right index: -)
             2 == 2 (left index: 1, right index: 0)
@@ -104,22 +104,45 @@ def print_diff_with_index(left, right):
      """
     matcher = SequenceMatcher(None, left, right)
     opcodes = matcher.get_opcodes()
-
+    explanation = []
     # get the difference
     for tag, i1, i2, j1, j2 in opcodes:
         if tag == 'equal':
             for i, j in zip(range(i1, i2), range(j1, j2)):
-                print(f"{left[i]} == {right[j]} (left index: {i}, right index: {j})")
+                explanation.append(f"{left[i]} == {right[j]} (left index: {i}, right index: {j})")
         elif tag == 'delete':
             for i in range(i1, i2):
-                print(f"{left[i]} != None (left index: {i}, right index: -)")
+                explanation.append(f"{left[i]} != None (left index: {i}, right index: -)")
         elif tag == 'insert':
             for j in range(j1, j2):
-                print(f"None != {right[j]} (left index: -, right index: {j})")
+                explanation.append(f"None != {right[j]} (left index: -, right index: {j})")
         elif tag == 'replace':
             for i, j in zip(range(i1, i2), range(j1, j2)):
-                print(f"{left[i]} != {right[j]} (left index: {i}, right index: {j})")
+                explanation.append(f"{left[i]} != {right[j]} (left index: {i}, right index: {j})")
+    return explanation
 
+
+def compare_eq_any_explanation(left: Any, right: Any) -> List[str]:
+    explanation = []
+    if istext(left) and istext(right):
+        explanation = _compare_eq_text(left,right)
+    if type(left) == type(right) and (
+        isdatacls(left) or isattrs(left) or isnamedtuple(left)
+    ):
+        explanation = _compare_eq_cls(left, right)
+    elif issequence(left) and issequence(right):
+        explanation = _compare_eq_sequence(left, right)
+    elif isset(left) and isset(right):
+        explanation = _compare_eq_set(left, right)
+    elif isdict(left) and isdict(right):
+        explanation = _compare_eq_dict(left, right)
+
+
+    if isiterable(left) and isiterable(right):
+        expl = _compare_eq_iterable(left, right)
+        explanation.extend(expl)
+
+    return explanation
 
 def compare_eq_any(left: Any, right: Any) -> List[str]:
     explanation = []
@@ -437,7 +460,7 @@ def has_default_eq(
 
 
 
-def compare_eq_any(left: Any, right: Any) -> List[str]:
+def compare_eq_any_explanation(left: Any, right: Any) -> List[str]:
     explanation = []
     if istext(left) and istext(right):
         explanation = _compare_eq_text(left,right)
@@ -673,16 +696,16 @@ def _compare_eq_cls(left: Any, right: Any) -> List[str]:
 
 
 
-bytes1 = bytearray([0x01,0x02])
-bytes2 = bytearray([0x02,0x02])
-print("\n".join(_compare_eq_any(bytes1,bytes2)))
-
-print("\n".join(_compare_eq_any("A B","A D")))
-
-text1 = "HAD EF."
-text2 = "GA FFD"
-
-print("\n".join(_compare_eq_any(text1,text2)))
+# bytes1 = bytearray([0x01,0x02])
+# bytes2 = bytearray([0x02,0x02])
+# print("\n".join(_compare_eq_any(bytes1,bytes2)))
+#
+# print("\n".join(_compare_eq_any("A B","A D")))
+#
+# text1 = "HAD EF."
+# text2 = "GA FFD"
+#
+# print("\n".join(_compare_eq_any(text1,text2)))
 
 
 

@@ -8,11 +8,12 @@ import datetime
 import copy
 from typing import Any
 import inspect
+from CompareUtil import *
 
 from bs4.formatter import HTMLFormatter
 
 
-class TestLog:
+class AriaLog:
 
     DEBUG = 3
     INFO = 2
@@ -29,12 +30,12 @@ class TestLog:
 
 
     @classmethod
-    def f_back_log(cls,f_back_no:int = 0,message:Any = "",):
+    def get_f_back_log(cls,f_back_no:int = 0,message:Any = "",explanation = ""):
         frame_info = inspect.currentframe().f_back
         #TODO shall consider to set  limit of f_back_no
         f_back_no_type = type(f_back_no)
         if f_back_no_type != int :
-            cls.critical(f"TestLog::f_back_log::arg::f_back_no shall be int but not {f_back_no_type}")
+            cls.critical(f"TestLog::get_f_back_log::arg::f_back_no shall be int but not {f_back_no_type}")
             #TODO shall we need raise exception ?
         else:
             while f_back_no != 0:
@@ -42,7 +43,7 @@ class TestLog:
                 f_back_no -= 1
         line_number = frame_info.f_lineno
         file_name = frame_info.f_code.co_filename
-        print(f" {message}\n:called at line {line_number} in file {file_name}")
+        return f" {message}\n:called at line {line_number} in file {file_name} \nDetails Failure Info \n{explanation}"
 
     @classmethod
     def info(cls,comment:Any):
@@ -57,8 +58,6 @@ class TestLog:
     @classmethod
     def critical(cls, comment:Any):
         print(f'\033[31;1m{comment}\033[0m')
-
-
 
     @classmethod
     def warning(cls,comment:Any):
@@ -320,7 +319,7 @@ class HTMLReport:
 
         self._add_extra_row_for_test_case()
 
-        TestLog.debug(f"start execute testcase{self.test_case} at {self.test_case_start_timestamp}")
+        AriaLog.debug(f"start execute testcase{self.test_case} at {self.test_case_start_timestamp}")
 
 
     def _add_extra_row_for_test_case(self):
@@ -398,7 +397,7 @@ class HTMLReport:
 
         self._add_details_for_test_group()
 
-        TestLog.debug(f"start execute test group{self.test_group} at {self.test_group_start_timestamp}")
+        AriaLog.debug(f"start execute test group{self.test_group} at {self.test_group_start_timestamp}")
 
 
     def _add_details_for_test_group(self):
@@ -444,9 +443,9 @@ class HTMLReport:
             test_case_result_td.string =  self.test_case_result
 
         if self.test_case_result== self.failed:
-            TestLog.critical(f"HTMLReport::{self.test_case} {self.failed}")
+            AriaLog.critical(f"HTMLReport::{self.test_case} {self.failed}")
         else:
-            TestLog.pass_log(f"HTMLReport::{self.test_case} {self.passed}")
+            AriaLog.pass_log(f"HTMLReport::{self.test_case} {self.passed}")
 
     def end_test_group(self):
         """
@@ -468,9 +467,9 @@ class HTMLReport:
             self.passed_groups += 1
 
         if self.test_group_result== self.failed:
-            TestLog.critical(f"HTMLReport::{self.test_group} {self.failed}")
+            AriaLog.critical(f"HTMLReport::{self.test_group} {self.failed}")
         else:
-            TestLog.pass_log(f"HTMLReport::{self.test_group} {self.passed}")
+            AriaLog.pass_log(f"HTMLReport::{self.test_group} {self.passed}")
 
 
     def test_step_customize_result(self, action:str, expect:Any, actual:Any, result:bool,log:str = ""):
@@ -525,6 +524,135 @@ class HTMLReport:
         test_step_row.append(result_cell)
 
         self._add_test_log(log)
+          # if use this kind method, there some problem with the report
+
+
+    def test_step_eq(self, action:str, expect:Any, actual:Any):
+        """
+        function used to add customize step,the user can defined the result
+        :param action: action
+        :param expect:
+        :param actual:
+        :param result:
+        :param log:
+        :return:
+        """
+        result = actual == expect
+
+        explanation = compare_eq_any_explanation(expect, actual)
+        log = AriaLog.get_f_back_log(1, action, "\n".join(explanation))  # get the back_log
+
+
+        self.step +=1
+        if result == True:
+            attrs={"class": 'Passed'}
+            self.passed_steps +=1
+
+        else:
+            attrs={"class": 'Failed'}
+            self.failed_steps +=1
+        # Create a new row for the test step in the test_steps_table
+        test_step_row = self.soup.new_tag('tr', attrs=attrs)
+        self.test_steps_table.append(test_step_row)
+
+        # Create and append table cells for each column of data
+        now = datetime.datetime.now()
+
+        # self.update_duration_result_for_testcase_testgroup(now,result)
+
+        timestamp_cell = self.soup.new_tag('td')
+        timestamp_cell.string = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+        test_step_row.append(timestamp_cell)
+
+        test_step_cell = self.soup.new_tag('td')
+        test_step_cell.string = f"Step {self.step}"
+        test_step_row.append(test_step_cell)
+
+        action_cell = self.soup.new_tag('td')
+        action_cell.append(str(action))
+        test_step_row.append(action_cell)
+
+        expect_cell = self.soup.new_tag('td')
+        expect_cell.append(str(expect))
+        test_step_row.append(expect_cell)
+
+        actual_cell = self.soup.new_tag('td')
+        actual_cell.append(str(actual))
+        test_step_row.append(actual_cell)
+
+        result_cell = self.soup.new_tag('td',attrs={"class": "col-test-step-log"})
+        result_cell.string = self.passed if result else self.failed
+        test_step_row.append(result_cell)
+
+        self._add_test_log(log)
+          # if use this kind method, there some problem with the report
+
+
+    def test_step_aria(self, aria_function_return,expect = None):
+
+        if len(aria_function_return) !=4 and isinstance(aria_function_return) != List:
+            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+            action = aria_function_return
+            expect = None
+            actual = "call execute arai function fail"
+            result = False
+            log = AriaLog.get_f_back_log(1, f"the return value of aria function shall be a list with 4 element")
+        elif expect == None:
+            result,actual,timestamp,action = aria_function_return[0],aria_function_return[1],aria_function_return[2],aria_function_return[3]
+            log = AriaLog.get_f_back_log(1, action) #get the back_log
+        else:
+            result, actual, timestamp, action = aria_function_return[0], aria_function_return[1], aria_function_return[
+                2], aria_function_return[3],
+            #compare the result
+            result = actual == expect
+
+            explanation = compare_eq_any_explanation(expect,actual)
+            log = AriaLog.get_f_back_log(1, action, "\n".join(explanation)) #get the back_log
+
+        self.step +=1
+        if result == True:
+            attrs={"class": 'Passed'}
+            self.passed_steps +=1
+        else:
+            attrs={"class": 'Failed'}
+            self.failed_steps +=1
+        # Create a new row for the test step in the test_steps_table
+        test_step_row = self.soup.new_tag('tr', attrs=attrs)
+        self.test_steps_table.append(test_step_row)
+
+        # Create and append table cells for each column of data
+
+
+        # self.update_duration_result_for_testcase_testgroup(now,result)
+
+        timestamp_cell = self.soup.new_tag('td')
+        timestamp_cell.string = timestamp
+        test_step_row.append(timestamp_cell)
+
+        test_step_cell = self.soup.new_tag('td')
+        test_step_cell.string = f"Step {self.step}"
+        test_step_row.append(test_step_cell)
+
+        action_cell = self.soup.new_tag('td')
+        action_cell.append(str(action))
+        test_step_row.append(action_cell)
+
+        expect_cell = self.soup.new_tag('td')
+        expect_cell.append(str(expect))
+        test_step_row.append(expect_cell)
+
+        actual_cell = self.soup.new_tag('td')
+        actual_cell.append(str(actual))
+        test_step_row.append(actual_cell)
+
+        result_cell = self.soup.new_tag('td',attrs={"class": "col-test-step-log"})
+        result_cell.string = self.passed if result else self.failed
+        test_step_row.append(result_cell)
+
+        if result == False:
+            self._add_test_log(log)
+        else:
+            self._add_test_log()
           # if use this kind method, there some problem with the report
 
     def update_report(self):

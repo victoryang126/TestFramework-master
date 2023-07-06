@@ -25,7 +25,7 @@ if __name__=="__main__":
     # time.sleep(5)
     report_generator.test_step_customize_result('Action 1', 'Expect 1', 'Actual 1', True)
     report_generator.test_step_customize_result('Action 2', 'Expect 2', 'Actual 2', True)
-    TestLog.f_back_log("4")
+    print(AriaLog.get_f_back_log(0, "4"))
     # 生成报告
     report_generator._end_test_case()
     report_generator.generate_report()
