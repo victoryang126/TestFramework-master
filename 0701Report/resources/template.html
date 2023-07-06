@@ -112,7 +112,7 @@ table {
   color: black;
   display: block;
   font-family: "Courier New", Courier, monospace;
-  height: 50px;
+  height: auto;
   overflow-y: scroll;
   padding: 5px;
   white-space: pre-wrap;
@@ -144,7 +144,39 @@ table {
 
 .test_groups, .test_steps {
       width: 100%;
+
    }
+.test_steps {
+        table-layout: fixed;
+        width: 100%;
+    }
+    .test_steps td {
+        word-wrap: break-word;
+    }
+
+   test_steps th.col-step-timestamps {
+        width: 10%;
+    }
+
+    .test_steps th.col-step-teststeps {
+        width: 8%;
+    }
+
+    .test_steps th.col-step-action {
+        width: 15%;
+    }
+
+    .test_steps th.col-step-expect {
+        width: 30%;
+    }
+
+    .test_steps th.col-step-actual {
+        width: 30%;
+    }
+
+    .test_steps th.col-step-result {
+        width: 7%;
+    }
 
    .test_steps tr.Passed {
       background-color: #c9ecc9;

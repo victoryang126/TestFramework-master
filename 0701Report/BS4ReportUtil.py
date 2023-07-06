@@ -28,6 +28,19 @@ class AriaLog:
     def set_log_level(cls,level):
         cls.LEVEL = level
 
+    @classmethod
+    def get_deep_f_back_log(cls,message = "",explanation=""):
+        frame_info = inspect.currentframe().f_back
+        code_infos = []
+        while frame_info.f_back is not None:
+            frame_info = frame_info.f_back
+            line_number = frame_info.f_lineno
+            file_name = frame_info.f_code.co_filename
+            func_name = inspect.getframeinfo(frame_info).function
+            code_infos.append(f"called at line {line_number} in function {func_name} file {file_name}")
+            # code_info = f"called at line {line_number} in file {file_name}\n"
+        code_info = "\n".join(code_infos)
+        return f" {message}\n:{code_info}Details Failure Info \n{explanation}"
 
     @classmethod
     def get_f_back_log(cls,f_back_no:int = 0,message:Any = "",explanation = ""):
@@ -422,8 +435,10 @@ class HTMLReport:
         details_thead.append(details_thead_row)
 
         step_headers = ['Timestamps', 'TestSteps', 'Action', 'Expect', 'Actual', 'Result']
-        for step_header in step_headers:
+        th_classes = ["col-step-timestamps","col-step-teststeps","col-step-action","col-step-expect","col-step-actual","col-step-result"]
+        for i,step_header in enumerate(step_headers):
             th = self.soup.new_tag('th')
+            th["class"] = th_classes[i]
             th.string = step_header
             details_thead_row.append(th)
 
@@ -599,10 +614,10 @@ class HTMLReport:
             expect = None
             actual = "call execute arai function fail"
             result = False
-            log = AriaLog.get_f_back_log(1,f"the return value of aria function shall be a list with 4 element")
+            log = AriaLog.get_deep_f_back_log(f"the return value of aria function shall be a list with 4 element")
         elif expect == None:
             result,actual,timestamp,action = aria_function_return[0],aria_function_return[1],aria_function_return[2],aria_function_return[3]
-            log = AriaLog.get_f_back_log(1,action) #get the back_log
+            log = AriaLog.get_deep_f_back_log(action) #get the back_log
         else:
             result, actual, timestamp, action = aria_function_return[0], aria_function_return[1], aria_function_return[
                 2], aria_function_return[3],
@@ -610,7 +625,7 @@ class HTMLReport:
             result = actual == expect
 
             explanation = compare_eq_any_explanation(expect,actual)
-            log = AriaLog.get_f_back_log(1,action,"\n".join(explanation)) #get the back_log
+            log = AriaLog.get_deep_f_back_log(action,"\n".join(explanation)) #get the back_log
 
         self.step +=1
         if result == True:

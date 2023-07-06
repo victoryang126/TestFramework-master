@@ -11,9 +11,9 @@ class MyLogger:
         # exc_type,exc_value,exe_traceback_obj = sys.exc_info()
         # print(exc_type,exc_value,exe_traceback_obj)
 
-# 示例调用
-logger = MyLogger()
-logger.log("Hello, world!")
+# # 示例调用
+# logger = MyLogger()
+# logger.log("Hello, world!")
 
 # f_back：指向调用当前帧的帧对象。
 #
@@ -36,10 +36,10 @@ def foo():
     line_number = caller_frame.f_lineno
     trace_function = caller_frame.f_trace
 
-    print("Code object:", code_object)
+    # print("Code object:", code_object)
     print("Local variables:", local_variables)
-    print("Global variables:", global_variables)
-    print("Line number:", line_number)
+    # print("Global variables:", global_variables)
+    # print("Line number:", line_number)
     print("Trace function:", trace_function)
 
 foo()
