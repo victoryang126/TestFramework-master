@@ -94,7 +94,10 @@ class HTMLReport:
         self.soup.append(self.html)
 
         if html_title == None:
-            self.html_title = os.path.basename(__file__).split(".")[0]
+            frame = inspect.currentframe()
+            caller_frame = frame.f_back
+            co_filename = caller_frame.f_code.co_filename
+            self.html_title = os.path.basename(co_filename).split(".")[0]
         else:
             self.html_title = html_title
 
@@ -306,7 +309,7 @@ class HTMLReport:
         self.test_case_row.append(timestamp_cell)
 
         test_case_cell = self.soup.new_tag('td')
-        test_case_cell.string = test_case
+        test_case_cell.string = f"{self.html_title}::{self.test_case}"
         self.test_case_row.append(test_case_cell)
 
         result_cell = self.soup.new_tag('td',attrs={"class": "col-result"})
@@ -380,7 +383,7 @@ class HTMLReport:
         timestamp_cell.string = self.test_group_start_timestamp
         self.test_group_row.append(timestamp_cell)
 
-        self.test_group = f"{self.group} {self.test_case}::{test_group}"
+        self.test_group = f"{self.html_title}::{self.test_case}::{self.group}::{test_group}"
 
         test_group_cell = self.soup.new_tag('td')
         test_group_cell.string = self.test_group

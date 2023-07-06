@@ -30,7 +30,7 @@ logger.log("Hello, world!")
 def foo():
     frame = inspect.currentframe()
     caller_frame = frame.f_back
-    code_object = caller_frame.f_code
+    code_object = caller_frame.f_code.co_filename
     local_variables = caller_frame.f_locals
     global_variables = caller_frame.f_globals
     line_number = caller_frame.f_lineno
