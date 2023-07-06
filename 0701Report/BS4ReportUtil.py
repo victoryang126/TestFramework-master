@@ -5,12 +5,12 @@ import getpass
 import socket
 import os
 import datetime
-import copy
+
 from typing import Any
 import inspect
 from CompareUtil import *
 
-from bs4.formatter import HTMLFormatter
+
 
 
 class AriaLog:
@@ -590,16 +590,16 @@ class HTMLReport:
 
     def test_step_aria(self, aria_function_return,expect = None):
 
-        if len(aria_function_return) !=4 and isinstance(aria_function_return) != List:
+        if len(aria_function_return) !=4 and isinstance(aria_function_return,List):
             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
             action = aria_function_return
             expect = None
             actual = "call execute arai function fail"
             result = False
-            log = AriaLog.get_f_back_log(1, f"the return value of aria function shall be a list with 4 element")
+            log = AriaLog.get_f_back_log(1,f"the return value of aria function shall be a list with 4 element")
         elif expect == None:
             result,actual,timestamp,action = aria_function_return[0],aria_function_return[1],aria_function_return[2],aria_function_return[3]
-            log = AriaLog.get_f_back_log(1, action) #get the back_log
+            log = AriaLog.get_f_back_log(1,action) #get the back_log
         else:
             result, actual, timestamp, action = aria_function_return[0], aria_function_return[1], aria_function_return[
                 2], aria_function_return[3],
@@ -607,7 +607,7 @@ class HTMLReport:
             result = actual == expect
 
             explanation = compare_eq_any_explanation(expect,actual)
-            log = AriaLog.get_f_back_log(1, action, "\n".join(explanation)) #get the back_log
+            log = AriaLog.get_f_back_log(1,action,"\n".join(explanation)) #get the back_log
 
         self.step +=1
         if result == True:
@@ -658,7 +658,7 @@ class HTMLReport:
     def update_report(self):
         self.file.write(self.soup.prettify(formatter='html5'))
 
-    def _add_test_log(self,log):
+    def _add_test_log(self,log = ""):
         log_row = self.soup.new_tag('tr')
         td_colspan = self.soup.new_tag('td',attrs = {"colspan": "6"})
         self.log_div = self.soup.new_tag('div',attrs = {"class": "log"})

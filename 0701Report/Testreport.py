@@ -18,6 +18,8 @@ if __name__=="__main__":
     Actual1[1] = 10
     report_generator.test_step_customize_result("Action 1", Actual1, Expect1, True,"This is a test")
     report_generator.test_comment("A")
+    report_generator.test_step_aria([False,"None","3344","5566"])
+    report_generator.test_step_aria([True, "None", "3344", "5566"])
     Actual1[1] = 20
     report_generator.test_step_customize_result('Action 2', Actual1, Expect1, False,["Test Failed"])
 
