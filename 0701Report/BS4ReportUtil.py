@@ -13,6 +13,7 @@ from CompareUtil import *
 
 
 
+
 class AriaLog:
 
     DEBUG = 3
@@ -40,7 +41,7 @@ class AriaLog:
             code_infos.append(f"called at line {line_number} in function {func_name} file {file_name}")
             # code_info = f"called at line {line_number} in file {file_name}\n"
         code_info = "\n".join(code_infos)
-        return f" {message}\n:{code_info}Details Failure Info \n{explanation}"
+        return f" {message}\n:{code_info} Details Failure Info \n{explanation}"
 
     @classmethod
     def get_f_back_log(cls,f_back_no:int = 0,message:Any = "",explanation = ""):
@@ -107,9 +108,12 @@ class HTMLReport:
         self.soup.append(self.html)
 
         if html_title == None:
-            frame = inspect.currentframe()
-            caller_frame = frame.f_back
-            co_filename = caller_frame.f_code.co_filename
+            frame_info = inspect.currentframe()
+            # caller_frame = frame.f_back
+            # co_filename = caller_frame.f_code.co_filename
+            while frame_info.f_back is not None:
+                frame_info = frame_info.f_back
+                co_filename = frame_info.f_code.co_filename
             self.html_title = os.path.basename(co_filename).split(".")[0]
         else:
             self.html_title = html_title
