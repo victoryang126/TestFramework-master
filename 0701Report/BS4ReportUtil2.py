@@ -105,6 +105,8 @@ class HTMLReport:
     soup.append(html)
     html_title = None
     report_path = ""
+
+    # env_datas = {}
     # if html_title == None:
     #     frame_info = inspect.currentframe()
     #     # caller_frame = frame.f_back
@@ -137,15 +139,7 @@ class HTMLReport:
         cls.report_path = report_path
 
     @classmethod
-    def init(cls,html_title=None):
-
-        # cls.test_case_result = cls.passed
-        # cls.test_group_result = cls.passed
-        #
-        # cls.soup = BeautifulSoup(features="html.parser")
-        # cls.html = cls.soup.new_tag('html')
-        # cls.soup.append(cls.html)
-
+    def init(cls):
         if cls.html_title == None:
             frame_info = inspect.currentframe()
             # caller_frame = frame.f_back
@@ -154,8 +148,6 @@ class HTMLReport:
                 frame_info = frame_info.f_back
                 co_filename = frame_info.f_code.co_filename
             cls.html_title = os.path.basename(co_filename).split(".")[0]
-        else:
-            cls.html_title = html_title
 
 
         cls.env_datas = cls._get_module_versions()
