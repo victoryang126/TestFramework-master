@@ -97,17 +97,56 @@ class HTMLReport:
     passed_steps = 0
     failed_steps = 0
 
+    test_case_result = passed
+    test_group_result = passed
+
+    soup = BeautifulSoup(features="html.parser")
+    html = soup.new_tag('html')
+    soup.append(html)
+    html_title = None
+    report_path = ""
+    # if html_title == None:
+    #     frame_info = inspect.currentframe()
+    #     # caller_frame = frame.f_back
+    #     # co_filename = caller_frame.f_code.co_filename
+    #     while frame_info.f_back is not None:
+    #         frame_info = frame_info.f_back
+    #         co_filename = frame_info.f_code.co_filename
+    #     cls.html_title = os.path.basename(co_filename).split(".")[0]
+    # else:
+    #     cls.html_title = html_title
+    #
+    # cls.report_path = report_path
+
+    # file_path = os.path.join(cls.report_path, f"{cls.html_title}.html")
+    # cls.file = open(file_path, "w")
+    # env_datas = _get_module_versions()
+    #
+    # cls._add_head_section() # Add the head section to the HTML report
+    # cls._add_environment_section() # Add the environment section to the HTML report
+    # cls._add_summary_section() # Add the summary section to the HTML report
+    # cls._add_results_section() # Add the results section to the HTML report
+
     @classmethod
-    def init(cls,html_title=None,report_path=""):
+    def set_title(cls,html_title:str):
+        cls.html_title = html_title
 
-        cls.test_case_result = cls.passed
-        cls.test_group_result = cls.passed
 
-        cls.soup = BeautifulSoup(features="html.parser")
-        cls.html = cls.soup.new_tag('html')
-        cls.soup.append(cls.html)
+    @classmethod
+    def set_report_path(cls,report_path):
+        cls.report_path = report_path
 
-        if html_title == None:
+    @classmethod
+    def init(cls,html_title=None):
+
+        # cls.test_case_result = cls.passed
+        # cls.test_group_result = cls.passed
+        #
+        # cls.soup = BeautifulSoup(features="html.parser")
+        # cls.html = cls.soup.new_tag('html')
+        # cls.soup.append(cls.html)
+
+        if cls.html_title == None:
             frame_info = inspect.currentframe()
             # caller_frame = frame.f_back
             # co_filename = caller_frame.f_code.co_filename
@@ -118,10 +157,7 @@ class HTMLReport:
         else:
             cls.html_title = html_title
 
-        cls.report_path = report_path
 
-        file_path = os.path.join(cls.report_path, f"{cls.html_title}.html")
-        cls.file = open(file_path, "w")
         cls.env_datas = cls._get_module_versions()
 
         cls._add_head_section() # Add the head section to the HTML report
@@ -331,7 +367,7 @@ class HTMLReport:
         cls.test_case_row.append(timestamp_cell)
 
         test_case_cell = cls.soup.new_tag('td')
-        test_case_cell.string = f"{cls.html_title}::{cls.test_case}"
+        test_case_cell.string = f"{cls.test_case}"
         cls.test_case_row.append(test_case_cell)
 
         result_cell = cls.soup.new_tag('td',attrs={"class": "col-result"})
@@ -405,7 +441,7 @@ class HTMLReport:
         timestamp_cell.string = cls.test_group_start_timestamp
         cls.test_group_row.append(timestamp_cell)
 
-        cls.test_group = f"{cls.html_title}::{cls.test_case}::{cls.group}::{test_group}"
+        cls.test_group = f"{cls.test_case}::{cls.group}::{test_group}"
 
         test_group_cell = cls.soup.new_tag('td')
         test_group_cell.string = cls.test_group
@@ -471,9 +507,9 @@ class HTMLReport:
             test_case_result_td.string =  cls.test_case_result
 
         if cls.test_case_result== cls.failed:
-            AriaLog.critical(f"HTMLReport::{cls.test_case} {cls.failed}")
+            AriaLog.critical(f"{cls.test_case} {cls.failed}")
         else:
-            AriaLog.pass_log(f"HTMLReport::{cls.test_case} {cls.passed}")
+            AriaLog.pass_log(f"{cls.test_case} {cls.passed}")
 
     @classmethod
     def end_test_group(cls):
@@ -496,9 +532,9 @@ class HTMLReport:
             cls.passed_groups += 1
 
         if cls.test_group_result== cls.failed:
-            AriaLog.critical(f"HTMLReport::{cls.test_group} {cls.failed}")
+            AriaLog.critical(f"{cls.test_group} {cls.failed}")
         else:
-            AriaLog.pass_log(f"HTMLReport::{cls.test_group} {cls.passed}")
+            AriaLog.pass_log(f"{cls.test_group} {cls.passed}")
 
     @classmethod
     def test_step_customize_result(cls, action:str, expect:Any, actual:Any, result:bool,log:str = ""):
@@ -685,9 +721,6 @@ class HTMLReport:
         # if use this kind method, there some problem with the report
 
 
-    @classmethod
-    def update_report(cls):
-        cls.file.write(cls.soup.prettify(formatter='html5'))
 
 
     @classmethod
@@ -711,11 +744,14 @@ class HTMLReport:
     def generate_report(cls):
 
         cls._end_test_case()
+
+        file_path = os.path.join(cls.report_path, f"{cls.html_title}.html")
+        with open(file_path, "w") as file:
         # cls.file.write(cls.soup.prettify(formatter=custom_formatter))
-        cls.file.write(str(cls.html))
-        file_path = os.path.join(cls.report_path,f"{cls.html_title}.html")
-        html_report = Path(os.path.expandvars(file_path)).expanduser()
-        print(f"generate customize html report: {html_report.absolute().as_uri()}")
-        cls.file.close()
+            file.write(str(cls.html))
+            file_path = os.path.join(cls.report_path,f"{cls.html_title}.html")
+            html_report = Path(os.path.expandvars(file_path)).expanduser()
+            print(f"generate customize html report: {html_report.absolute().as_uri()}")
+
 
 

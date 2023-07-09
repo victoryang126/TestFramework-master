@@ -14,7 +14,7 @@ if __name__=="__main__":
     HTMLReport.init()
 
     # 添加测试类
-    HTMLReport.add_test_case('TestCase1')
+    HTMLReport.add_test_case('/Users/monster/PycharmProjects/GitHub/TestFramework-master/0701Report/ConvertFunction.py')
 
     # 添加测试步骤数据
     HTMLReport.add_test_group('Testgroup1')
