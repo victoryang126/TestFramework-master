@@ -16,6 +16,16 @@ from typing import Optional
 from collections import Counter
 from difflib import SequenceMatcher
 
+"""
+Copyright Holger Krekel and others, 2004.
+
+Distributed under the terms of the MIT license, pytest is free and open source software.
+
+Modify by VictorYang 2023,add other code
+"""
+
+
+
 def compare_arrays_ignore_order(array1, array2)->tuple[bool,str]:
     """
     function used to compare two arrays ignore order

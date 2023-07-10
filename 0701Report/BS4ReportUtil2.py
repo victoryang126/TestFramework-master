@@ -88,6 +88,8 @@ def bytearray_to_hex_list(byte_array):
 
 class HTMLReport:
 
+    global G_Test_Case
+
     passed = "Passed"
     failed = "Failed"
     group = 0

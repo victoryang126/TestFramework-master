@@ -51,4 +51,51 @@ filename = get_calling_filename()
 print(filename)
 
 
+def custom_logic():
+    pass
+
+def ActualResult():
+    # 执行一些操作...
+    result = custom_logic()
+    print(result)
+    # 继续其他操作...
+
+# 用户重新定义 custom_logic 函数
+def custom_logic():
+    # 用户定义的逻辑
+    return "Custom Result"
+
+# 用户重新定义 custom_logic 函数
+def custom_logic():
+    # 用户定义的逻辑
+    return "Custom 2222"
+
+# 用户调用 ActualResult() 函数
+result = ActualResult()
+# print(result)
+
+
+class CustomLogic:
+    def __init__(self):
+        self.custom_result = None
+
+    def actual_result(self):
+        # 执行一些操作...
+        result = self.custom_result() if self.custom_result else None
+        # 继续其他操作...
+
+# 创建 CustomLogic 类的实例
+custom_logic = CustomLogic()
+
+# 用户重新赋值 custom_result 属性为自定义逻辑的函数
+def custom_logic_function():
+    # 用户定义的逻辑
+    return "Custom Result"
+
+custom_logic.custom_result = custom_logic_function
+
+# 用户调用 actual_result 方法
+result = custom_logic.actual_result()
+
+
 

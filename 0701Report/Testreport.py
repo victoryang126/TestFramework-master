@@ -11,6 +11,7 @@ def test2():
 
 if __name__=="__main__":
     # 创建HTMLReportGenerator实例
+    print(G_Test_Case)
     HTMLReport.init()
 
     # 添加测试类
