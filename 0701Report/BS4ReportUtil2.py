@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 import bs4
 from bs4 import BeautifulSoup
@@ -88,7 +89,6 @@ def bytearray_to_hex_list(byte_array):
 
 class HTMLReport:
 
-    global G_Test_Case
 
     passed = "Passed"
     failed = "Failed"
@@ -173,7 +173,9 @@ class HTMLReport:
     def _get_module_versions(cls):
         #get the version of related module
         module_version = {}
+        module_version["Python"] = sys.version
         module_version["BS4"] = bs4.__version__
+
         pass
         #TODO get version of related module
         return module_version
