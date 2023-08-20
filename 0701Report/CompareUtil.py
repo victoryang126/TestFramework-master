@@ -657,51 +657,51 @@ def _compare_eq_dict(
     return explanation
 
 
-def _compare_eq_cls(left: Any, right: Any) -> List[str]:
-    if not has_default_eq(left):
-        return []
-    if isdatacls(left):
-        import dataclasses
-
-        all_fields = dataclasses.fields(left)
-        fields_to_check = [info.name for info in all_fields if info.compare]
-    elif isattrs(left):
-        all_fields = left.__attrs_attrs__
-        fields_to_check = [field.name for field in all_fields if getattr(field, "eq")]
-    elif isnamedtuple(left):
-        fields_to_check = left._fields
-    else:
-        assert False
-
-    indent = "  "
-    same = []
-    diff = []
-    for field in fields_to_check:
-        if getattr(left, field) == getattr(right, field):
-            same.append(field)
-        else:
-            diff.append(field)
-
-    explanation = []
-
-    explanation += ["Matching attributes:"]
-    explanation += pprint.pformat(same).splitlines()
-    if diff:
-        explanation += ["Differing attributes:"]
-        explanation += pprint.pformat(diff).splitlines()
-        for field in diff:
-            field_left = getattr(left, field)
-            field_right = getattr(right, field)
-            explanation += [
-                "",
-                "Drill down into differing attribute %s:" % field,
-                ("%s%s: %r != %r") % (indent, field, field_left, field_right),
-            ]
-            explanation += [
-                indent + line
-                for line in _compare_eq_any(field_left, field_right)
-            ]
-    return explanation
+# def _compare_eq_cls(left: Any, right: Any) -> List[str]:
+#     if not has_default_eq(left):
+#         return []
+#     if isdatacls(left):
+#         import dataclasses
+#
+#         all_fields = dataclasses.fields(left)
+#         fields_to_check = [info.name for info in all_fields if info.compare]
+#     elif isattrs(left):
+#         all_fields = left.__attrs_attrs__
+#         fields_to_check = [field.name for field in all_fields if getattr(field, "eq")]
+#     elif isnamedtuple(left):
+#         fields_to_check = left._fields
+#     else:
+#         assert False
+#
+#     indent = "  "
+#     same = []
+#     diff = []
+#     for field in fields_to_check:
+#         if getattr(left, field) == getattr(right, field):
+#             same.append(field)
+#         else:
+#             diff.append(field)
+#
+#     explanation = []
+#
+#     explanation += ["Matching attributes:"]
+#     explanation += pprint.pformat(same).splitlines()
+#     if diff:
+#         explanation += ["Differing attributes:"]
+#         explanation += pprint.pformat(diff).splitlines()
+#         for field in diff:
+#             field_left = getattr(left, field)
+#             field_right = getattr(right, field)
+#             explanation += [
+#                 "",
+#                 "Drill down into differing attribute %s:" % field,
+#                 ("%s%s: %r != %r") % (indent, field, field_left, field_right),
+#             ]
+#             explanation += [
+#                 indent + line
+#                 for line in _compare_eq_any(field_left, field_right)
+#             ]
+#     return explanation
 
 
 
@@ -725,3 +725,9 @@ def _compare_eq_cls(left: Any, right: Any) -> List[str]:
 # explanation = _diff_text("Hello", "World", verbose=1)
 # print("Compare text values:")
 # print('\n'.join(explanation))
+array1 = [1, 2, 3, 4, 4, 5]
+array2 = [5, 2, 3, 4, 4, 5]
+
+ret, diff_info= compare_arrays_ignore_order(array1, array2)
+print(ret)
+print(diff_info)
