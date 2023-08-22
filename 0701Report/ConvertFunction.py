@@ -28,8 +28,7 @@ import os
 def get_main_filename():
     # 获取主模块的文件路径
     main_filepath = __import__('__main__').__file__
-
-    # 提取文件名（包括扩展名）
+    print(main_filepath)
     main_filename = os.path.basename(main_filepath)
 
     return main_filename
@@ -37,18 +36,18 @@ def get_main_filename():
 # 示例调用
 filename = get_main_filename()
 print(filename)
-
-import inspect
-
-def get_calling_filename():
-    frame = inspect.currentframe().f_back
-    filename = inspect.getframeinfo(frame).filename
-    print(os.path.basename(filename).split(".")[0])
-    return filename
-
-# 示例调用
-filename = get_calling_filename()
-print(filename)
+#
+# import inspect
+#
+# def get_calling_filename():
+#     frame = inspect.currentframe().f_back
+#     filename = inspect.getframeinfo(frame).filename
+#     print(os.path.basename(filename).split(".")[0])
+#     return filename
+#
+# # 示例调用
+# filename = get_calling_filename()
+# print(filename)
 
 
 def custom_logic():
