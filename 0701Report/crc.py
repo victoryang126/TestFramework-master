@@ -1,14 +1,15 @@
-def generate_crc_table(poly, width):
+def generate_crc_table(polynomial, width):
     crc_table = [0] * 256
+
     for i in range(256):
-        crc = i
+        crc = i << (width - 8)
         for _ in range(8):
-            if crc & 1:
-                crc = (crc >> 1) ^ poly
+            if crc & (1 << (width - 1)):
+                crc = (crc << 1) ^ polynomial
             else:
-                crc >>= 1
-        crc_table[i] = crc & ((1 << width) - 1)
-    print(crc_table)
+                crc <<= 1
+        crc_table[i] = crc
+
     return crc_table
 
 
