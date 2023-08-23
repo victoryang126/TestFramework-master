@@ -46,10 +46,15 @@ class CRC:
         for byte in data:
             if input_reflect:
                 byte = CRC.reverse_bits(byte, 8)
+            #CRC 8 pass code
+            # index = (crc ^ byte) & 0xFF
+            # crc = (crc >> 8) ^ crc_table[index]
+            index =((crc>>(width -8)) ^ byte ) & 0xFF
+            crc = (crc << 8) ^ crc_table[index]
 
-            index = (crc ^ byte) & 0xFF
-            crc = (crc >> 8) ^ crc_table[index]
+            # crc = (crc >> 8) ^ crc_table[index]
             crc &= ((1 << width) - 1)
+
 
         if result_reflect:
             crc = CRC.reverse_bits(crc, width)
@@ -79,13 +84,22 @@ if __name__ == "__main__":
     CRC.calculate_crc(bytearray([0x31, 0x32, 0x33]), 0x1D, 0xFF, 0xFF, 8)
     CRC.calculate_crc_with_table(bytearray([0x31, 0x32, 0x33]), crc_table, 0xFF, 0xFF, 8)
 
+    CRC.calculate_crc(bytearray([0x31, 0x32, 0x33]), 0x1D, 0xFF, 0xFF, 8,True,True)
+    CRC.calculate_crc_with_table(bytearray([0x31, 0x32, 0x33]), crc_table, 0xFF, 0xFF, 8,True,True)
+
     poly = 0x1021
     crc_table = CRC.generate_crc_table(poly, width=16)
-    CRC.calculate_crc(bytearray([0x31, 0x32, 0x33]), 0x1021, 0x0, 0x0, 16)
-    CRC.calculate_crc_with_table(bytearray([0x31, 0x32, 0x33]), crc_table, 0x0, 0x00, 16)
-    # # Calculate CRC-32 using table
-    # crc32_result = CRC.calculate_crc_with_table(reversed_data, crc32_table, width=32)
-    #
-    # # Reverse CRC-32 result
-    # reversed_crc32_result = CRC.reverse_bits(crc32_result, 32)
-    # print(f"CRC-32 value: {reversed_crc32_result:08X}")
+    CRC.calculate_crc(bytearray([0x31,0x32]), 0x1021, 0x0, 0x0, 16)
+    CRC.calculate_crc_with_table(bytearray([0x31,0x32]), crc_table, 0x0, 0x00, 16)
+
+    CRC.calculate_crc(bytearray([0x31,0x32]), 0x1021, 0x0, 0x0, 16,True,True)
+    CRC.calculate_crc_with_table(bytearray([0x31,0x32]), crc_table, 0x0, 0x00, 16,True,True)
+
+
+    poly = 0x4C11DB7
+    crc_table = CRC.generate_crc_table(poly, width=32)
+    CRC.calculate_crc(bytearray([0x31,0x32]), poly, 0x0, 0x0, 32)
+    CRC.calculate_crc_with_table(bytearray([0x31,0x32]), crc_table, 0x0, 0x00, 32)
+
+    CRC.calculate_crc(bytearray([0x31,0x32]), poly, 0xFFFFFFFF, 0xFFFFFFFF, 32,True,True)
+    CRC.calculate_crc_with_table(bytearray([0x31,0x32]), crc_table, 0xFFFFFFFF, 0xFFFFFFFF, 32,True,True)
