@@ -1,48 +1,31 @@
-import time
+# SWV_Generic_Lib.py
+class G_Var:
+    var1 = None
+    var2 = None
 
-from BS4ReportUtil2 import *
+class SWV_Generic_Lib:
+    @classmethod
+    def some_function(cls):
+        # 使用G_Var类属性中的全局变量
+        print(f"var1: {G_Var.var1}, var2: {G_Var.var2}")
 
+# Project_Lib.py
+# from SWV_Generic_Lib import SWV_Generic_Lib
 
-def test():
-    HTMLReport.test_step_aria([False,"None","3344","5566"])
+class Project_Lib(SWV_Generic_Lib):
+    pass
+    # @staticmethod
+    # def another_static_function():
+    #     # 在这里可以调用父类的方法
+    #     SWV_Generic_Lib.some_function()
 
-def test2():
-    test()
+# # 在另一个文件或测试脚本中：
+# from SWV_Generic_Lib import G_Var
+# from Project_Lib import Project_Lib
 
-if __name__=="__main__":
-    # 创建HTMLReportGenerator实例
-    # print(G_Test_Case)
-    HTMLReport.init()
+# 直接通过类名修改G_Var的属性
+G_Var.var1 = "New Value for var1"
+G_Var.var2 = "New Value for var2"
 
-    # 添加测试类
-    HTMLReport.add_test_case('/Users/monster/PycharmProjects/GitHub/TestFramework-master/0701Report/ConvertFunction.py')
-
-    # 添加测试步骤数据
-    HTMLReport.add_test_group('Testgroup1')
-    # time.sleep(1)
-    Expect1 = bytearray([i for i in range(100)])
-    Actual1 = bytearray([i for i in range(100)])
-    # Expect1 = [i for i in range(100)]
-    # Actual1 = [i for i in range(100)]
-    Actual1[1] = 10
-    test()
-    test2()
-    HTMLReport.test_step_customize_result("Action 1", Actual1, Expect1, True,"This is a test")
-    HTMLReport.test_comment("A")
-    HTMLReport.test_step_aria([False,"None","3344","5566"])
-    HTMLReport.test_step_aria([True, "None", "3344", "5566"])
-    Actual1[1] = 20
-    HTMLReport.test_step_customize_result('Action 2', Actual1, Expect1, False,["Test Failed"])
-
-    HTMLReport.add_test_group('Testgroup2')
-    # time.sleep(5)
-    HTMLReport.test_step_customize_result('Action 1', 'Expect 1', 'Actual 1', True)
-    HTMLReport.test_step_customize_result('Action 2', 'Expect 2', 'Actual 2', True)
-
-    # print(AriaLog.get_f_back_log(0, "4"))
-    # 生成报告
-    HTMLReport._end_test_case()
-    HTMLReport.generate_report()
-
-
-
+# 直接通过类名调用Project_Lib中的方法
+Project_Lib.some_function()
