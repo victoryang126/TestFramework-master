@@ -138,6 +138,8 @@ class SWA_Widget(QWidget):
                 viewitem = QStandardItem(str(value))
                 self.data_model.setItem(i, j, viewitem)
 
+        self.__ui.tableView_data.resizeColumnsToContents()
+
     def display_history(self, item):
         # 清空模型
         item.reverse()
@@ -150,7 +152,7 @@ class SWA_Widget(QWidget):
             for j, value in enumerate(row):
                 viewitem = QStandardItem(str(value))
                 self.history_model.setItem(i, j, viewitem)
-
+        self.__ui.tableView_history.resizeColumnsToContents()
     @pyqtSlot()
     def on_BT_Export_clicked(self):
         file = os.path.join(self.data_base_folder,"Inventory.xlsx")
@@ -158,11 +160,14 @@ class SWA_Widget(QWidget):
 
     @pyqtSlot()
     def on_BT_BackUp_clicked(self):
-        filename,file_extension =  os.path.splitext(self.sql_file)
-        today_date = datetime.date.today().strftime('%Y-%m-%d')
-        newfile = f"{filename}_{today_date}{file_extension}"
-        self.inventory_system.save_as_database(newfile)
-
+        try:
+            filename,file_extension =  os.path.splitext(self.sql_file)
+            today_date = datetime.date.today().strftime('%Y_%m_%d')
+            newfile = f"{filename}_{today_date}{file_extension}"
+            self.inventory_system.save_as_database(self.sql_file,newfile)
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
     def query_pn(self):
         if self.pn:

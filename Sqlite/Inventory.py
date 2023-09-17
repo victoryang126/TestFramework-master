@@ -179,9 +179,9 @@ class InventorySystem:
 
 
 
-    def save_as_database(self, new_db_name):
+    def save_as_database(self,file, new_db_name):
         self.conn.close()
-        shutil.copy("inventory.db", new_db_name)
+        shutil.copy(file, new_db_name)
         print(f"数据库已另存为 '{new_db_name}'")
         self.conn = sqlite3.connect(new_db_name)
         self.cursor = self.conn.cursor()
