@@ -169,9 +169,9 @@ class InventorySystem:
             # columns_to_print = ["ShelfNumber", "Category", "OEM", "PN", "BalanceQuantity"]
             table_data = [["ShelfNumber", "Category", "OEM", "PN", "BalanceQuantity"]]
             table_data.append([ item[column] for column in columns_to_print])
-            table = tabulate(table_data,headers="firstrow",tablefmt="fancy_grid",numalign="left")
-            print(table)
-            return table
+            # table = tabulate(table_data,headers="firstrow",tablefmt="fancy_grid",numalign="left")
+            # print(table)
+            return table_data
         else:
 
             return None
