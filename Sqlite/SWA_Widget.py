@@ -132,27 +132,21 @@ class SWA_Widget(QWidget):
             printer = printer_dialog.printer()
             document = QTextDocument()
             cursor = QTextCursor(document)
-            cursor.setCharFormat(QTextCharFormat())
 
-            # 创建文档中的表格
-            table = QTextTable(document)
-            table_format = table.format()
-            table_format.setHeaderRowCount(1)  # 如果需要标题行，请设置为1
+            # 创建表格格式
+            table_format = QTextTableFormat()
+            table_format.setAlignment(Qt.AlignLeft)
+            table_format.setBorder(1)  # 设置表格边框
+            table_format.setWidth(QTextLength(QTextLength.PercentageLength, 100))  # 表格宽度自适应
+
+            # 创建表格并插入内容
+            table = cursor.insertTable(len(table_content), len(table_content[0]), table_format)
 
             for row, row_data in enumerate(table_content):
                 for col, cell_data in enumerate(row_data):
                     cell = table.cellAt(row, col)
-                    cell_cursor = cell.firstCursorPosition()
-                    cell_cursor.insertText(str(cell_data))
-
-            # 调整表格样式和布局
-            table_format.setAlignment(Qt.AlignLeft)
-            table_format.setBorderStyle(QTextFrameFormat.BorderStyle_Solid)
-            table_format.setWidth(QTextLength(QTextLength.PercentageLength, 100))  # 表格宽度自适应
-
-            # 将表格添加到文档中
-            cursor.movePosition(QTextCursor.End)
-            cursor.insertTable(table)
+                    cursor = cell.firstCursorPosition()
+                    cursor.insertText(str(cell_data))
 
             # 打印文档
             printer.setDocName('Inventory')
