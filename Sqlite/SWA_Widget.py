@@ -242,11 +242,14 @@ class SWA_Widget(QWidget):
             print(traceback.format_exc())
     @pyqtSlot()
     def on_BT_Print_clicked(self):
-        if self.table != None:
-            self.print_item_to_printer(self.table)
-        else:
-            self.warning("没有任何需要打印的")
-
+        try:
+            if self.table != None:
+                self.print_item_to_printer(self.table)
+            else:
+                self.warning("没有任何需要打印的")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

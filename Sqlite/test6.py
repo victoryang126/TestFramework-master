@@ -1,4 +1,6 @@
 import sys
+import traceback
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QTextEdit, QVBoxLayout, QWidget
 from PyQt5.QtPrintSupport import QPrinter,QPrintDialog
 from reportlab.lib.pagesizes import letter
@@ -39,29 +41,33 @@ class BarcodePrinter(QMainWindow):
         return d
 
     def printBarcode(self):
-        text = self.text_edit.toPlainText()
+        try:
+            text = self.text_edit.toPlainText()
 
-        if text:
-            printer = QPrinter(QPrinter.HighResolution)
-            dialog = QPrintDialog(printer, self)
+            if text:
+                printer = QPrinter(QPrinter.HighResolution)
+                dialog = QPrintDialog(printer, self)
 
-            if dialog.exec_() == QPrintDialog.Accepted:
-                painter = QPainter()
-                painter.begin(printer)
+                if dialog.exec_() == QPrintDialog.Accepted:
+                    painter = QPainter()
+                    painter.begin(printer)
 
-                barcode = self.generateBarcode(text)
-                width, height = letter
-                barcode_width = 2.0 * inch
-                barcode_height = 0.5 * inch
+                    barcode = self.generateBarcode(text)
+                    width, height = letter
+                    barcode_width = 2.0 * inch
+                    barcode_height = 0.5 * inch
 
-                # 居中绘制条形码
-                x = (width - barcode_width) / 2
-                y = (height - barcode_height) / 2
+                    # 居中绘制条形码
+                    x = (width - barcode_width) / 2
+                    y = (height - barcode_height) / 2
 
-                barcode.drawOn(painter, x, y)
-                painter.end()
-        else:
-            print("Please enter barcode text.")
+                    barcode.drawOn(painter, x, y)
+                    painter.end()
+            else:
+                print("Please enter barcode text.")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
 def main():
     app = QApplication(sys.argv)
