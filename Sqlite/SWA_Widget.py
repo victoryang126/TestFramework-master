@@ -9,7 +9,6 @@ import traceback
 from PyQt5.QtPrintSupport import QPrintDialog,QPrinter,QPageSetupDialog,QPrintPreviewDialog
 
 
-
 def bind(objectName,propertyName):
     """
     数据绑定函数，例如，将Line_edit的text属性和对象属性绑定起来，任何一个变化，都能传递过去
@@ -126,6 +125,8 @@ class SWA_Widget(QWidget):
     #         printer_dc.TextOut(100, 100, table)
     #         printer_dc.EndPage()
     #         printer_dc.EndDoc()
+
+
     def print_item_to_printer(self, table):
         printer = QPrinter(QPrinter.HighResolution)
 
@@ -174,130 +175,130 @@ class SWA_Widget(QWidget):
         # 结束绘制
         painter.end()
 
-        def display_data(self, item):
-            # 清空模型
-            data  = [item]
-            self.data_model.clear()
-            # 设置表格头
-            self.data_model.setHorizontalHeaderLabels(["ShelfNumber", "Category", "OEM", "PN", "Engineer", "OutboundQuantity", "OutboundDate", "InboundQuantity", "InboundDate", "BalanceQuantity"])
-            # 填充数据
-            for i, row in enumerate(data):
-                for j, value in enumerate(row):
-                    viewitem = QStandardItem(str(value))
-                    self.data_model.setItem(i, j, viewitem)
+    def display_data(self, item):
+        # 清空模型
+        data  = [item]
+        self.data_model.clear()
+        # 设置表格头
+        self.data_model.setHorizontalHeaderLabels(["ShelfNumber", "Category", "OEM", "PN", "Engineer", "OutboundQuantity", "OutboundDate", "InboundQuantity", "InboundDate", "BalanceQuantity"])
+        # 填充数据
+        for i, row in enumerate(data):
+            for j, value in enumerate(row):
+                viewitem = QStandardItem(str(value))
+                self.data_model.setItem(i, j, viewitem)
 
-            self.__ui.tableView_data.resizeColumnsToContents()
+        self.__ui.tableView_data.resizeColumnsToContents()
 
-        def display_history(self, item):
-            # 清空模型
-            item.reverse()
-            data = item
-            self.history_model.clear()
-            # 设置表格头
-            self.history_model.setHorizontalHeaderLabels(["ChangeType", "PN", "Engineer", "Quantity", "Date"])
-            # 填充数据
-            for i, row in enumerate(data):
-                for j, value in enumerate(row):
-                    viewitem = QStandardItem(str(value))
-                    self.history_model.setItem(i, j, viewitem)
-            self.__ui.tableView_history.resizeColumnsToContents()
-        @pyqtSlot()
-        def on_BT_Export_clicked(self):
-            file = os.path.join(self.data_base_folder,"Inventory.xlsx")
-            self.inventory_system.export_to_excel(file)
+    def display_history(self, item):
+        # 清空模型
+        item.reverse()
+        data = item
+        self.history_model.clear()
+        # 设置表格头
+        self.history_model.setHorizontalHeaderLabels(["ChangeType", "PN", "Engineer", "Quantity", "Date"])
+        # 填充数据
+        for i, row in enumerate(data):
+            for j, value in enumerate(row):
+                viewitem = QStandardItem(str(value))
+                self.history_model.setItem(i, j, viewitem)
+        self.__ui.tableView_history.resizeColumnsToContents()
+    @pyqtSlot()
+    def on_BT_Export_clicked(self):
+        file = os.path.join(self.data_base_folder,"Inventory.xlsx")
+        self.inventory_system.export_to_excel(file)
 
-        @pyqtSlot()
-        def on_BT_BackUp_clicked(self):
-            try:
-                filename,file_extension =  os.path.splitext(self.sql_file)
-                today_date = datetime.date.today().strftime('%Y_%m_%d')
-                newfile = f"{filename}_{today_date}{file_extension}"
-                self.inventory_system.save_as_database(self.sql_file,newfile)
-            except Exception as err:
-                self.warning(f"异常{err}")
-                print(traceback.format_exc())
+    @pyqtSlot()
+    def on_BT_BackUp_clicked(self):
+        try:
+            filename,file_extension =  os.path.splitext(self.sql_file)
+            today_date = datetime.date.today().strftime('%Y_%m_%d')
+            newfile = f"{filename}_{today_date}{file_extension}"
+            self.inventory_system.save_as_database(self.sql_file,newfile)
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
-        def query_pn(self):
-            if self.pn:
-                self.data = self.inventory_system.query_item_by_pn(self.pn)
-                if self.data == None:
-                    self.info = f"当前库存无此料号：{self.pn}, 如需入库，请确认货架号"
-                    self.table = None
-                    self.data_model.clear()
-                else:
-                    self.info = "请检查并确认当前库存和库存更新历史记录"
-                    self.table = self.inventory_system.print_item_table(self.data)  # 获取库存信息
-                    self.display_data(self.data)  # 显示库存信息
-                self.history = self.inventory_system.view_history_by_pn(self.pn)  # 查询历史记录
-                if self.history != None:  # 如果有历史记录，则显示
-                    self.display_history(self.history)
-                else:
-                    self.history_model.clear()
-            else:
-                self.warning("内部零件号不能为空")
+    def query_pn(self):
+        if self.pn:
+            self.data = self.inventory_system.query_item_by_pn(self.pn)
+            if self.data == None:
+                self.info = f"当前库存无此料号：{self.pn}, 如需入库，请确认货架号"
                 self.table = None
                 self.data_model.clear()
+            else:
+                self.info = "请检查并确认当前库存和库存更新历史记录"
+                self.table = self.inventory_system.print_item_table(self.data)  # 获取库存信息
+                self.display_data(self.data)  # 显示库存信息
+            self.history = self.inventory_system.view_history_by_pn(self.pn)  # 查询历史记录
+            if self.history != None:  # 如果有历史记录，则显示
+                self.display_history(self.history)
+            else:
                 self.history_model.clear()
+        else:
+            self.warning("内部零件号不能为空")
+            self.table = None
+            self.data_model.clear()
+            self.history_model.clear()
 
-        @pyqtSlot()
-        def on_BT_Query_clicked(self):
-            try:
+    @pyqtSlot()
+    def on_BT_Query_clicked(self):
+        try:
+            self.query_pn()
+            # if self.pn:
+            #     self.data = self.inventory_system.query_item_by_pn(self.pn)
+            #     if self.data == None:
+            #         self.info = f"当前库存无此料号：{self.pn}, 如需入库，请确认货架号"
+            #     else:
+            #         self.info = "请检查并确认当前库存和库存更新历史记录"
+            #         self.table = self.inventory_system.print_item_table(self.data) #获取库存信息
+            #         self.display_data(self.data) #显示库存信息
+            #     self.history = self.inventory_system.view_history_by_pn(self.pn) #查询历史记录
+            #     if self.history != None: #如果有历史记录，则显示
+            #         self.display_history(self.history)
+            # else:
+            #     self.warning("内部零件号不能为空")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
+
+    @pyqtSlot()
+    def on_BT_StockIn_clicked(self):
+        try:
+            if self.pn:
+                self.validate_input_data()
+                if self.data:
+                    self.inventory_system.stock_in(self.pn,self.engineer,int(self.quantity))
+                else:
+                    self.inventory_system.add_item_if_not_exists(self.shelf_number,self.category,self.oem,self.pn,self.engineer,int(self.quantity))
                 self.query_pn()
-                # if self.pn:
-                #     self.data = self.inventory_system.query_item_by_pn(self.pn)
-                #     if self.data == None:
-                #         self.info = f"当前库存无此料号：{self.pn}, 如需入库，请确认货架号"
-                #     else:
-                #         self.info = "请检查并确认当前库存和库存更新历史记录"
-                #         self.table = self.inventory_system.print_item_table(self.data) #获取库存信息
-                #         self.display_data(self.data) #显示库存信息
-                #     self.history = self.inventory_system.view_history_by_pn(self.pn) #查询历史记录
-                #     if self.history != None: #如果有历史记录，则显示
-                #         self.display_history(self.history)
-                # else:
-                #     self.warning("内部零件号不能为空")
-            except Exception as err:
-                self.warning(f"异常{err}")
-                print(traceback.format_exc())
+            else:
+                self.warning("内部零件号不能为空")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
-        @pyqtSlot()
-        def on_BT_StockIn_clicked(self):
-            try:
-                if self.pn:
-                    self.validate_input_data()
-                    if self.data:
-                        self.inventory_system.stock_in(self.pn,self.engineer,int(self.quantity))
-                    else:
-                        self.inventory_system.add_item_if_not_exists(self.shelf_number,self.category,self.oem,self.pn,self.engineer,int(self.quantity))
-                    self.query_pn()
-                else:
-                    self.warning("内部零件号不能为空")
-            except Exception as err:
-                self.warning(f"异常{err}")
-                print(traceback.format_exc())
-
-        @pyqtSlot()
-        def on_BT_StockOut_clicked(self):
-            try:
-                if self.pn:
-                    self.validate_input_data()
-                    self.inventory_system.stock_out(self.pn,self.engineer,int(self.quantity))
-                    self.query_pn()
-                else:
-                    self.warning("内部零件号不能为空")
-            except Exception as err:
-                self.warning(f"异常{err}")
-                print(traceback.format_exc())
-        @pyqtSlot()
-        def on_BT_Print_clicked(self):
-            try:
-                if self.table != None:
-                    self.print_item_to_printer(self.table)
-                else:
-                    self.warning("没有任何需要打印的")
-            except Exception as err:
-                self.warning(f"异常{err}")
-                print(traceback.format_exc())
+    @pyqtSlot()
+    def on_BT_StockOut_clicked(self):
+        try:
+            if self.pn:
+                self.validate_input_data()
+                self.inventory_system.stock_out(self.pn,self.engineer,int(self.quantity))
+                self.query_pn()
+            else:
+                self.warning("内部零件号不能为空")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
+    @pyqtSlot()
+    def on_BT_Print_clicked(self):
+        try:
+            if self.table != None:
+                self.print_item_to_printer(self.table)
+            else:
+                self.warning("没有任何需要打印的")
+        except Exception as err:
+            self.warning(f"异常{err}")
+            print(traceback.format_exc())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
