@@ -125,34 +125,67 @@ class SWA_Widget(QWidget):
     #         printer_dc.TextOut(100, 100, table)
     #         printer_dc.EndPage()
     #         printer_dc.EndDoc()
+    def print_item_to_printer(self, table_content):
+        printer_dialog = QPrintDialog()
 
-    def print_item_to_printer(self, table):
-        printer = QPrinter(QPrinter.HighResolution)
-        # diag = QPrintDialog(printer,self) # 指定输出的 PDF 文件名
-        printer.setPageSize(QPrinter.A4)
-        dialog = QPrintDialog(printer, self)
-        if dialog.exec_() == QPrintDialog.Accepted:
-            painter = QPainter()
-            painter.begin(printer)
+        if printer_dialog.exec_() == QPrintDialog.Accepted:
+            printer = printer_dialog.printer()
+            document = QTextDocument()
+            cursor = QTextCursor(document)
+            cursor.setCharFormat(QTextCharFormat())
 
-            # 设置绘制的位置和样式
-            x, y = 100, 100
-            column_width = 1000
-            row_height = 300
-            font = QFont("Arial", 12)
+            # 创建表格
+            table = cursor.insertTable(len(table_content), len(table_content[0]))
+            table_format = table.format()
+            table_format.setHeaderRowCount(1)  # 如果需要标题行，请设置为1
 
-            # 开始绘制表格
-            painter.setFont(font)
-            for row_data in table:
-                x = 100
-                for item in row_data:
-                    print(item)
-                    painter.drawRect(x, y, column_width, row_height)
-                    painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, str(item))
-                    x += column_width
-                y += row_height
+            for row, row_data in enumerate(table_content):
+                for col, cell_data in enumerate(row_data):
+                    cell = table.cellAt(row, col)
+                    cell_cursor = cell.firstCursorPosition()
+                    cell_cursor.insertText(str(cell_data))
 
-            painter.end()
+            # 调整表格样式和布局
+            table_format.setAlignment(Qt.AlignLeft)
+            table_format.setBorderStyle(QTextFrameFormat.BorderStyle_Solid)
+            table_format.setWidth(QTextLength(QTextLength.PercentageLength, 100))  # 表格宽度自适应
+
+            # 将表格添加到文档中
+            cursor.movePosition(QTextCursor.End)
+            cursor.insertBlock()
+            cursor.insertTable(table_format)
+
+            # 打印文档
+            printer.setDocName('Inventory')
+            printer.setResolution(300)  # 设置打印分辨率
+            document.print_(printer)
+    # def print_item_to_printer(self, table):
+    #     printer = QPrinter(QPrinter.HighResolution)
+    #     printer.setOutputFormat(QPrinter.PdfFormat)
+    #     printer.setOutputFileName('output.pdf')  # 指定输出的 PDF 文件名
+    #
+    #     dialog = QPrintDialog(printer, self)
+    #     if dialog.exec_() == QPrintDialog.Accepted:
+    #         painter = QPainter()
+    #         painter.begin(printer)
+    #
+    #         # 设置绘制的位置和样式
+    #         x, y = 100, 100
+    #         column_width = 100
+    #         row_height = 30
+    #         font = QFont("Arial", 12)
+    #
+    #         # 开始绘制表格
+    #         painter.setFont(font)
+    #         for row_data in table:
+    #             x = 100
+    #             for item in row_data:
+    #                 painter.drawRect(x, y, column_width, row_height)
+    #                 painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, str(item))
+    #                 x += column_width
+    #             y += row_height
+    #
+    #         painter.end()
     # def print_item_to_printer(self, table):
     #     printer = QPrinter(QPrinter.HighResolution)
     #
