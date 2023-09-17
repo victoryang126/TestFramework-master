@@ -134,8 +134,8 @@ class SWA_Widget(QWidget):
             cursor = QTextCursor(document)
             cursor.setCharFormat(QTextCharFormat())
 
-            # 创建表格
-            table = cursor.insertTable(len(table_content), len(table_content[0]))
+            # 创建文档中的表格
+            table = QTextTable(document)
             table_format = table.format()
             table_format.setHeaderRowCount(1)  # 如果需要标题行，请设置为1
 
@@ -152,8 +152,7 @@ class SWA_Widget(QWidget):
 
             # 将表格添加到文档中
             cursor.movePosition(QTextCursor.End)
-            cursor.insertBlock()
-            cursor.insertTable(table_format)
+            cursor.insertTable(table)
 
             # 打印文档
             printer.setDocName('Inventory')
