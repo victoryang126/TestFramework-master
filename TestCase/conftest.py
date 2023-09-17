@@ -44,7 +44,7 @@ def pytest_html_results_table_row(report, cells):
     action = getattr(report, 'action', '-')
     expect_result = getattr(report, 'expect_result', '-')
     actual_result = getattr(report, 'actual_result', '-')
-    result = getattr(report, 'result', '-')
+    result = getattr(report, 'data', '-')
     timestamp = getattr(report, 'timestamp', '-')
 
     cells.insert(0, str(timestamp))

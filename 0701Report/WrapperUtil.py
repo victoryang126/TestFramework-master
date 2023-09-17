@@ -46,7 +46,7 @@ class AriaFuncDecorator:
     def func_excute_duration(cls, func):
         def wrapper(*args, **kwargs):
             # Perform additional decoration logic...
-            # For example, you can modify the arguments or manipulate the result
+            # For example, you can modify the arguments or manipulate the data
             start_time = time.time()
             result = func(*args, **kwargs)
             execution_time = time.time() - start_time
@@ -73,11 +73,11 @@ class AriaFuncDecorator:
 #         try:
 #             # Call the original function, passing args and kwargs
 #             timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-#             result = func(*args, **kwargs)
+#             data = func(*args, **kwargs)
 #             # logging.info(f"{timestamp} execute {message}")
 #             # Check if the function has a return value
-#             if result is not None:
-#                 return [Result.passed, result,timestamp,message]
+#             if data is not None:
+#                 return [Result.passed, data,timestamp,message]
 #             else:
 #                 return [Result.passed, None,timestamp,message]
 #         except Exception as e:

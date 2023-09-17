@@ -6,9 +6,9 @@
 # report_rows = []
 #
 # # 添加一行数据到测试报告
-# def add_row_to_report(test_step, action, expect_result, actual_result, result):
+# def add_row_to_report(test_step, action, expect_result, actual_result, data):
 #     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-#     row = (now, test_step, action, expect_result, actual_result, result)
+#     row = (now, test_step, action, expect_result, actual_result, data)
 #     report_rows.append(row)
 #
 #
@@ -19,10 +19,10 @@
 #     rep = outcome.get_result()
 #     if rep.when == "call":
 #         if rep.failed:
-#             result = "失败"
+#             data = "失败"
 #         else:
-#             result = "通过"
-#         add_row_to_report(None, None, None, None, result)
+#             data = "通过"
+#         add_row_to_report(None, None, None, None, data)
 #
 # # 生成HTML测试报告
 # @pytest.mark.hookwrapper

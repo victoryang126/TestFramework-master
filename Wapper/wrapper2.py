@@ -23,7 +23,7 @@ def decorator(func):
         # Code to execute after calling the original function
         print("After function execution")
 
-        # Return the result of the original function
+        # Return the data of the original function
         return result
 
     return wrapper

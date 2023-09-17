@@ -5,18 +5,18 @@ import pytest
 #     action = "执行动作"
 #     expect_result = "期望结果"
 #     actual_result = "实际结果"
-#     result = "通过"
+#     data = "通过"
 #
 #     # 获取当前时间戳
 #     current_timestamp = timestamp
 #
 #     # 在报告中显示测试步骤的信息
-#     print_test_step(test_step, action, expect_result, actual_result, result, current_timestamp)
+#     print_test_step(test_step, action, expect_result, actual_result, data, current_timestamp)
 #
-#     assert result == "通过"
+#     assert data == "通过"
 #
 #
-# def print_test_step(step, action, expect_result, actual_result, result, timestamp):
+# def print_test_step(step, action, expect_result, actual_result, data, timestamp):
 #     """
 #     打印测试步骤的信息。
 #     """
@@ -24,32 +24,32 @@ import pytest
 #     print(f"Action: {action}")
 #     print(f"Expect Result: {expect_result}")
 #     print(f"Actual Result: {actual_result}")
-#     print(f"Result: {result}")
+#     print(f"Result: {data}")
 #     print(f"Timestamp: {timestamp}")
 #
 #
 # import pytest
 #
 #
-# @pytest.mark.parametrize("action, expect_result, actual_result, result", [
+# @pytest.mark.parametrize("action, expect_result, actual_result, data", [
 #     ("执行动作1", "期望结果1", "实际结果1", "通过"),
 #     ("执行动作2", "期望结果2", "实际结果2", "通过"),
 # ])
-# def test_example(timestamp, test_step, action, expect_result, actual_result, result):
+# def test_example(timestamp, test_step, action, expect_result, actual_result, data):
 #     # 获取当前时间戳
 #     current_timestamp = timestamp
 #
 #     # 在报告中显示测试步骤的信息
-#     print_test_step(test_step, action, expect_result, actual_result, result, current_timestamp)
+#     print_test_step(test_step, action, expect_result, actual_result, data, current_timestamp)
 #
-#     assert result == "通过"
+#     assert data == "通过"
 #
 #
-# def print_test_step(step, action, expect_result, actual_result, result, timestamp):
+# def print_test_step(step, action, expect_result, actual_result, data, timestamp):
 #     """
 #     打印测试步骤的信息。
 #     """
-#     table_row = f"<tr><td>{step}</td><td>{action}</td><td>{expect_result}</td><td>{actual_result}</td><td>{result}</td><td>{timestamp}</td></tr>"
+#     table_row = f"<tr><td>{step}</td><td>{action}</td><td>{expect_result}</td><td>{actual_result}</td><td>{data}</td><td>{timestamp}</td></tr>"
 #     pytest_html = pytest.config.pluginmanager.getplugin("html")
 #     pytest_html._add_html(pytest_html.extras.table([table_row], ['Test Steps', 'Action', 'Expect Result', 'Actual Result', 'Result', 'Timestamps']))
 
@@ -58,7 +58,7 @@ def test_example(timestamp, test_step):
     action = "action"
     expect_result = "expect_result"
     actual_result = "actual_result"
-    result = "result"
+    result = "data"
 
     # 获取当前时间戳
     current_timestamp = timestamp

@@ -211,7 +211,7 @@ def pytest_html_results_table_row(report, cells):
     action = getattr(report, 'action', '-')
     expect_result = getattr(report, 'expect_result', '-')
     actual_result = getattr(report, 'actual_result', '-')
-    result = getattr(report, 'result', '-')
+    result = getattr(report, 'data', '-')
     timestamp = getattr(report, 'timestamp', '-')
 
     cells.insert(0, str(timestamp))
@@ -320,13 +320,13 @@ def generate_html_table(data):
 
     for item in data:
         html += f'''
-            <tr class="{item['result'].lower()}">
+            <tr class="{item['data'].lower()}">
                 <td>{item['timestamps']}</td>
                 <td>{item['teststeps']}</td>
                 <td>{item['action']}</td>
                 <td>{item['expect']}</td>
                 <td>{item['actual']}</td>
-                <td>{item['result']}</td>
+                <td>{item['data']}</td>
             </tr>
         '''
 

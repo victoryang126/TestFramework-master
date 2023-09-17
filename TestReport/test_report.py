@@ -45,6 +45,6 @@ def test_example(test_steps):
 def test_another_example(test_steps):
     test_steps("Action 3", "Expect 3", "Actual 3", "Pass")
     test_steps("Action 4", "Expect 4", "Actual 4", "Pass")
-    # assert result == 'Failed'
+    # assert data == 'Failed'
 if __name__ == "__main__":
     pytest.main(['-v','test_report.py'  ,'--html=test_report.html','--self-contained-html'])

@@ -12,7 +12,7 @@ import pytest
 
 import pytest
 
-@pytest.mark.parametrize("timestamps, steps, action, expect, actual, result", [
+@pytest.mark.parametrize("timestamps, steps, action, expect, actual, data", [
     ("2023-05-27 10:00:00", "Step 1", "Action 111111111TGhhhhhhhhhhhhhhhhhhhhfyhuihidishf1111111111111111111111111111111111111111"*10, "Expected value 1", "Actual value 1", "Pass"),
     ("2023-05-27 11:00:00", "Step 2", "Action 2", "Expected value 2", "Actual value 2", "Fail"),
 ])

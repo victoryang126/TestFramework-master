@@ -67,7 +67,7 @@ class Result:
     def add_test_class(cls,test_class_name):
         test_class = {
             'duration': 0.0,
-            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
+            'data': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
             'test_class': test_class_name,
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             "test_cases":[]
@@ -79,7 +79,7 @@ class Result:
         cls.step = 0
         test_case = {
             'duration': 0.0,
-            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
+            'data': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
             'test_case': test_case_name,
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'test_steps':[]
@@ -104,7 +104,7 @@ class Result:
             'action': action,
             'expect': copy.deepcopy(expect),
             'actual': copy.deepcopy(actual),
-            'result': result[0],
+            'data': result[0],
             'log':result[1],
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
@@ -129,7 +129,7 @@ class Result:
             'action': action,
             'expect': copy.deepcopy(expect),
             'actual': copy.deepcopy(actual),
-            'result': result[0],
+            'data': result[0],
             'log':result[1],
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
@@ -143,7 +143,7 @@ class Result:
             'action': comment,
             'expect': "",
             'actual': "actual",
-            'result': "",
+            'data': "",
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
         cls.results[-1]["test_cases"][-1]["test_steps"].append(test_step)
@@ -166,9 +166,9 @@ class Result:
         cls.results[-1]["test_cases"][-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
         test_steps =  cls.results[-1]["test_cases"][-1]["test_steps"]
         #get the test results in all test steps
-        test_steps_results = [test_step["result"] for test_step in test_steps]
+        test_steps_results = [test_step["data"] for test_step in test_steps]
         if cls.failed not in test_steps_results:
-            cls.results[-1]["test_cases"][-1]['result'] = cls.passed
+            cls.results[-1]["test_cases"][-1]['data'] = cls.passed
 
 
     @classmethod
@@ -180,9 +180,9 @@ class Result:
         cls.results[-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
         test_cases =  cls.results[-1]["test_cases"]
         #get the test results in all test case
-        test_cases_results = [test_case["result"] for test_case in test_cases]
+        test_cases_results = [test_case["data"] for test_case in test_cases]
         if cls.failed not in test_cases_results:
-            cls.results[-1]['result'] = cls.passed
+            cls.results[-1]['data'] = cls.passed
 
 # class TestClass:
 #

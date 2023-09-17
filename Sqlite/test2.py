@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView, QPushButton, QVBoxLayout, QWidget, QLineEdit, QLabel, QTableWidgetItem, QMessageBox
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import sqlite3
-from test import InventorySystem
+from Inventory import InventorySystem
 
 class InventoryApp(QMainWindow):
     def __init__(self):

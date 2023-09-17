@@ -48,13 +48,13 @@ def generate_html_table(data):
 
     for item in data:
         html += f'''
-            <tr class="{item['result'].lower()}">
+            <tr class="{item['data'].lower()}">
                 <td>{item['timestamps']}</td>
                 <td>{item['teststeps']}</td>
                 <td>{item['action']}</td>
                 <td>{item['expect']}</td>
                 <td>{item['actual']}</td>
-                <td>{item['result']}</td>
+                <td>{item['data']}</td>
             </tr>
         '''
 
@@ -103,7 +103,7 @@ def pytest_runtest_makereport(item, call):
             'action': action,
             'expect': expect,
             'actual': actual,
-            'result': result
+            'data': result
         }
         extra.append(pytest_html.extras.html(generate_html_table([data])))
         report.extra = extra

@@ -1,9 +1,9 @@
 import traceback
 def divide_numbers(a, b):
-    # result = a / b
+    # data = a / b
     # try:
         result = a / b
-    #     print("result：", result)
+    #     print("data：", data)
     # except Exception:
     #     traceback.print_exc()
 

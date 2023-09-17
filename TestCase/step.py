@@ -2,7 +2,7 @@ import pytest
 from pytest_html import extras
 import datetime
 
-# def test_step(action,expect_result,actual_result,result):
+# def test_step(action,expect_result,actual_result,data):
 #     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 #     test_step = {
 #         'Timestamps': timestamp,
@@ -10,7 +10,7 @@ import datetime
 #         'Action': action,
 #         'ExpectResult': expect_result,
 #         'ActualResult': actual_result,
-#         'Result': result
+#         'Result': data
 #     }
 #     test_steps_list.append(test_step)
 

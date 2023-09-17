@@ -45,8 +45,8 @@ class TestExample:
 
 
 if __name__ == "__main__":
-    pytest.main(['-v','test.py'  ,'--html=test.html','--self-contained-html'])
-    # pytest.main(['-vs','test.py','--html=test.html','--self-contained-html'])
-    # pytest.main(['-v','test.py','--show-capture=no'])
+    pytest.main(['-v','Inventory.py'  ,'--html=test.html','--self-contained-html'])
+    # pytest.main(['-vs','Inventory.py','--html=test.html','--self-contained-html'])
+    # pytest.main(['-v','Inventory.py','--show-capture=no'])
     report = Report()
     report.generate_html(Result.results,"test_report.html")

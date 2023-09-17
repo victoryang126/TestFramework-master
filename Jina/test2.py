@@ -15,7 +15,7 @@ data = {
         {
             'time': '2023-05-30 22:31:09.590726',
             'test_class': '-',
-            'result': {
+            'data': {
                 'status': 'Passed',
                 'test': 'pytest_hook.py::Test_C::test_example',
                 'duration': '0.00',
@@ -62,7 +62,7 @@ data = {
         {
             'time': '2023-05-30 22:31:09.590936',
             'test_class': '-',
-            'result': {
+            'data': {
                 'status': 'Failed',
                 'test': 'pytest_hook.py::Test_C::test_another_example',
                 'duration': '0.00',

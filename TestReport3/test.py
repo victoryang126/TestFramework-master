@@ -8,8 +8,8 @@ from collections import defaultdict
 #     def __init__(self):
 #         self.results = defaultdict(lambda: defaultdict(list))
 #
-#     def add_result(self, test_class, test_case, test_step, result):
-#         self.results[test_class][test_case].append((test_step, result))
+#     def add_result(self, test_class, test_case, test_step, data):
+#         self.results[test_class][test_case].append((test_step, data))
 #
 #     def get_failures(self):
 #         failures = []
@@ -17,8 +17,8 @@ from collections import defaultdict
 #             class_failed = False
 #             for test_case, test_steps in test_cases.items():
 #                 case_failed = False
-#                 for step, result in test_steps:
-#                     if result == "fail":
+#                 for step, data in test_steps:
+#                     if data == "fail":
 #                         case_failed = True
 #                         class_failed = True
 #                         failures.append((test_class, test_case, step))
@@ -30,16 +30,16 @@ from collections import defaultdict
 #
 # # pytest钩子函数，收集测试结果
 # def pytest_runtest_makereport(item, call):
-#     result = None
+#     data = None
 #     if call.excinfo is not None:
-#         result = "fail"
+#         data = "fail"
 #     elif call.when == "call":
-#         result = "pass"
-#     if result is not None:
+#         data = "pass"
+#     if data is not None:
 #         test_class = item.cls.__name__ if item.cls else "NoClass"
 #         test_case = item.name
 #         test_step = call.when
-#         custom_result.add_result(test_class, test_case, test_step, result)
+#         custom_result.add_result(test_class, test_case, test_step, data)
 #
 # # 自定义的pytest插件
 # class CustomReportPlugin:
@@ -90,4 +90,4 @@ class TestExample:
 
 if __name__ == "__main__":
     # pytest.main(["-qq"])
-    pytest.main(['-v','test.py'  ,'--html=test.html','--self-contained-html'])
+    pytest.main(['-v','Inventory.py'  ,'--html=test.html','--self-contained-html'])

@@ -33,16 +33,16 @@ def test_example():
     Test the example function.
     """
     print("Execute")
-    # result = 3
-    # assert result == 42
+    # data = 3
+    # assert data == 42
 
 def test_example2(execute_feature_manually):
     """
     Test the example function.
     """
     print("Execute")
-    # result = 3
-    # assert result == 42
+    # data = 3
+    # assert data == 42
 
 
 if __name__ == "__main__":

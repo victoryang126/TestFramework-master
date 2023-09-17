@@ -10,7 +10,7 @@ if __name__ == "__main__":
     #输出调试信息
     # pytest.main(['-s'])
     # #指定模块 中标记为smoke的测试用例
-    # pytest.main(['-sv', '-m=smoke', './testcase', '--html=./report/result.html', '--self-contained-html'])
+    # pytest.main(['-sv', '-m=smoke', './testcase', '--html=./report/data.html', '--self-contained-html'])
     # pytest.main(['-sv','./testcase/py_test.py','--html=./report/py_test.html','--self-contained-html'])
     # #指定文件夹
     # pytest.main(['-sv','./testcase'])
@@ -18,5 +18,5 @@ if __name__ == "__main__":
     # #指定nodeid 运行特定模块中的某个用例::python分隔符
     # pytest.main(['-sv', './testcase/py_test.py::Test_Class::test_1'])
     # pytest.main(["--html ./report/report.html"])
-    # pytest.main(["-vs --html=./report/result.html"])
+    # pytest.main(["-vs --html=./report/data.html"])
     # pytest.main()

@@ -45,7 +45,7 @@ class AriaFuncDecorator:
     def my_additional_decorator(cls, func):
         def wrapper(*args, **kwargs):
             # Perform additional decoration logic...
-            # For example, you can modify the arguments or manipulate the result
+            # For example, you can modify the arguments or manipulate the data
             start_time = time.time()
             result = func(*args, **kwargs)
             execution_time = time.time() - start_time

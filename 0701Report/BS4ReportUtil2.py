@@ -366,7 +366,7 @@ class HTMLReport:
         test_case_cell.string = f"{cls.test_case}"
         cls.test_case_row.append(test_case_cell)
 
-        result_cell = cls.soup.new_tag('td',attrs={"class": "col-result"})
+        result_cell = cls.soup.new_tag('td',attrs={"class": "col-data"})
         result_cell.string = result
         cls.test_case_row.append(result_cell)
 
@@ -415,7 +415,7 @@ class HTMLReport:
         :param test_group: the name of the test group
         :return:
         """
-        #handler the test group result for previous one
+        #handler the test group data for previous one
         if cls.group !=0:
             cls.end_test_group()
 
@@ -444,7 +444,7 @@ class HTMLReport:
         cls.test_group_row.append(test_group_cell)
 
 
-        result_cell = cls.soup.new_tag('td',attrs={"class": "col-result"})
+        result_cell = cls.soup.new_tag('td',attrs={"class": "col-data"})
         result_cell.string = result
         cls.test_group_row.append(result_cell)
 
@@ -476,7 +476,7 @@ class HTMLReport:
         details_thead.append(details_thead_row)
 
         step_headers = ['Timestamps', 'TestSteps', 'Action', 'Expect', 'Actual', 'Result']
-        th_classes = ["col-step-timestamps","col-step-teststeps","col-step-action","col-step-expect","col-step-actual","col-step-result"]
+        th_classes = ["col-step-timestamps","col-step-teststeps","col-step-action","col-step-expect","col-step-actual","col-step-data"]
         for i,step_header in enumerate(step_headers):
             th = cls.soup.new_tag('th')
             th["class"] = th_classes[i]
@@ -486,7 +486,7 @@ class HTMLReport:
     @classmethod
     def _end_test_case(cls):
         """
-        this function used to get the duration and final result of test case
+        this function used to get the duration and final data of test case
         :return:
         """
         cls.end_test_group()
@@ -510,7 +510,7 @@ class HTMLReport:
     @classmethod
     def end_test_group(cls):
         """
-        this function is used to get the duration and final result of test group
+        this function is used to get the duration and final data of test group
         :return:
         """
         end_time = datetime.datetime.now()
@@ -535,7 +535,7 @@ class HTMLReport:
     @classmethod
     def test_step_customize_result(cls, action:str, expect:Any, actual:Any, result:bool,log:str = ""):
         """
-        function used to add customize step,the user can defined the result
+        function used to add customize step,the user can defined the data
         :param action: action
         :param expect:
         :param actual:
@@ -558,7 +558,7 @@ class HTMLReport:
         # Create and append table cells for each column of data
         now = datetime.datetime.now()
 
-        # cls.update_duration_result_for_testcase_testgroup(now,result)
+        # cls.update_duration_result_for_testcase_testgroup(now,data)
 
         timestamp_cell = cls.soup.new_tag('td')
         timestamp_cell.string = now.strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -590,11 +590,11 @@ class HTMLReport:
     @classmethod
     def test_step_eq(cls, action:str, expect:Any, actual:Any):
         """
-        function used to add customize step,the user can defined the result
+        function used to add customize step,the user can defined the data
         :param action: action
         :param expect:
         :param actual:
-        :param result:
+        :param data:
         :param log:
         :return:
         """
@@ -619,7 +619,7 @@ class HTMLReport:
         # Create and append table cells for each column of data
         now = datetime.datetime.now()
 
-        # cls.update_duration_result_for_testcase_testgroup(now,result)
+        # cls.update_duration_result_for_testcase_testgroup(now,data)
 
         timestamp_cell = cls.soup.new_tag('td')
         timestamp_cell.string = now.strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -664,7 +664,7 @@ class HTMLReport:
         else:
             result, actual, timestamp, action = aria_function_return[0], aria_function_return[1], aria_function_return[
                 2], aria_function_return[3],
-            #compare the result
+            #compare the data
             result = actual == expect
 
             explanation = compare_eq_any_explanation(expect,actual)
@@ -684,7 +684,7 @@ class HTMLReport:
         # Create and append table cells for each column of data
 
 
-        # cls.update_duration_result_for_testcase_testgroup(now,result)
+        # cls.update_duration_result_for_testcase_testgroup(now,data)
 
         timestamp_cell = cls.soup.new_tag('td')
         timestamp_cell.string = timestamp

@@ -53,7 +53,7 @@ class Test_C():
     def test_another_example(self,test_step):
         test_step("Action 3", "Expect 3", "Actual 3")
         test_step("Action 4", "Expect 4", "Actual 4")
-        # assert result == 'Failed'
+        # assert data == 'Failed'
 
 if __name__ == "__main__":
     pytest.main(['-v','pytest_hook.py'  ,'--html=test_report_hook.html','--self-contained-html'])

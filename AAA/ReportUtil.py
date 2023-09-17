@@ -79,7 +79,7 @@ class Result:
     def add_test_case(cls,test_case_name):
         test_case = {
             'duration': 0.0,
-            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
+            'data': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
             'test_case': test_case_name,
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             "test_groups":[]
@@ -91,7 +91,7 @@ class Result:
         cls.step = 0
         test_group = {
             'duration': 0.0,
-            'result': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
+            'data': cls.failed, # default is Failed, if any exception happen, then the test calls will be failed
             'test_group': test_group_name,
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
             'test_steps':[]
@@ -114,14 +114,14 @@ class Result:
             result = aria_function_return[0]
             log = aria_function_return[1]
         else:
-            #if the aria function have return value, then the index1 is the return result
+            #if the aria function have return value, then the index1 is the return data
             result,log = cls._compare_assert(aria_function_return[1], expect)
         test_step = {
             "test_step": f"Step {cls.step}",
             'action': aria_function_return[3],
             'expect': copy.deepcopy(expect),
             'actual': aria_function_return[1],
-            'result': result,
+            'data': result,
             'log': log,
             'timestamp': aria_function_return[2]
         }
@@ -142,7 +142,7 @@ class Result:
             'action': action,
             'expect': copy.deepcopy(expect),
             'actual': copy.deepcopy(actual),
-            'result': result[0],
+            'data': result[0],
             'log':result[1],
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
@@ -165,7 +165,7 @@ class Result:
             'action': action,
             'expect': copy.deepcopy(expect),
             'actual': copy.deepcopy(actual),
-            'result': result[0],
+            'data': result[0],
             'log':result[1],
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
@@ -190,7 +190,7 @@ class Result:
             'action': action,
             'expect': copy.deepcopy(expect),
             'actual': copy.deepcopy(actual),
-            'result': result[0],
+            'data': result[0],
             'log':result[1],
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
@@ -204,7 +204,7 @@ class Result:
             'action': comment,
             'expect': "",
             'actual': "actual",
-            'result': "",
+            'data': "",
             'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
         }
         cls.results[-1]["test_groups"][-1]["test_steps"].append(test_step)
@@ -229,9 +229,9 @@ class Result:
         cls.results[-1]["test_groups"][-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
         test_steps =  cls.results[-1]["test_groups"][-1]["test_steps"]
         #get the test results in all test steps
-        test_steps_results = [test_step["result"] for test_step in test_steps]
+        test_steps_results = [test_step["data"] for test_step in test_steps]
         if cls.failed not in test_steps_results:
-            cls.results[-1]["test_groups"][-1]['result'] = cls.passed
+            cls.results[-1]["test_groups"][-1]['data'] = cls.passed
 
 
     @classmethod
@@ -243,9 +243,9 @@ class Result:
         cls.results[-1]["duration"] =  "{:.4f}".format((end - start).total_seconds())
         test_groups =  cls.results[-1]["test_groups"]
         #get the test results in all test case
-        test_groups_results = [test_group["result"] for test_group in test_groups]
+        test_groups_results = [test_group["data"] for test_group in test_groups]
         if cls.failed not in test_groups_results:
-            cls.results[-1]['result'] = cls.passed
+            cls.results[-1]['data'] = cls.passed
 
 # class TestClass:
 #

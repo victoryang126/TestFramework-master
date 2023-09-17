@@ -48,7 +48,7 @@ def pytest_html_results_table_row(report, cells):
 
 def pytest_configure(config):
     config.addinivalue_line(
-        "markers", "test_steps(action, expect_result, actual_result, result): Add test steps information to the report"
+        "markers", "test_steps(action, expect_result, actual_result, data): Add test steps information to the report"
     )
 
 def pytest_html_report_html(report, config):

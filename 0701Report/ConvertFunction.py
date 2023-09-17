@@ -71,7 +71,7 @@ def custom_logic():
 
 # 用户调用 ActualResult() 函数
 result = ActualResult()
-# print(result)
+# print(data)
 
 
 class CustomLogic:

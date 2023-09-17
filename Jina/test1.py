@@ -15,7 +15,7 @@ data = {
         {
             'timestamp': '2023-05-30 22:31:09.590726',
             'test_class': 'AA',
-            'result': 'Passed',
+            'data': 'Passed',
             'test': 'pytest_hook.py::Test_C::test_example',
             'duration': '0.00',
             'test_cases': [
@@ -24,7 +24,7 @@ data = {
                     'test_case': 'TestCase 1',
                     'file': 'File 2',
                     'duration': 'Duration 2',
-                    'result': 'Passed',
+                    'data': 'Passed',
                     'test_steps': [
                         {
                             'timestamp': 'Timestamp 2',
@@ -32,7 +32,7 @@ data = {
                             'action': 'Action 3',
                             'expect': 'Expect 3',
                             'actual': 'Actual 3',
-                            'result': 'Failed'
+                            'data': 'Failed'
                         },
                         {
                             'timestamp': 'Timestamp 2',
@@ -40,7 +40,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'result': 'Passed'
+                            'data': 'Passed'
                         },
                         {
                             'timestamp': 'Timestamp 2',
@@ -48,7 +48,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'result': 'Failed'
+                            'data': 'Failed'
                         }
                     ]
                 }
@@ -57,7 +57,7 @@ data = {
         {
             'timestamp': '2023-05-30 22:31:09.590936',
             'test_class': 'BB',
-            'result': 'Failed',
+            'data': 'Failed',
             'test': 'pytest_hook.py::Test_C::test_another_example',
             'duration': '0.00',
             'test_cases': [
@@ -66,7 +66,7 @@ data = {
                     'test_case': 'TestCase 3',
                     'file': 'File 2',
                     'duration': 'Duration 2',
-                    'result': 'Failed',
+                    'data': 'Failed',
                     'test_steps': [
                         {
                             'timestamp': 'Timestamp 2',
@@ -74,7 +74,7 @@ data = {
                             'action': 'Action 3',
                             'expect': 'Expect 3',
                             'actual': 'Actual 3',
-                            'result': 'Passed'
+                            'data': 'Passed'
 
                         },
                         {
@@ -83,7 +83,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'result': 'Passed'
+                            'data': 'Passed'
                         },
                         {
                             'timestamp': 'Timestamp 2',
@@ -91,7 +91,7 @@ data = {
                             'action': 'Action 4',
                             'expect': 'Expect 4',
                             'actual': 'Actual 4',
-                            'result': 'Failed'
+                            'data': 'Failed'
                         }
                     ]
                 }

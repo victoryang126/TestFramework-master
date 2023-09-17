@@ -83,7 +83,7 @@ for diff in diff_info:
 
 list1 = [1, 2, 3]
 list2 = [1, 4, 4,5]
-# result = compare_elements(list1, list2)
+# data = compare_elements(list1, list2)
 
 compare_elements("AB", "AD")
 
