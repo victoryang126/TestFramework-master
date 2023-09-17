@@ -163,6 +163,7 @@ class SWA_Widget(QWidget):
             y += row_height
 
         painter.end()
+        # print(painter)
 
     def print(self, table, printer):
         # 创建 QPainter 对象并连接到打印机
