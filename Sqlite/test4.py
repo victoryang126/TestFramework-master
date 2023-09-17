@@ -19,7 +19,7 @@ class DictionaryToTable(QMainWindow):
         # 创建打印按钮
         print_button = QPushButton('打印', self)
         print_button.setGeometry(50, 270, 100, 30)
-        print_button.clicked.connect(self.print_table)
+        print_button.clicked.connect(self.print_preview)
 
         # 将字典数据填充到表格中
         self.fill_table()
@@ -35,7 +35,7 @@ class DictionaryToTable(QMainWindow):
             self.table_widget.setItem(row, 0, QTableWidgetItem(header))
             self.table_widget.setItem(row, 1, QTableWidgetItem(str(data[row])))
 
-    def print_table(self):
+    def print_preview(self):
         printer = QPrinter(QPrinter.HighResolution)
         dialog = QPrintDialog(printer, self)
 
@@ -83,6 +83,10 @@ class DictionaryToTable(QMainWindow):
                 y += row_height
 
             painter.end()
+
+            # 手动显示打印预览
+            preview_dialog = QPrintPreviewDialog(printer, self)
+            preview_dialog.exec_()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
