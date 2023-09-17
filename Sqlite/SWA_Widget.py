@@ -109,22 +109,7 @@ class SWA_Widget(QWidget):
         QMessageBox.information(self, title, str)
 
 
-    # def print_item_to_printer(self, table):
-    #
-    #     printer_diqlog = QPrintDialog()
-    #
-    #     if printer_diqlog.exec_():
-    #         printer_name = printer_diqlog.printer().printerName()
-    #         printer_handle = win32print.OpenPrinter(printer_name)
-    #         printer_info = win32print.GetPrinter(printer_handle, 2)
-    #         printer_dc = win32ui.CreateDC()
-    #         printer_dc.CreatePrinterDC(printer_name)
-    #
-    #         printer_dc.StartDoc('Inventory')
-    #         printer_dc.StartPage()
-    #         printer_dc.TextOut(100, 100, table)
-    #         printer_dc.EndPage()
-    #         printer_dc.EndDoc()
+
     def print_item_to_printer(self, table_content):
         printer_dialog = QPrintDialog()
 
@@ -138,6 +123,7 @@ class SWA_Widget(QWidget):
             table_format.setAlignment(Qt.AlignLeft)
             table_format.setBorder(1)  # 设置表格边框
             table_format.setWidth(QTextLength(QTextLength.PercentageLength, 100))  # 表格宽度自适应
+            table_format.setColumnWidthConstraints(QTextLength(QTextLength.Per))
 
             # 创建表格并插入内容
             table = cursor.insertTable(len(table_content), len(table_content[0]), table_format)
@@ -150,83 +136,9 @@ class SWA_Widget(QWidget):
 
             # 打印文档
             printer.setDocName('Inventory')
-            printer.setResolution(300)  # 设置打印分辨率
+            printer.setResolution(600)  # 设置打印分辨率
             document.print_(printer)
-    # def print_item_to_printer(self, table):
-    #     printer = QPrinter(QPrinter.HighResolution)
-    #     printer.setOutputFormat(QPrinter.PdfFormat)
-    #     printer.setOutputFileName('output.pdf')  # 指定输出的 PDF 文件名
-    #
-    #     dialog = QPrintDialog(printer, self)
-    #     if dialog.exec_() == QPrintDialog.Accepted:
-    #         painter = QPainter()
-    #         painter.begin(printer)
-    #
-    #         # 设置绘制的位置和样式
-    #         x, y = 100, 100
-    #         column_width = 100
-    #         row_height = 30
-    #         font = QFont("Arial", 12)
-    #
-    #         # 开始绘制表格
-    #         painter.setFont(font)
-    #         for row_data in table:
-    #             x = 100
-    #             for item in row_data:
-    #                 painter.drawRect(x, y, column_width, row_height)
-    #                 painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, str(item))
-    #                 x += column_width
-    #             y += row_height
-    #
-    #         painter.end()
-    # def print_item_to_printer(self, table):
-    #     printer = QPrinter(QPrinter.HighResolution)
-    #
-    #     # 创建打印预览对话框
-    #     preview_dialog = QPrintPreviewDialog(printer, self)
-    #     preview_dialog.setWindowTitle('Print Preview')
-    #
-    #     # 连接打印预览对话框的信号
-    #     preview_dialog.paintRequested.connect(self.print_preview)
-    #
-    #     # 显示打印预览对话框
-    #     if preview_dialog.exec_() == QPrintPreviewDialog.Accepted:
-    #         self.print(table, printer)
 
-    def print_preview(self, printer):
-        # 使用 QPainter 绘制打印内容
-        painter = QPainter(printer)
-        table_content = self.table  # 获取表格内容
-
-        # 设置绘制的位置和样式
-        x, y = 100, 100
-        column_width = 100
-        row_height = 30
-        font = QFont("Arial", 12)
-
-        # 开始绘制表格
-        painter.setFont(font)
-        for row_data in table_content:
-            x = 100
-            for item in row_data:
-                painter.drawRect(x, y, column_width, row_height)
-                painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, str(item))
-                x += column_width
-            y += row_height
-
-        painter.end()
-        # print(painter)
-
-    def print(self, table, printer):
-        # 创建 QPainter 对象并连接到打印机
-        painter = QPainter()
-        painter.begin(printer)
-
-        # 使用 QPainter 绘制打印内容
-        self.print_preview(printer)
-
-        # 结束绘制
-        painter.end()
 
     def display_data(self, item):
         # 清空模型
