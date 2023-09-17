@@ -126,20 +126,46 @@ class SWA_Widget(QWidget):
     #         printer_dc.EndPage()
     #         printer_dc.EndDoc()
 
-
     def print_item_to_printer(self, table):
         printer = QPrinter(QPrinter.HighResolution)
+        printer.setOutputFormat(QPrinter.PdfFormat)
+        printer.setOutputFileName('output.pdf')  # 指定输出的 PDF 文件名
 
-        # 创建打印预览对话框
-        preview_dialog = QPrintPreviewDialog(printer, self)
-        preview_dialog.setWindowTitle('Print Preview')
+        dialog = QPrintDialog(printer, self)
+        if dialog.exec_() == QPrintDialog.Accepted:
+            painter = QPainter()
+            painter.begin(printer)
 
-        # 连接打印预览对话框的信号
-        preview_dialog.paintRequested.connect(self.print_preview)
+            # 设置绘制的位置和样式
+            x, y = 100, 100
+            column_width = 100
+            row_height = 30
+            font = QFont("Arial", 12)
 
-        # 显示打印预览对话框
-        if preview_dialog.exec_() == QPrintPreviewDialog.Accepted:
-            self.print(table, printer)
+            # 开始绘制表格
+            painter.setFont(font)
+            for row_data in table:
+                x = 100
+                for item in row_data:
+                    painter.drawRect(x, y, column_width, row_height)
+                    painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, str(item))
+                    x += column_width
+                y += row_height
+
+            painter.end()
+    # def print_item_to_printer(self, table):
+    #     printer = QPrinter(QPrinter.HighResolution)
+    #
+    #     # 创建打印预览对话框
+    #     preview_dialog = QPrintPreviewDialog(printer, self)
+    #     preview_dialog.setWindowTitle('Print Preview')
+    #
+    #     # 连接打印预览对话框的信号
+    #     preview_dialog.paintRequested.connect(self.print_preview)
+    #
+    #     # 显示打印预览对话框
+    #     if preview_dialog.exec_() == QPrintPreviewDialog.Accepted:
+    #         self.print(table, printer)
 
     def print_preview(self, printer):
         # 使用 QPainter 绘制打印内容
