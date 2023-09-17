@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QVBoxLayout, QWidget
-from PyQt5.QtGui import QPainter, QPen, QFont
+from PyQt5.QtGui import QPainter, QPen, QFont,QTextDocument
 from PyQt5.QtCore import Qt
 from PyQt5.QtPrintSupport import QPrinter,QPrintDialog,QPrintPreviewDialog
 
@@ -37,56 +37,32 @@ class DictionaryToTable(QMainWindow):
 
     def print_preview(self):
         printer = QPrinter(QPrinter.HighResolution)
-        dialog = QPrintDialog(printer, self)
 
-        if dialog.exec_() == QPrintDialog.Accepted:
-            painter = QPainter()
-            painter.begin(printer)
+        # 创建一个文档对象
+        doc = QTextDocument()
 
-            # 获取表格的内容
-            table_content = []
-            for row in range(self.table_widget.rowCount()):
-                table_content.append([self.table_widget.item(row, 0).text(), self.table_widget.item(row, 1).text()])
+        # 添加表格内容到文档中
+        doc.setHtml(self.table_to_html(self.table_widget))
 
-            # 设置表格样式
-            table_style = '''
-                border-collapse: collapse;
-                width: 100%;
-            '''
-            td_style = '''
-                border: 1px solid #dddddd;
-                text-align: left;
-                padding: 8px;
-            '''
+        # 设置文档为打印机
+        printer.setOutputFormat(QPrinter.NativeFormat)
+        doc.print_(printer)
 
-            # 开始绘制表格
-            painter.setRenderHint(QPainter.Antialiasing)
-            painter.setRenderHint(QPainter.TextAntialiasing)
-            painter.setFont(QFont("Arial", 12))
+    def table_to_html(self, table_widget):
+        html = "<html><body><table border='1' cellspacing='0' cellpadding='2'>"
 
-            table_width = 500
-            column_width = table_width / 2
+        for row in range(table_widget.rowCount()):
+            html += "<tr>"
+            for column in range(table_widget.columnCount()):
+                item = table_widget.item(row, column)
+                if item:
+                    html += f"<td>{item.text()}</td>"
+                else:
+                    html += "<td></td>"
+            html += "</tr>"
 
-            x, y = 50, 50
-            row_height = 30
-
-            for row_data in table_content:
-                x = 50
-                for item in row_data:
-                    painter.setPen(QPen(Qt.black))
-                    painter.drawRect(x, y, column_width, row_height)
-
-                    painter.setPen(QPen(Qt.black))
-                    painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, item)
-
-                    x += column_width
-                y += row_height
-
-            painter.end()
-
-            # 手动显示打印预览
-            preview_dialog = QPrintPreviewDialog(printer, self)
-            preview_dialog.exec_()
+        html += "</table></body></html>"
+        return html
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
