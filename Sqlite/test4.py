@@ -69,10 +69,10 @@ class DictionaryToTable(QMainWindow):
         for row_data in table_content:
             x = 50
             for item in row_data:
-                painter.setPen(Qt.black)
+                painter.setPen(QPen(Qt.black))
                 painter.drawRect(x, y, column_width, row_height)
 
-                painter.setPen(Qt.black)
+                painter.setPen(QPen(Qt.black))
                 painter.drawText(x + 5, y + 20, column_width - 10, row_height - 10, Qt.AlignLeft, item)
 
                 x += column_width
@@ -84,7 +84,7 @@ class DictionaryToTable(QMainWindow):
         printer = QPrinter(QPrinter.HighResolution)
 
         # 创建一个打印预览对话框
-        preview_dialog = QPrintPreviewDialog(printer, self)
+        preview_dialog = QPrintPreviewDialog(self)
         preview_dialog.paintRequested.connect(self.print_table)
 
         # 显示打印预览
