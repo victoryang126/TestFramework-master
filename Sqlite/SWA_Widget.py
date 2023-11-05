@@ -123,16 +123,23 @@ class SWA_Widget(QWidget):
             table_format.setAlignment(Qt.AlignLeft)
             table_format.setBorder(1)  # 设置表格边框
             table_format.setWidth(QTextLength(QTextLength.PercentageLength, 100))  # 表格宽度自适应
-            table_format.setColumnWidthConstraints(QTextLength(QTextLength.Per))
+            # table_format.setColumnWidthConstraints(QTextLength(QTextLength.PercentageLength, 0))
 
             # 创建表格并插入内容
             table = cursor.insertTable(len(table_content), len(table_content[0]), table_format)
+
+            #设置字体
+            font = QFont("Arial",16)
+            table_text_format = QTextCharFormat()
+            table_text_format.setFont(font)
+
+            # table.cursor().setCharFormat(table_text_format)
 
             for row, row_data in enumerate(table_content):
                 for col, cell_data in enumerate(row_data):
                     cell = table.cellAt(row, col)
                     cursor = cell.firstCursorPosition()
-                    cursor.insertText(str(cell_data))
+                    cursor.insertText(str(cell_data),table_text_format)
 
             # 打印文档
             printer.setDocName('Inventory')
@@ -145,7 +152,7 @@ class SWA_Widget(QWidget):
         data  = [item]
         self.data_model.clear()
         # 设置表格头
-        self.data_model.setHorizontalHeaderLabels(["ShelfNumber", "Category", "OEM", "PN", "Engineer", "OutboundQuantity", "OutboundDate", "InboundQuantity", "InboundDate", "BalanceQuantity"])
+        self.data_model.setHorizontalHeaderLabels(["ShelfNumber", "Category", "OEM", "PN", "Engineer", "StockOutQuantity", "StockOutDate", "StockInQuantity", "StockInDate", "BalanceQuantity"])
         # 填充数据
         for i, row in enumerate(data):
             for j, value in enumerate(row):
@@ -183,9 +190,10 @@ class SWA_Widget(QWidget):
             self.warning(f"异常{err}")
             print(traceback.format_exc())
 
-    def query_pn(self):
+    def query_item(self):
         if self.pn:
             self.data = self.inventory_system.query_item_by_pn(self.pn)
+            # self.data = self.inventory_system.query_item_by_pn_oem(self.pn,self.oem)
             if self.data == None:
                 self.info = f"当前库存无此料号：{self.pn}, 如需入库，请确认货架号"
                 self.table = None
@@ -208,7 +216,7 @@ class SWA_Widget(QWidget):
     @pyqtSlot()
     def on_BT_Query_clicked(self):
         try:
-            self.query_pn()
+            self.query_item()
             # if self.pn:
             #     self.data = self.inventory_system.query_item_by_pn(self.pn)
             #     if self.data == None:
@@ -235,7 +243,7 @@ class SWA_Widget(QWidget):
                     self.inventory_system.stock_in(self.pn,self.engineer,int(self.quantity))
                 else:
                     self.inventory_system.add_item_if_not_exists(self.shelf_number,self.category,self.oem,self.pn,self.engineer,int(self.quantity))
-                self.query_pn()
+                self.query_item()
             else:
                 self.warning("内部零件号不能为空")
         except Exception as err:
@@ -248,7 +256,7 @@ class SWA_Widget(QWidget):
             if self.pn:
                 self.validate_input_data()
                 self.inventory_system.stock_out(self.pn,self.engineer,int(self.quantity))
-                self.query_pn()
+                self.query_item()
             else:
                 self.warning("内部零件号不能为空")
         except Exception as err:

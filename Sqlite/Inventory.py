@@ -85,6 +85,14 @@ class InventorySystem:
         else:
             return None
 
+    def query_item_by_pn_oem(self, pn,oem):
+        self.cursor.execute("SELECT * FROM inventory WHERE PN=? AND OEM=?", (pn,oem))
+        item = self.cursor.fetchone()
+        if item:
+            return item
+        else:
+            return None
+
     def add_item_if_not_exists(self,shelf_number,category,oem, pn, engineer, inbound_quantity):
         # 检查数据库中是否已存在具有相同PN的记录
         self.cursor.execute("SELECT PN FROM inventory WHERE PN=?", (pn,))
