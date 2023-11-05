@@ -204,6 +204,7 @@ class InventorySystem:
             print("数据已成功导入到数据库")
         except Exception as e:
             print(f"导入数据时发生错误: {str(e)}")
+
 # 示例用法
 if __name__ == '__main__':
 
