@@ -7,17 +7,19 @@ class VBF:
     description = ""
     sw_part = ""
     sw_part_type = ""
-    network = 0x00
+    # network = 0x00
     data_format_identifier = 0x00
     ecu_address = 0x00
     verification_block_start = 0x00
-    frame_format = ""
+    # frame_format = ""
     erase = []
     checksum = bytes()
-    raw = bytes()
-    data = []
+    # raw = bytes()
+    # data = []
 
-    def __init__(self, data):
+    def __init__(self, file):
+        with open(file, "rb") as fd:
+            data = fd.read()
         if not isinstance(data, bytes):
             raise TypeError("Requires binary input")
 
@@ -108,9 +110,9 @@ class VBF:
             f.close()
 
 if __name__ == "__main__":
-    with open('Application_Signed.vbf', "rb") as fd:
-        datas = fd.read()
-    Vtest = VBF(datas)
+    # with open('Application_Signed.vbf', "rb") as fd:
+    #     datas = fd.read()
+    Vtest = VBF("Application_Signed.vbf")
     # print(Vtest.data)
     print(Vtest.data_format_identifier)
     print(Vtest.description)
