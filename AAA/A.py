@@ -1,28 +1,43 @@
-import re
+import traceback
+import can
 
-def convert(name):
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+def step():
+    try:
+        assert [1,2]==[1,1]
+    except AssertionError as e:
+        print("Assertion failed:", str(e))
+        traceback.print_exc()
+        # print(traceback.format_exc())
 
-# the metaclass will automatically get passed the same arguments that we pass to `type`
-def camel_to_snake_case(name, bases, attrs):
-    """Return a class object, with its attributes from camelCase to snake_case."""
-    print("Calling the metaclass camel_to_snake_case to construct class: {}".format(name))
+# from assertpy import assert_that
+#
+# value = 42
+#
+# # 使用 assertpy 进行断言
+# assert_that([1,2]).is_equal_to([1,1])
+# assert_that(value).is_instance_of(int)
+# assert_that(value).is_greater_than(0)
 
-    # pick up any attribute that doesn't start with '__' and snakecase it
-    snake_attrs = {}
-    for attr_name, attr_val in attrs.items():
-        if not attr_name.startswith('__'):
-            snake_attrs[convert(attr_name)] = attr_val
-        else:
-            snake_attrs[attr_name] = attr_val
-    return type(name, bases, snake_attrs) # let `type` do the class creation
+# from hamcrest import assert_that, equal_to, has_length, contains_string
+#
+# value = "Hello, World!"
+# numbers = [1, 2, 3, 4, 5]
+#
+# # 使用 PyHamcrest 进行断言
+# assert_that(value, equal_to("Hello, Worrld!"))  # 断言相等性
+# assert_that(value, contains_string("World"))  # 断言包含子字符串
+# assert_that(numbers, has_length(5))  # 断言列表长度为 5
 
-class MyVector(metaclass=camel_to_snake_case):
-    def addToVector(self): pass
-    def subtractFromVector(self, other): pass
-    def calculateDotProduct(self, other): pass
-    def calculateCrossProduct(self, other): pass
-    def calculateTripleProduct(self, other): pass
+from nose.tools import assert_equal, assert_in
 
-print([a for a in dir(MyVector) if not a.startswith('__')])
+value = "Hello, World!"
+numbers = [1, 2, 3, 4, 5]
+
+# 使用 nose 进行断言
+try:
+    assert_equal(value, "Hello, Worle!")  # 断言相等性
+except Exception as e:
+    print(e)
+    print(traceback.format_exc())
+# assert_in("World", value)  # 断言字符串包含
+# assert_equal(len(numbers), 5)  # 断言列表长度为 5
