@@ -1,43 +1,23 @@
-import traceback
-import can
+class A:
+    class B:
+        class C:
+            pass
 
-def step():
-    try:
-        assert [1,2]==[1,1]
-    except AssertionError as e:
-        print("Assertion failed:", str(e))
-        traceback.print_exc()
-        # print(traceback.format_exc())
+    @classmethod
+    def get_nested_classes(cls, current_class=None, level=1):
+        if current_class is None:
+            current_class = cls
 
-# from assertpy import assert_that
-#
-# value = 42
-#
-# # 使用 assertpy 进行断言
-# assert_that([1,2]).is_equal_to([1,1])
-# assert_that(value).is_instance_of(int)
-# assert_that(value).is_greater_than(0)
+        nested_classes = []
+        for name, obj in current_class.__dict__.items():
+            if isinstance(obj, type) and obj.__module__ == current_class.__module__:
+                nested_classes.append(name)
+                if level > 1:
+                    nested_classes.extend(cls.get_nested_classes(obj, level - 1))
+        return nested_classes
 
-# from hamcrest import assert_that, equal_to, has_length, contains_string
-#
-# value = "Hello, World!"
-# numbers = [1, 2, 3, 4, 5]
-#
-# # 使用 PyHamcrest 进行断言
-# assert_that(value, equal_to("Hello, Worrld!"))  # 断言相等性
-# assert_that(value, contains_string("World"))  # 断言包含子字符串
-# assert_that(numbers, has_length(5))  # 断言列表长度为 5
+# 使用A的函数获取嵌套类的名称
+nested_class_names = A.get_nested_classes(level=2)
 
-from nose.tools import assert_equal, assert_in
-
-value = "Hello, World!"
-numbers = [1, 2, 3, 4, 5]
-
-# 使用 nose 进行断言
-try:
-    assert_equal(value, "Hello, Worle!")  # 断言相等性
-except Exception as e:
-    print(e)
-    print(traceback.format_exc())
-# assert_in("World", value)  # 断言字符串包含
-# assert_equal(len(numbers), 5)  # 断言列表长度为 5
+# 打印嵌套类的名称
+print(f"Nested classes in A: {', '.join(nested_class_names)}")
