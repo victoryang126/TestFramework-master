@@ -1,76 +1,56 @@
-import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
-def flatten_data(parsed_data, output_file='output.xlsx'):
-    flat_data = []
+def write_data_to_existing_sheet(file_path, sheet_name, data):
+    # Load the existing workbook
+    workbook = load_workbook(file_path)
 
-    for can_frame_info in parsed_data:
-        can_frame_dict = {
-            'CanFrameName': can_frame_info['Name'],
-            'CanFrameDlc': can_frame_info['Dlc'],
-            'CanFrameId': can_frame_info.get('Id', None),
-        }
+    # Check if the sheet exists, if not, create it
+    if sheet_name not in workbook.sheetnames:
+        workbook.create_sheet(sheet_name)
 
-        if 'Pdus' in can_frame_info:
-            for pdu_info in can_frame_info['Pdus']:
-                pdu_dict = {
-                    'PduName': pdu_info['Name'],
-                    'PduDlc': pdu_info['Dlc'],
-                    'PduId': pdu_info.get('PduId', None),
-                    'PduTimePeriod': pdu_info.get('TimePeriod', None),
-                    'PduHeader': pdu_info.get('Header', None),
-                }
+    # Select the sheet
+    worksheet = workbook[sheet_name]
 
-                if 'signals' in pdu_info:
-                    for signal_info in pdu_info['signals']:
-                        signal_dict = {
-                            'SignalName': signal_info['Name'],
-                            'SignalBitLength': signal_info['BitLength'],
-                        }
+    # Clear existing data in the sheet
+    worksheet.delete_rows(1, worksheet.max_row)
 
-                        if 'TableValues' in signal_info:
-                            signal_dict['SignalTableValues'] = ', '.join(signal_info['TableValues'])
-                        else:
-                            signal_dict['SignalTableValues'] = None
+    # Write column headers
+    header_row = 1
+    for col_index, col_name in enumerate(data[0], start=1):
+        worksheet.cell(row=header_row, column=col_index, value=col_name)
 
-                        if 'Factor' in signal_info:
-                            signal_dict['SignalFactor'] = signal_info['Factor']
-                        else:
-                            signal_dict['SignalFactor'] = None
+    # Write new data to the sheet
+    for row_index, row_data in enumerate(data, start=2):
+        for col_index, col_value in enumerate(row_data.values(), start=1):
+            worksheet.cell(row=row_index, column=col_index, value=col_value)
 
-                        if 'Offset' in signal_info:
-                            signal_dict['SignalOffset'] = signal_info['Offset']
-                        else:
-                            signal_dict['SignalOffset'] = None
+    # Auto size columns based on content
+    for column in worksheet.columns:
+        max_length = 0
+        column = [col for col in column]
+        column_letter = get_column_letter(column[0].column)
 
-                        flat_data.append({**can_frame_dict, **pdu_dict, **signal_dict})
-                else:
-                    flat_data.append({**can_frame_dict, **pdu_dict})
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
 
-    df = pd.DataFrame(flat_data)
+        adjusted_width = (max_length + 2)
+        worksheet.column_dimensions[column_letter].width = adjusted_width
 
-    # Save the DataFrame to Excel with openpyxl engine to enable styling
-    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Sheet1')
+    # Save the changes to the existing workbook
+    workbook.save(file_path)
 
-        # Access the Excel writer and the default worksheet
-        worksheet = writer.sheets['Sheet1']
+# Example usage
+file_path = 'your_existing_file.xlsx'
+sheet_name = 'Sheet1'  # Change this to the desired sheet name
+data_to_write = [
+    {'Header 1': 'Value 1', 'Header 2': 'Value 2'},
+    {'Header 1': 'Value 3', 'Header 2': 'Value 4'},
+    # Add more data as needed
+]
 
-        # Apply styling options
-        for column in worksheet.columns:
-            max_length = 0
-            column = [column[0].column] + [col.value for col in column]
-            for col_index, cell_value in enumerate(column):
-                try:
-                    if len(str(cell_value)) > max_length:
-                        max_length = len(cell_value)
-                except:
-                    pass
-            adjusted_width = (max_length + 2)
-            worksheet.column_dimensions[column[0]].width = adjusted_width
-
-        for row in worksheet.iter_rows():
-            for cell in row:
-                cell.alignment = openpyxl.styles.Alignment(wrap_text=True)
-
-# Assuming parsed_can_frames is the list containing the parsed data
-flatten_data(parsed_can_frames)
+write_data_to_existing_sheet(file_path, sheet_name, data_to_write)
