@@ -1,23 +1,27 @@
-class A:
-    class B:
-        class C:
-            pass
+import pandas as pd
 
-    @classmethod
-    def get_nested_classes(cls, current_class=None, level=1):
-        if current_class is None:
-            current_class = cls
+def process_qualify_columns(df):
+    # 获取所有列名
+    columns = df.columns
 
-        nested_classes = []
-        for name, obj in current_class.__dict__.items():
-            if isinstance(obj, type) and obj.__module__ == current_class.__module__:
-                nested_classes.append(name)
-                if level > 1:
-                    nested_classes.extend(cls.get_nested_classes(obj, level - 1))
-        return nested_classes
+    # 找到包含 "Qualify" 字符串的列
+    qualify_columns = [col for col in columns if 'Qualify' in col]
 
-# 使用A的函数获取嵌套类的名称
-nested_class_names = A.get_nested_classes(level=2)
+    # 处理每个符合条件的列
+    for col in qualify_columns:
+        # 使用 apply 函数对每个单元格进行 split 操作
+        df[col] = df[col].apply(lambda x: x.split(",") if pd.notnull(x) else x)
 
-# 打印嵌套类的名称
-print(f"Nested classes in A: {', '.join(nested_class_names)}")
+    return df
+
+# 示例用法
+data = {'ID': [1, 2, 3],
+        'Name_Qualify1': ['A,X,Y', 'B,Z', 'C'],
+        'Value_Qualify2': ['10,20,30', '40', '50,60']}
+df = pd.DataFrame(data)
+
+# 处理包含 "Qualify" 字符串的列
+result_df = process_qualify_columns(df)
+
+# 打印处理后的 DataFrame
+print(result_df)
