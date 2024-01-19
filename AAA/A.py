@@ -2,56 +2,6 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 
 
-def parse_can_frame_definition(can_frame):
-    name = can_frame.get('Name')
-    dlc = can_frame.get('Dlc')
-    frame_id = can_frame.get('Id')
-
-    print(f"Frame Name: {name}, DLC: {dlc}, ID: {frame_id}")
-
-    pdus_node = can_frame.find('.//Pdus')
-    if pdus_node is not None:
-        # Check for DynamicContainerPduDefinition
-        dynamic_container = pdus_node.find('.//DynamicContainerPduDefinition')
-        if dynamic_container is not None:
-            dlc_dynamic_container = dynamic_container.get('Dlc')
-            header_dynamic_container = dynamic_container.find('Header').text
-            print(f"  Dynamic Container - DLC: {dlc_dynamic_container}, Header: {header_dynamic_container}")
-
-            # Iterate through SignalPduDefinition nodes within DynamicContainerPduDefinition
-            for signal_pdu in dynamic_container.findall('.//SignalPduDefinition'):
-                dlc_signal_pdu = signal_pdu.get('Dlc')
-                dynamic_properties = signal_pdu.find('.//DynamicPduProperties')
-                pdu_id = dynamic_properties.find('PduId').text
-                time_period = dynamic_properties.find('TimePeriod').text
-                time_offset = dynamic_properties.find('TimeOffset').text
-
-                print(f"    Signal PDU - DLC: {dlc_signal_pdu}, PDU ID: {pdu_id}, Time Period: {time_period}, Time Offset: {time_offset}")
-
-                # Iterate through Signals nodes within SignalPduDefinition
-                signals_node = signal_pdu.find('.//Signals')
-                if signals_node is not None:
-                    for signal in signals_node.findall('.//SignalDefinition'):
-                        signal_name = signal.get('Name')
-                        start_bit = signal.find('StartBit').text
-                        bit_length = signal.find('BitLength').text
-
-                        print(f"      Signal Name: {signal_name}, Start Bit: {start_bit}, Bit Length: {bit_length}")
-
-                        table_values_node = signal.find('.//TableValues')
-                        if table_values_node is not None:
-                            # Extract Key and Value from TableValues node
-                            table_values = [(item.get('Key'), item.get('Value')) for item in table_values_node.findall('.//Item')]
-                            # signal_info['TableValues'] = table_values
-                            print(table_values)
-
-                        # Check if LinearComputationMethod node exists
-                        linear_computation_method_node = signal.find('.//LinearComputationMethod')
-                        if linear_computation_method_node is not None:
-                            factor = linear_computation_method_node.find('.//Factor/DynamicValue').text
-                            offset = linear_computation_method_node.find('.//Offset/DynamicValue').text
-                            print( {'Factor': factor, 'Offset': offset})
-                            # signal_info['LinearComputationMethod'] = {'Factor': factor, 'Offset': offset}
 
 
 class AcpdfUtil:
@@ -70,6 +20,8 @@ class AcpdfUtil:
             return table_values
         return None
 
+
+
     @classmethod
     def parse_signal_linear_computation(cls, signal):
         """
@@ -83,6 +35,16 @@ class AcpdfUtil:
             offset = float(linear_computation_method_node.find('.//Offset/DynamicValue').text)
             return factor,offset
         return None,None
+
+    @classmethod
+    def parse_signal_dynamic_behavior(cls,signal):
+        dynamic_behaviors_node = signal.find('.//DynamicBehaviors')
+        if dynamic_behaviors_node is None:
+            return False
+        if len(list(dynamic_behaviors_node.iter())) >1:
+            # print(len(list(dynamic_behaviors_node.iter())))
+            return  True
+        return False
 
     @classmethod
     def parse_signal_definition(cls,signal):
@@ -104,6 +66,7 @@ class AcpdfUtil:
         # Check if TableValues node exists
         signal_info['TableValues'] = cls.parse_signal_table_values(signal)
         signal_info['Factor'], signal_info['Offset']  = cls.parse_signal_linear_computation(signal)
+        signal_info['Dynamic'] = cls.parse_signal_dynamic_behavior(signal)
         # Check if LinearComputationMethod node exists
 
         return signal_info
@@ -203,51 +166,49 @@ class AcpdfUtil:
         return parsed_can_frames
 
 
+    @classmethod
+    def flatten_data(cls,parsed_data, output_file='output.xlsx'):
+        flat_data = []
 
-def flatten_data(parsed_data, output_file='output.xlsx'):
-    flat_data = []
+        for can_frame_info in parsed_data:
+            can_frame_dict = {
+                'CanFrameName': can_frame_info['Name'],
+                'CanFrameDlc': can_frame_info['Dlc'],
+                'CanFrameId': can_frame_info.get('Id', None),
+            }
 
-    for can_frame_info in parsed_data:
-        can_frame_dict = {
-            'CanFrameName': can_frame_info['Name'],
-            'CanFrameDlc': can_frame_info['Dlc'],
-            'CanFrameId': can_frame_info.get('Id', None),
-        }
+            if 'Pdus' in can_frame_info:
+                # print(can_frame_info['Pdus'])
+                for pdu_info in can_frame_info['Pdus']:
+                    pdu_dict = {
+                        'PduName': pdu_info['Name'],
+                        'PduDlc': pdu_info['Dlc'],
+                        'PduId': pdu_info.get('PduId', None),
+                        'PduTimePeriod': pdu_info.get('TimePeriod', None),
+                        'PduHeader': pdu_info.get('Header', None),
+                    }
 
-        if 'Pdus' in can_frame_info:
-            # print(can_frame_info['Pdus'])
-            for pdu_info in can_frame_info['Pdus']:
-                pdu_dict = {
-                    'PduName': pdu_info['Name'],
-                    'PduDlc': pdu_info['Dlc'],
-                    'PduId': pdu_info.get('PduId', None),
-                    'PduTimePeriod': pdu_info.get('TimePeriod', None),
-                    'PduHeader': pdu_info.get('Header', None),
-                }
+                    if 'Signals' in pdu_info:
+                        for signal_info in pdu_info['Signals']:
+                            signal_dict = {
+                                'SignalName': signal_info['Name'],
+                                'SignalBitLength': signal_info['BitLength'],
+                                'SignalTableValues': '\n'.join(signal_info.get('TableValues', [])),
+                                'SignalFactor': signal_info.get('Factor', None),
+                                'SignalOffset': signal_info.get('Offset', None),
+                                 'SignalBehavior':signal_info['Dynamic']
+                            }
+                            # print({**can_frame_dict, **pdu_dict, **signal_dict})
+                            flat_data.append({**can_frame_dict, **pdu_dict, **signal_dict})
+                    else:
+                        # print()
+                        flat_data.append({**can_frame_dict, **pdu_dict})
 
-                if 'Signals' in pdu_info:
-                    for signal_info in pdu_info['Signals']:
-                        signal_dict = {
-                            'SignalName': signal_info['Name'],
-                            'SignalBitLength': signal_info['BitLength'],
-                            'SignalTableValues': ', '.join(signal_info.get('TableValues', [])),
-                            'SignalFactor': signal_info.get('Factor', None),
-                            'SignalOffset': signal_info.get('Offset', None),
-                        }
-                        print({**can_frame_dict, **pdu_dict, **signal_dict})
-                        flat_data.append({**can_frame_dict, **pdu_dict, **signal_dict})
-                else:
-                    # print()
-                    flat_data.append({**can_frame_dict, **pdu_dict})
-    # print(can_frame_dict)
-    # print(pdu_dict)
-    # print(signal_dict)
-    df = pd.DataFrame(flat_data)
-    df.to_excel(output_file, index=False)
-# Assuming parsed_can_frames is the list containing the parsed data
+        df = pd.DataFrame(flat_data)
+        df.to_excel(output_file, index=False)
 
 
 
 if __name__ == "__main__":
     parsed_can_frames = AcpdfUtil.read_acpdf("test.xml")
-    flatten_data(parsed_can_frames)
+    AcpdfUtil.flatten_data(parsed_can_frames)
