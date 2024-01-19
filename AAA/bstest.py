@@ -198,8 +198,7 @@ class AcpdfUtil:
             parsed_can_frame = cls.parse_can_frame_definition(can_frame)
             parsed_can_frames.append(parsed_can_frame)
 
-        for can_frame_info in parsed_can_frames:
-            print(can_frame_info)
+        print(parsed_can_frames)
         return parsed_can_frames
 
 if __name__ == "__main__":
