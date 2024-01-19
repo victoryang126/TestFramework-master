@@ -149,14 +149,14 @@ class AcpdfUtil:
             'Name': signal_pdu_name,
             'Dlc': dlc_signal_pdu,
         }
-        signal_pdu_info["signals"]:list = []
+        signal_pdu_info["Signals"]:list = []
         dynamic_properties = cls.parse_dynamic_pdu_properties(signal_pdu)
         signal_pdu_info.update(dynamic_properties)
         signals_node = signal_pdu.find('.//Signals')
         if signals_node is not None:
             for signal in signals_node:
                 signal_info = cls.parse_signal_definition(signal)
-                signal_pdu_info["signals"].append(signal_info)
+                signal_pdu_info["Signals"].append(signal_info)
 
         return signal_pdu_info
 
@@ -186,7 +186,7 @@ class AcpdfUtil:
 
 
 
-            can_frame_info["Puds"] = pdus_info
+            can_frame_info["Pdus"] = pdus_info
         return can_frame_info
 
     @classmethod
@@ -199,7 +199,7 @@ class AcpdfUtil:
             parsed_can_frame = cls.parse_can_frame_definition(can_frame)
             parsed_can_frames.append(parsed_can_frame)
 
-        print(parsed_can_frames)
+        # print(parsed_can_frames)
         return parsed_can_frames
 
 
@@ -215,6 +215,7 @@ def flatten_data(parsed_data, output_file='output.xlsx'):
         }
 
         if 'Pdus' in can_frame_info:
+            # print(can_frame_info['Pdus'])
             for pdu_info in can_frame_info['Pdus']:
                 pdu_dict = {
                     'PduName': pdu_info['Name'],
@@ -229,15 +230,18 @@ def flatten_data(parsed_data, output_file='output.xlsx'):
                         signal_dict = {
                             'SignalName': signal_info['Name'],
                             'SignalBitLength': signal_info['BitLength'],
-                            'SignalTableValues': signal_info.get('TableValues', None),
+                            'SignalTableValues': ', '.join(signal_info.get('TableValues', [])),
                             'SignalFactor': signal_info.get('Factor', None),
                             'SignalOffset': signal_info.get('Offset', None),
                         }
-
+                        print({**can_frame_dict, **pdu_dict, **signal_dict})
                         flat_data.append({**can_frame_dict, **pdu_dict, **signal_dict})
                 else:
+                    # print()
                     flat_data.append({**can_frame_dict, **pdu_dict})
-
+    # print(can_frame_dict)
+    # print(pdu_dict)
+    # print(signal_dict)
     df = pd.DataFrame(flat_data)
     df.to_excel(output_file, index=False)
 # Assuming parsed_can_frames is the list containing the parsed data
