@@ -1,73 +1,152 @@
-from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
 
-class TestReportGenerator:
-    def __init__(self):
-        self.template_html = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Test Report</title>
-        </head>
-        <body>
-            <table id="results-table">
-                <tr><th>Results</th></tr>
-            </table>
-            <table class="test_cases">
-                <tr><th>Test Cases</th></tr>
-            </table>
-            <table class="test_steps">
-                <tr><th>Test Steps</th></tr>
-            </table>
-        </body>
-        </html>
-        """
-        self.results_table = None
-        self.test_cases_table = None
-        self.test_steps_table = None
+def parse_signal_definition(signal):
+    signal_name = signal.get('Name')
+    start_bit = signal.find('StartBit').text
+    bit_length = signal.find('BitLength').text
 
-    def initialize_html(self):
-        self.results_table = BeautifulSoup("<tr></tr>", 'html.parser').tr
-        self.test_cases_table = BeautifulSoup("<tr></tr>", 'html.parser').tr
-        self.test_steps_table = BeautifulSoup("<tr></tr>", 'html.parser').tr
+    # Initialize a dictionary to store signal information
+    signal_info = {
+        'Name': signal_name,
+        'StartBit': start_bit,
+        'BitLength': bit_length,
+    }
 
-    def add_row_to_results(self, row_data):
-        row = BeautifulSoup("<tr></tr>", 'html.parser').tr
-        for data in row_data:
-            cell = BeautifulSoup(f"<td>{data}</td>", 'html.parser').td
-            row.append(cell)
-        self.results_table.append(row)
+    # Check if TableValues node exists
+    table_values_node = signal.find('.//TableValues')
+    if table_values_node is not None:
+        # Extract Key and Value from TableValues node
+        table_values = [(item.get('Key'), item.get('Value')) for item in table_values_node.findall('.//Item')]
+        signal_info['TableValues'] = table_values
 
-    def add_test_case(self, test_case):
-        row = BeautifulSoup("<tr></tr>", 'html.parser').tr
-        cell = BeautifulSoup(f"<td>{test_case}</td>", 'html.parser').td
-        row.append(cell)
-        self.test_cases_table.append(row)
+    # Check if LinearComputationMethod node exists
+    linear_computation_method_node = signal.find('.//LinearComputationMethod')
+    if linear_computation_method_node is not None:
+        factor = linear_computation_method_node.find('.//Factor/DynamicValue').text
+        offset = linear_computation_method_node.find('.//Offset/DynamicValue').text
+        signal_info['LinearComputationMethod'] = {'Factor': factor, 'Offset': offset}
 
-    def add_test_step(self, test_step):
-        row = BeautifulSoup("<tr></tr>", 'html.parser').tr
-        cell = BeautifulSoup(f"<td>{test_step}</td>", 'html.parser').td
-        row.append(cell)
-        self.test_steps_table.append(row)
+    return signal_info
 
-    def generate_html(self, filename):
-        html = BeautifulSoup(self.template_html, 'html.parser')
-        html.find('table', id='results-table').replace_with(self.results_table)
-        html.find('table', class_='test_cases').replace_with(self.test_cases_table)
-        html.find('table', class_='test_steps').replace_with(self.test_steps_table)
-        with open(filename, 'w') as file:
-            file.write(html.prettify())
+def parse_dynamic_container_pdu(dynamic_container_pdu):
+    dlc_dynamic_container_pdu = dynamic_container_pdu.get('Dlc')
+    header_dynamic_container_pdu = dynamic_container_pdu.get('Header')
+    return {'Dlc': dlc_dynamic_container_pdu, 'Header': header_dynamic_container_pdu}
 
-# 示例用法
-report_generator = TestReportGenerator()
-report_generator.initialize_html()
+def parse_dynamic_pdu_properties(dynamic_pdu_properties):
+    pdu_id = dynamic_pdu_properties.find('.//PduId').text
+    time_period = dynamic_pdu_properties.find('.//TimePeriod').text
+    return {'PduId': pdu_id, 'TimePeriod': time_period}
 
-# 添加行和数据
-report_generator.add_row_to_results(['Result 1', 'Pass'])
-report_generator.add_row_to_results(['Result 2', 'Fail'])
-report_generator.add_test_case('Test Case 1')
-report_generator.add_test_case('Test Case 2')
-report_generator.add_test_step('Step 1')
-report_generator.add_test_step('Step 2')
+def parse_signal_pdu_definition(signal_pdu):
+    signal_pdu_name = signal_pdu.get('Name')
+    dlc_signal_pdu = signal_pdu.get('Dlc')
 
-# 生成HTML文档并保存为文件
-report_generator.generate_html('report.html')
+    # Initialize a dictionary to store Signal PDU information
+    signal_pdu_info = {
+        'Name': signal_pdu_name,
+        'Dlc': dlc_signal_pdu,
+    }
+
+    # Check if DynamicContainerPduDefinition node exists
+    dynamic_container_pdu_node = signal_pdu.find('.//DynamicContainerPduDefinition')
+    if dynamic_container_pdu_node is not None:
+        # Parse DynamicContainerPduDefinition
+        dynamic_container_info = parse_dynamic_container_pdu(dynamic_container_pdu_node)
+        signal_pdu_info['DynamicContainerPdu'] = dynamic_container_info
+
+        # Parse Signals node within DynamicContainerPduDefinition
+        signals_node = dynamic_container_pdu_node.find('.//Signals')
+        if signals_node is not None:
+            signals_info = [parse_signal_definition(signal) for signal in signals_node.findall('.//SignalPduDefinition')]
+            signal_pdu_info['Signals'] = signals_info
+
+            # Parse DynamicPduProperties within each SignalPduDefinition
+            for signal_info in signals_info:
+                dynamic_pdu_properties_node = signal_info.find('.//DynamicPduProperties')
+                if dynamic_pdu_properties_node is not None:
+                    dynamic_properties_info = parse_dynamic_pdu_properties(dynamic_pdu_properties_node)
+                    signal_info['DynamicPduProperties'] = dynamic_properties_info
+
+    else:
+        # No DynamicContainerPduDefinition, directly parse SignalPduDefinition
+        signals_node = signal_pdu.find('.//Signals')
+        if signals_node is not None:
+            signals_info = [parse_signal_definition(signal) for signal in signals_node.findall('.//SignalPduDefinition')]
+            signal_pdu_info['Signals'] = signals_info
+
+            # Parse DynamicPduProperties within each SignalPduDefinition
+            for signal_info in signals_info:
+                dynamic_pdu_properties_node = signal_info.find('.//DynamicPduProperties')
+                if dynamic_pdu_properties_node is not None:
+                    dynamic_properties_info = parse_dynamic_pdu_properties(dynamic_pdu_properties_node)
+                    signal_info['DynamicPduProperties'] = dynamic_properties_info
+
+    return signal_pdu_info
+
+def parse_can_frame_definition(can_frame):
+    can_frame_name = can_frame.get('Name')
+    dlc_can_frame = can_frame.get('Dlc')
+
+    # Check if Id element exists
+    id_can_frame = can_frame.get('Dlc')
+    # id_can_frame = id_element.text if id_element is not None else None
+
+    can_frame_info = {
+        'Name': can_frame_name,
+        'Dlc': dlc_can_frame,
+        'Id': id_can_frame,
+    }
+
+    pdus_node = can_frame.find('.//Pdus')
+    if pdus_node is not None:
+        pdus_info = []
+
+        # Check if DynamicContainerPduDefinition exists under Pdus
+        dynamic_container_pdu_node = pdus_node.find('.//DynamicContainerPduDefinition')
+        if dynamic_container_pdu_node is not None:
+            # Parse DynamicContainerPduDefinition
+            dynamic_container_info = parse_dynamic_container_pdu(dynamic_container_pdu_node)
+
+            # Iterate through SignalPduDefinition nodes within DynamicContainerPduDefinition
+            for signal_pdu in dynamic_container_pdu_node.findall('.//SignalPduDefinition'):
+                pdu_info = parse_signal_pdu_definition(signal_pdu)
+                pdus_info.append(pdu_info)
+
+                # Assign DynamicContainerPduDefinition properties to SignalPduDefinition
+                pdu_info['DynamicContainerPdu'] = dynamic_container_info
+
+                # Parse DynamicPduProperties within SignalPduDefinition
+                dynamic_pdu_properties_node = signal_pdu.find('.//DynamicPduProperties')
+                if dynamic_pdu_properties_node is not None:
+                    dynamic_properties_info = parse_dynamic_pdu_properties(dynamic_pdu_properties_node)
+                    pdu_info['DynamicPduProperties'] = dynamic_properties_info
+        else:
+            # No DynamicContainerPduDefinition under Pdus, directly parse SignalPduDefinition
+            for signal_pdu in pdus_node.findall('.//SignalPduDefinition'):
+                pdu_info = parse_signal_pdu_definition(signal_pdu)
+                pdus_info.append(pdu_info)
+
+                # Parse DynamicPduProperties within SignalPduDefinition
+                dynamic_pdu_properties_node = signal_pdu.find('.//DynamicPduProperties')
+                if dynamic_pdu_properties_node is not None:
+                    dynamic_properties_info = parse_dynamic_pdu_properties(dynamic_pdu_properties_node)
+                    pdu_info['DynamicPduProperties'] = dynamic_properties_info
+
+        can_frame_info['Pdus'] = pdus_info
+
+    return can_frame_info
+
+tree = ET.parse('test.xml')
+root = tree.getroot()
+
+can_frames = root.findall('.//CanFrameDefinition')
+
+parsed_can_frames = []
+
+for can_frame in can_frames:
+    parsed_can_frame = parse_can_frame_definition(can_frame)
+    parsed_can_frames.append(parsed_can_frame)
+
+for can_frame_info in parsed_can_frames:
+    print(can_frame_info)
