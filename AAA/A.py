@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import mode
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
