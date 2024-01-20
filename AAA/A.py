@@ -1,214 +1,241 @@
-import xml.etree.ElementTree as ET
 import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import mode
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+
+def plot_waveform_from_csv(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+    print(df.columns)
+    # 绘制图表
+    plt.figure(figsize=(10, 6))
+
+    # 根据需要绘制不同参数的曲线
+    plt.plot(df['Time[s]'], df['ENS'], label='ENS')
+    plt.plot(df['Time[s]'], df['Trigger'], label='Trigger')
+    plt.plot(df['Time[s]'], df['IGN'], label='IGN')
+    plt.plot(df['Time[s]'], df['SAFING'], label='SAFING')
+
+    # 添加图例、标签等
+    plt.legend()
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Parameter Value')
+    plt.title('Analysis of Waveform Parameters')
+    plt.grid(True)
+
+    # 显示图表
+    plt.show()
+
+def analyze_ens_data(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 计算当前采样点到下一个采样点的间隔时间
+    durations = df['Time[s]'].diff().fillna(0)
+
+    # 创建DataFrame保存结果
+    result_df = pd.DataFrame({'ENS_Value': df['ENS'], 'Duration': durations.shift(-1).fillna(0)})
+
+    return result_df
+
+
+def plot_square_wave_from_csv(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 绘制方波图表
+    plt.figure(figsize=(10, 6))
+
+    # 根据需要绘制不同参数的方波曲线
+    plt.step(df['Time[s]'], df['ENS'], label='ENS')
+    plt.step(df['Time[s]'], df['Trigger'], label='Trigger')
+    plt.step(df['Time[s]'], df['IGN'], label='IGN')
+    plt.step(df['Time[s]'], df['SAFING'], label='SAFING')
+
+    # 添加图例、标签等
+    plt.legend()
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Parameter Value')
+    plt.title('Analysis of Square Waveform Parameters')
+    plt.grid(True)
+
+    # 显示图表
+    plt.show()
+
+def plot_binary_square_wave_from_csv(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 绘制二值方波图表
+    plt.figure(figsize=(10, 6))
+
+    # 根据需要绘制不同参数的二值方波曲线
+    plt.step(df['Time[s]'], df['ENS'], where='post', label='ENS')
+    plt.step(df['Time[s]'], df['Trigger'], where='post', label='Trigger')
+    plt.step(df['Time[s]'], df['IGN'], where='post', label='IGN')
+    plt.step(df['Time[s]'], df['SAFING'], where='post', label='SAFING')
+
+    # 设置Y轴仅显示0和1
+    plt.yticks([0, 1])
+
+    # 添加图例、标签等
+    plt.legend()
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Parameter Value')
+    plt.title('Binary Square Waveform Parameters')
+    plt.grid(True)
+
+    # 显示图表
+    plt.show()
 
 
 
 
-class AcpdfUtil:
+def plot_interactive_square_wave_from_csv(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
 
-    @classmethod
-    def parse_signal_table_values(cls, signal):
-        """
-        a function used to get the tables values for the signal node
-        :param signal:
-        :return:
-        """
-        table_values_node = signal.find('.//TableValues')
-        if table_values_node is not None:
-            # Extract Key and Value from TableValues node
-            table_values = [f"{item.get('Key')}:{item.get('Value')}" for item in table_values_node.findall('.//Item')]
-            return table_values
-        return None
+    # 创建交互式图表
+    fig = go.Figure()
 
+    # 添加二值方波图形
+    for column in ['ENS', 'Trigger', 'IGN', 'SAFING']:
+        fig.add_trace(go.Scatter(
+            x=df['Time[s]'],
+            y=df[column],
+            mode='lines+markers',
+            name=column,
+            line=dict(shape='hv'),  # 设置线段形状为水平和垂直
+        ))
 
+    # 设置布局
+    fig.update_layout(
+        title='Interactive Binary Square Waveform Parameters',
+        xaxis=dict(title='Time (seconds)'),
+        yaxis=dict(title='Parameter Value', tickvals=[0, 1], range=[-0.1, 1.1]),
+        legend=dict(x=0, y=1),
+        hovermode='x unified'
+    )
 
-    @classmethod
-    def parse_signal_linear_computation(cls, signal):
-        """
-        function used to get linear computation method for signal node
-        :param signal:
-        :return:
-        """
-        linear_computation_method_node = signal.find('.//LinearComputationMethod')
-        if linear_computation_method_node is not None:
-            factor = float(linear_computation_method_node.find('.//Factor/DynamicValue').text)
-            offset = float(linear_computation_method_node.find('.//Offset/DynamicValue').text)
-            return factor,offset
-        return None,None
+    # 显示交互式图表
+    fig.show()
 
-    @classmethod
-    def parse_signal_dynamic_behavior(cls,signal):
-        dynamic_behaviors_node = signal.find('.//DynamicBehaviors')
-        if dynamic_behaviors_node is None:
-            return False
-        if len(list(dynamic_behaviors_node.iter())) >1:
-            # print(len(list(dynamic_behaviors_node.iter())))
-            return  True
-        return False
+    fig.write_html("table.html")
+    html_code = fig.to_html(full_html=False)
+    print(html_code)
+# 用法示例：传入CSV文件路径
 
-    @classmethod
-    def parse_signal_definition(cls,signal):
-        """
-        function used to parese the signal node
-        :param signal:
-        :return:
-        """
-        signal_name = signal.get('Name')
-        start_bit = signal.find('StartBit').text
-        bit_length = signal.find('BitLength').text
+def analyze_ens_data_to_df(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
 
-        # Initialize a dictionary to store signal information
-        signal_info = {
-            'Name': signal_name,
-            'BitLength': int(bit_length),
-        }
+    # 获取ENS列的数值和时间间隔
+    ens_values = df['ENS'].tolist()
+    time_intervals = [df['Time[s]'][i + 1] - df['Time[s]'][i] for i in range(len(df['Time[s]']) - 1)]
 
-        # Check if TableValues node exists
-        signal_info['TableValues'] = cls.parse_signal_table_values(signal)
-        signal_info['Factor'], signal_info['Offset']  = cls.parse_signal_linear_computation(signal)
-        signal_info['Dynamic'] = cls.parse_signal_dynamic_behavior(signal)
-        # Check if LinearComputationMethod node exists
+    # 获取当前采样点和下一个不同值的采样点的时间间隔
+    sample_points = []
+    sample_times = []
 
-        return signal_info
+    current_value = ens_values[0]
+    current_time = 0.0
 
-    @classmethod
-    def parse_dynamic_container_pdu(cls,pdus_node):
-        """
-        function used to check if the pdu is a container pdu
-        :param pdus_node:
-        :return:
-        """
-        dynamic_container_pdu = pdus_node.find('.//DynamicContainerPduDefinition')
-        if dynamic_container_pdu is not None:
-            # dlc_dynamic_container_pdu = dynamic_container_pdu.get('Dlc')
-            header_dynamic_container_pdu = dynamic_container_pdu.get('Header')
+    for value, time_interval in zip(ens_values[1:], time_intervals):
+        if value != current_value:
+            sample_points.append(current_value)
+            sample_times.append(current_time + time_interval)  # 更新为当前时间间隔加上下一个不同值的时间间隔
+
+            current_value = value
+            current_time = 0.0
         else:
-            header_dynamic_container_pdu = None
-        return { 'Header': header_dynamic_container_pdu}
+            current_time += time_interval
 
-    @classmethod
-    def parse_dynamic_pdu_properties(cls, signal_pdu):
-        """
-        function used to parse dynamic pdu properities
-        :param signal_pdu:
-        :return:
-        """
-        dynamic_properties_node = signal_pdu.find('.//DynamicPduProperties')
-        if dynamic_properties_node is not None:
-            pdu_id = dynamic_properties_node.find('PduId').text
-            time_period = dynamic_properties_node.find('TimePeriod').text
-        else:
-            pdu_id = 0
-            time_period = 0
-        return {'PduId': pdu_id, 'TimePeriod': time_period}
+    # 添加最后一个采样点
+    sample_points.append(current_value)
+    sample_times.append(current_time)
 
-    @classmethod
-    def parse_signal_pdu_definition(cls,signal_pdu):
-        signal_pdu_name = signal_pdu.get('Name')
-        dlc_signal_pdu = int(signal_pdu.find('Dlc').text)
+    # 构建结果DataFrame
+    result_df = pd.DataFrame({
+        'Sample Points': sample_points,
+        'Sample Times': sample_times
+    })
 
-        # Initialize a dictionary to store Signal PDU information
-        signal_pdu_info:dict = {
-            'Name': signal_pdu_name,
-            'Dlc': dlc_signal_pdu,
-        }
-        signal_pdu_info["Signals"]:list = []
-        dynamic_properties = cls.parse_dynamic_pdu_properties(signal_pdu)
-        signal_pdu_info.update(dynamic_properties)
-        signals_node = signal_pdu.find('.//Signals')
-        if signals_node is not None:
-            for signal in signals_node:
-                signal_info = cls.parse_signal_definition(signal)
-                signal_pdu_info["Signals"].append(signal_info)
+    return result_df
 
-        return signal_pdu_info
+def analyze_ens_data_to_df3(file_path):
+    # 从CSV文件加载数据到DataFrame
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
 
-    @classmethod
-    def parse_can_frame_definition(cls,can_frame):
-        can_frame_name = can_frame.get('Name')
-        dlc_can_frame = can_frame.get('Dlc')
+    # 找到ENS列中当前采样点和下一个不同值的采样点的索引
+    # df['ENS']：获取 DataFrame 中名为 'ENS' 的列。
+    # .shift()：将该列向下平移一行，即将每个元素替换为其下一行的值。
+    # .ne()：执行逻辑运算，返回一个布尔值 Series，指示两列中的元素是否不相等。
+    # 因此，df['ENS'].ne(df['ENS'].shift()) 返回一个布尔值 Series，其中每个元素表示当前行与下一行是否具有不同的 'ENS' 列值。在你的上下文中，它被用于找到 'ENS' 列中当前采样点和下    #一个不同值的采样点的索引。
+    change_indices = df['ENS'].diff().ne(0)
+    print(change_indices)
 
-        # Check if Id element exists
-        id_can_frame = can_frame.get('Dlc')
-        # id_can_frame = id_element.text if id_element is not None else None
+    # 获取当前采样点和下一个不同值的采样点的时间间隔和采样点值
+    sample_times = df.loc[change_indices, 'Time[s]'].diff().fillna(0).tolist()
+    sample_points = df.loc[change_indices, 'ENS'].tolist()
 
-        can_frame_info = {
-            'Name': can_frame_name,
-            'Dlc': int(dlc_can_frame),
-            'Id': hex(int(id_can_frame)),
-        }
-        pdus_node = can_frame.find('.//Pdus')
-        if pdus_node is not None:
-            pdus_info = []
+    # 构建结果DataFrame
+    result_df = pd.DataFrame({
+        'Sample Points': sample_points,
+        'Sample Times': sample_times
+    })
 
-            dynamic_container_info = cls.parse_dynamic_container_pdu(pdus_node)
-            for signal_pdu in pdus_node.findall('.//SignalPduDefinition'):
-                signal_pdu_info = cls.parse_signal_pdu_definition(signal_pdu)
-                signal_pdu_info.update(dynamic_container_info)
-                pdus_info.append(signal_pdu_info)
+    return result_df
 
 
 
-            can_frame_info["Pdus"] = pdus_info
-        return can_frame_info
+def analyze_ens_data_to_df4(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
 
-    @classmethod
-    def read_acpdf(cls, file):
-        tree = ET.parse(file)
-        root = tree.getroot()
-        can_frames = root.findall('.//CanFrameDefinition')
-        parsed_can_frames = []
-        for can_frame in can_frames:
-            parsed_can_frame = cls.parse_can_frame_definition(can_frame)
-            parsed_can_frames.append(parsed_can_frame)
+    # 找到ENS列中当前采样点和下一个不同值的采样点的索引
+    change_indices = df['ENS'].ne(df['ENS'].shift())
 
-        # print(parsed_can_frames)
-        return parsed_can_frames
+    # 获取当前采样点到下一个不同值的采样点的时间间隔和采样点值
+    sample_times = df['Time[s]'][change_indices].diff().fillna(0).tolist()
+    sample_points = df['ENS'][change_indices].tolist()
 
+    # 构建结果DataFrame
+    result_df = pd.DataFrame({
+        'Sample Points': sample_points,
+        'Sample Times': sample_times
+    })
 
-    @classmethod
-    def flatten_data(cls,parsed_data, output_file='your_existing_file.xlsx'):
-        flat_data = []
-
-        for can_frame_info in parsed_data:
-            can_frame_dict = {
-                'CanFrameName': can_frame_info['Name'],
-                'CanFrameDlc': can_frame_info['Dlc'],
-                'CanFrameId': can_frame_info.get('Id', None),
-            }
-
-            if 'Pdus' in can_frame_info:
-                # print(can_frame_info['Pdus'])
-                for pdu_info in can_frame_info['Pdus']:
-                    pdu_dict = {
-                        'PduName': pdu_info['Name'],
-                        'PduDlc': pdu_info['Dlc'],
-                        'PduId': pdu_info.get('PduId', None),
-                        'PduTimePeriod': pdu_info.get('TimePeriod', None),
-                        'PduHeader': pdu_info.get('Header', None),
-                    }
-
-                    if 'Signals' in pdu_info:
-                        for signal_info in pdu_info['Signals']:
-                            signal_dict = {
-                                'SignalName': signal_info['Name'],
-                                'SignalBitLength': signal_info['BitLength'],
-                                'SignalTableValues': '\n'.join(signal_info.get('TableValues', [])),
-                                'SignalFactor': signal_info.get('Factor', None),
-                                'SignalOffset': signal_info.get('Offset', None),
-                                 'SignalBehavior':signal_info['Dynamic']
-                            }
-                            # print({**can_frame_dict, **pdu_dict, **signal_dict})
-                            flat_data.append({**can_frame_dict, **pdu_dict, **signal_dict})
-                    else:
-                        # print()
-                        flat_data.append({**can_frame_dict, **pdu_dict})
-
-        df = pd.DataFrame(flat_data)
-        df.to_excel(output_file, index=False)
+    return result_df
 
 
+def analyze_ens_data_to_df5(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
 
-if __name__ == "__main__":
-    parsed_can_frames = AcpdfUtil.read_acpdf("test.xml")
-    AcpdfUtil.flatten_data(parsed_can_frames)
+    # 找到ENS列中当前采样点和下一个不同值的采样点的索引
+    change_indices = df['ENS'].ne(df['ENS'].shift())
+    print(change_indices)
+    print(df['Time[s]'][change_indices])
+    # 获取当前采样点和下一个不同值的采样点之间的时间间隔和采样点值
+    sample_times = df['Time[s]'][change_indices].diff().shift(-1).fillna(0).tolist()
+    sample_points = df['ENS'][change_indices].tolist()
+
+    # 构建结果DataFrame
+    result_df = pd.DataFrame({
+        'Sample Points': sample_points,
+        'Sample Times': sample_times
+    })
+
+    return result_df
+csv_file_path = "single.csv"
+# plot_interactive_square_wave_with_time_diff(csv_file_path)
+# plot_interactive_square_wave_from_csv(csv_file_path)
+result_df = analyze_ens_data(csv_file_path)
+print(result_df)
+result_df = analyze_ens_data_to_df(csv_file_path)
+print(result_df)
+result_df = analyze_ens_data_to_df5(csv_file_path)
+print(result_df)
