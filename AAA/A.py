@@ -167,7 +167,7 @@ class AcpdfUtil:
 
 
     @classmethod
-    def flatten_data(cls,parsed_data, output_file='output.xlsx'):
+    def flatten_data(cls,parsed_data, output_file='your_existing_file.xlsx'):
         flat_data = []
 
         for can_frame_info in parsed_data:
