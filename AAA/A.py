@@ -126,6 +126,42 @@ def plot_interactive_square_wave_from_csv(file_path):
     print(html_code)
 # 用法示例：传入CSV文件路径
 
+def plot_interactive_square_wave_from_csv2(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 获取ENS列的最大值
+    max_ens_value = df['ENS'].max()
+
+    # 创建交互式图表
+    fig = go.Figure()
+
+    # 添加二值方波图形
+    for column in ['ENS', 'Trigger', 'IGN', 'SAFING']:
+        fig.add_trace(go.Scatter(
+            x=df['Time[s]'],
+            y=df[column],
+            mode='lines+markers',
+            name=column,
+            line=dict(shape='hv'),  # 设置线段形状为水平和垂直
+        ))
+
+    # 设置布局
+    fig.update_layout(
+        title='Interactive Binary Square Waveform Parameters',
+        xaxis=dict(title='Time (seconds)'),
+        yaxis=dict(title='Parameter Value', tickvals=[i  for i in range(0,max_ens_value)], range=[0, max_ens_value]),
+        legend=dict(x=0, y=1),
+        hovermode='x unified'
+    )
+
+    # 显示交互式图表
+    fig.show()
+
+    fig.write_html("table.html")
+    html_code = fig.to_html(full_html=False)
+    print(html_code)
+
 def analyze_ens_data_to_df(file_path):
     # 从CSV文件加载数据到DataFrame
     df = pd.read_csv(file_path)
@@ -231,10 +267,10 @@ def analyze_ens_data_to_df5(file_path):
     return result_df
 csv_file_path = "single.csv"
 # plot_interactive_square_wave_with_time_diff(csv_file_path)
-# plot_interactive_square_wave_from_csv(csv_file_path)
-result_df = analyze_ens_data(csv_file_path)
-print(result_df)
-result_df = analyze_ens_data_to_df(csv_file_path)
-print(result_df)
-result_df = analyze_ens_data_to_df5(csv_file_path)
-print(result_df)
+plot_interactive_square_wave_from_csv2(csv_file_path)
+# result_df = analyze_ens_data(csv_file_path)
+# print(result_df)
+# result_df = analyze_ens_data_to_df(csv_file_path)
+# print(result_df)
+# result_df = analyze_ens_data_to_df5(csv_file_path)
+# print(result_df)
