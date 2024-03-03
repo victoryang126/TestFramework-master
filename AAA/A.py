@@ -2,7 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import mpld3
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource
 
 def plot_waveform_from_csv(file_path):
     # 从CSV文件加载数据到DataFrame
@@ -115,14 +117,15 @@ def plot_interactive_square_wave_from_csv(file_path):
         xaxis=dict(title='Time (seconds)'),
         yaxis=dict(title='Parameter Value', tickvals=[0, 1], range=[-0.1, 1.1]),
         legend=dict(x=0, y=1),
-        hovermode='x unified'
+        hovermode='x unified',
+        modeBarButtonsToRemove=['toImage'],
     )
 
     # 显示交互式图表
     fig.show()
 
     fig.write_html("table.html")
-    html_code = fig.to_html(full_html=False)
+    html_code = fig.to_html(full_html=False, include_plotlyjs=False, include_mathjax=False)
     print(html_code)
 # 用法示例：传入CSV文件路径
 
@@ -265,9 +268,80 @@ def analyze_ens_data_to_df5(file_path):
     })
 
     return result_df
+
+def plot_waveform_from_csv_to_html(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 绘制图表
+    plt.figure(figsize=(10, 6))
+
+    # 根据需要绘制不同参数的曲线
+    plt.plot(df['Time[s]'], df['ENS'], label='ENS')
+    plt.plot(df['Time[s]'], df['Trigger'], label='Trigger')
+    plt.plot(df['Time[s]'], df['IGN'], label='IGN')
+    plt.plot(df['Time[s]'], df['SAFING'], label='SAFING')
+
+    # 添加图例、标签等
+    plt.legend()
+    plt.xlabel('Time (seconds)')
+    plt.ylabel('Parameter Value')
+    plt.title('Analysis of Waveform Parameters')
+    plt.grid(True)
+
+    # 将Matplotlib图形转换为HTML
+    html_fig = mpld3.fig_to_html(plt.gcf())
+
+    # 保存为HTML文件
+    with open("output.html", "w") as html_file:
+        html_file.write(html_fig)
+
+    # 显示图表（可选）
+    mpld3.show()
+
+def plot_waveform_from_csv_to_html_code_bokeh(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 创建Bokeh图形
+    source = ColumnDataSource(df)
+    p = figure(x_axis_label='Time (seconds)', y_axis_label='Parameter Value')
+    p.line(x='Time[s]', y='ENS', source=source, legend_label='ENS', line_width=2)
+    p.line(x='Time[s]', y='Trigger', source=source, legend_label='Trigger', line_width=2)
+    p.line(x='Time[s]', y='IGN', source=source, legend_label='IGN', line_width=2)
+    p.line(x='Time[s]', y='SAFING', source=source, legend_label='SAFING', line_width=2)
+
+    # 将Bokeh图形嵌入到HTML中
+    html_code = show(p, notebook_handle=False, serve=False)
+    with open("test.html", 'w') as html_file:
+        html_file.write(html_code)
+    # 打印HTML代码（可选）
+    print(html_code)
+import plotly.express as px
+
+def plot_interactive_square_wave_plotly(file_path):
+    # 从CSV文件加载数据到DataFrame
+    df = pd.read_csv(file_path)
+
+    # 使用 Plotly Express 创建交互式图表
+    fig = px.line(df, x='Time[s]', y=['ENS', 'Trigger', 'IGN', 'SAFING'], title='Interactive Binary Square Waveform Parameters')
+
+    # 设置布局
+    fig.update_layout(
+        xaxis=dict(title='Time (seconds)'),
+        yaxis=dict(title='Parameter Value', tickvals=[0, 1], range=[-0.1, 1.1]),
+        legend=dict(x=0, y=1),
+        hovermode='x unified'
+    )
+
+    # 显示交互式图表
+    fig.show()
+
+    # 将图表保存为HTML文件
+    fig.write_html("plotly_table.html")
 csv_file_path = "single.csv"
 # plot_interactive_square_wave_with_time_diff(csv_file_path)
-plot_interactive_square_wave_from_csv2(csv_file_path)
+plot_interactive_square_wave_plotly(csv_file_path)
 # result_df = analyze_ens_data(csv_file_path)
 # print(result_df)
 # result_df = analyze_ens_data_to_df(csv_file_path)
